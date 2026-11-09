@@ -56,19 +56,31 @@ La aceptación de Product Owner, la prueba en teléfono físico y la revisión d
 - test/sprint_test.dart: 9 pruebas automatizadas.
 - docs/: backlog de 25 HU, tarjetas para Trello y evidencias.
 
-## Git y GitHub
+## Repositorio GitHub
 
-El paquete incluye un repositorio Git local y un bundle con el historial. GitHub y Trello todavía no están publicados. Para recuperar el repositorio desde el bundle:
-
-```sh
-git clone FilaCero_Git.bundle filacero
-```
-
-Después de crear el repositorio GitHub del equipo, vincularlo y publicar:
+Proyecto: https://github.com/Rickv122/fila_cero
 
 ```sh
-git remote add origin URL_DEL_REPOSITORIO
-git push -u origin main
+git clone https://github.com/Rickv122/fila_cero.git
+cd fila_cero
+flutter pub get
+flutter run -d ID_DEL_DISPOSITIVO
 ```
 
-No se adjunta una URL inexistente ni se registran Pull Requests no realizados. docs/Trello_tarjetas.csv contiene las tarjetas para copiar o cargar con una herramienta compatible; no es un tablero publicado. Se propone Backlog, Por hacer, En progreso, En revisión y Hecho. Las HU con aceptación pendiente no deben marcarse Hecho.
+El repositorio es privado. Para que otros integrantes o la docente puedan verlo deben tener acceso al repositorio. El tablero Trello y la aceptación de la Product Owner siguen pendientes. No se atribuyen revisiones de código ni Pull Requests que no se hayan realizado.
+
+docs/Trello_tarjetas.csv contiene las tarjetas preparadas para el tablero, docs/backlog_25_hu.json contiene las 25 historias y docs/capturas conserva las evidencias y los resultados de pruebas. Las carpetas de compilación y las rutas locales se regeneran al abrir el proyecto.
+## Repositorio GitHub
+
+Proyecto: https://github.com/Rickv122/fila_cero
+
+```sh
+git clone https://github.com/Rickv122/fila_cero.git
+cd fila_cero
+flutter pub get
+flutter run -d ID_DEL_DISPOSITIVO
+```
+
+El repositorio es privado. Para que otros integrantes o la docente puedan verlo deben tener acceso al repositorio. El tablero Trello y la aceptación de la Product Owner siguen pendientes. No se atribuyen revisiones de código ni Pull Requests que no se hayan realizado.
+
+docs/Trello_tarjetas.csv contiene las tarjetas preparadas para el tablero, docs/backlog_25_hu.json contiene las 25 historias y docs/capturas conserva las evidencias y los resultados de pruebas. Las carpetas de compilación y las rutas locales se regeneran al abrir el proyecto.
