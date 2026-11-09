@@ -67,20 +67,6 @@ flutter pub get
 flutter run -d ID_DEL_DISPOSITIVO
 ```
 
-El repositorio es privado. Para que otros integrantes o la docente puedan verlo deben tener acceso al repositorio. El tablero Trello y la aceptación de la Product Owner siguen pendientes. No se atribuyen revisiones de código ni Pull Requests que no se hayan realizado.
-
-docs/Trello_tarjetas.csv contiene las tarjetas preparadas para el tablero, docs/backlog_25_hu.json contiene las 25 historias y docs/capturas conserva las evidencias y los resultados de pruebas. Las carpetas de compilación y las rutas locales se regeneran al abrir el proyecto.
-## Repositorio GitHub
-
-Proyecto: https://github.com/Rickv122/fila_cero
-
-```sh
-git clone https://github.com/Rickv122/fila_cero.git
-cd fila_cero
-flutter pub get
-flutter run -d ID_DEL_DISPOSITIVO
-```
-
-El repositorio es privado. Para que otros integrantes o la docente puedan verlo deben tener acceso al repositorio. El tablero Trello y la aceptación de la Product Owner siguen pendientes. No se atribuyen revisiones de código ni Pull Requests que no se hayan realizado.
+El repositorio es público y se puede consultar con el enlace sin iniciar sesión. El tablero Trello y la aceptación de la Product Owner siguen pendientes. No se atribuyen revisiones de código ni Pull Requests que no se hayan realizado.
 
 docs/Trello_tarjetas.csv contiene las tarjetas preparadas para el tablero, docs/backlog_25_hu.json contiene las 25 historias y docs/capturas conserva las evidencias y los resultados de pruebas. Las carpetas de compilación y las rutas locales se regeneran al abrir el proyecto.
