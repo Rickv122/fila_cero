@@ -1,0 +1,11 @@
+00:00 +0: loading C:/Users/ferna/Documents/Codex/2026-11-09/en-x20/work/filacero-naira/test/sprint_test.dart
+00:00 +0: HU01 registro persistente y rechazo de contraseña incorrecta
+00:04 +1: HU01 correo duplicado e inválido no crean cuentas
+00:05 +2: HU05 visitante y conductor no pueden guardar surtidores
+00:08 +3: HU05 alta y edición persisten sin duplicar ni perder fecha
+00:10 +4: HU05 rechaza coordenadas inválidas y formulario vacío
+00:12 +5: HU03 cuatro estados y reporte vencido se muestran sin confusión
+00:14 +6: HU02 y HU04 visitante abre detalle y Reportar pide sesión
+00:18 +7: Bienvenida adaptable 360.0 x 640.0
+00:20 +8: Bienvenida adaptable 412.0 x 915.0
+00:21 +9: All tests passed!

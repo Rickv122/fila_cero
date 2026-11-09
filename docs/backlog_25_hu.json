@@ -1,0 +1,677 @@
+[
+  {
+    "id": "HU-01",
+    "title": "Registro e inicio de sesión",
+    "story": "Como conductor, quiero registrarme e iniciar sesión con correo o Google, para que mis reportes queden a mi nombre.",
+    "epic": "E1",
+    "priority": "Must",
+    "points": 5,
+    "sprint": 1,
+    "owner": "Cristopher",
+    "criteria": [
+      {
+        "given": "un conductor sin cuenta",
+        "when": "se registra con correo y contraseña o con Google",
+        "then": "entra al mapa y ve su nombre en el perfil"
+      },
+      {
+        "given": "un conductor registrado",
+        "when": "ingresa una contraseña incorrecta",
+        "then": "ve “Correo o contraseña incorrectos” y no se abre una sesión"
+      },
+      {
+        "given": "el formulario de registro",
+        "when": "se escribe un correo inválido o se repite uno existente",
+        "then": "se informa el error y no se crea una cuenta duplicada"
+      }
+    ]
+  },
+  {
+    "id": "HU-02",
+    "title": "Acceso de visitante",
+    "story": "Como visitante, quiero ver el mapa sin crear cuenta, para consultar rápido antes de salir.",
+    "epic": "E1",
+    "priority": "Must",
+    "points": 1,
+    "sprint": 1,
+    "owner": "Naira",
+    "criteria": [
+      {
+        "given": "un visitante sin sesión",
+        "when": "toca “Entrar sin cuenta”",
+        "then": "puede consultar el mapa"
+      },
+      {
+        "given": "un visitante en el detalle",
+        "when": "toca “Reportar”",
+        "then": "se le solicita iniciar sesión y no se publica un reporte"
+      },
+      {
+        "given": "un visitante",
+        "when": "abre un surtidor y vuelve al mapa",
+        "then": "consulta datos en modo lectura y conserva la navegación"
+      }
+    ]
+  },
+  {
+    "id": "HU-03",
+    "title": "Mapa de surtidores por estado",
+    "story": "Como conductor, quiero ver un mapa con los surtidores y un color por estado (hay, poco, no hay), para saber de un vistazo dónde ir.",
+    "epic": "E2",
+    "priority": "Must",
+    "points": 8,
+    "sprint": 1,
+    "owner": "Lucas",
+    "criteria": [
+      {
+        "given": "surtidores con reportes vigentes",
+        "when": "se abre el mapa",
+        "then": "los marcadores usan verde para hay, amarillo para poco y rojo para no hay"
+      },
+      {
+        "given": "un surtidor sin reporte vigente",
+        "when": "se consulta el mapa",
+        "then": "su marcador es gris y se identifica como sin reporte vigente"
+      },
+      {
+        "given": "el mapa abierto",
+        "when": "se toca un marcador",
+        "then": "se abre el detalle del surtidor seleccionado"
+      }
+    ]
+  },
+  {
+    "id": "HU-04",
+    "title": "Detalle de un surtidor",
+    "story": "Como conductor, quiero ver el detalle de un surtidor (dirección, combustibles, último reporte y su hora), para decidir si vale la pena ir.",
+    "epic": "E2",
+    "priority": "Must",
+    "points": 3,
+    "sprint": 1,
+    "owner": "Ricardo",
+    "criteria": [
+      {
+        "given": "el mapa o la lista",
+        "when": "se selecciona un surtidor",
+        "then": "se muestran nombre, dirección, combustibles, último estado y antigüedad del reporte"
+      },
+      {
+        "given": "un surtidor sin reportes",
+        "when": "se abre su detalle",
+        "then": "se indica “Sin reportes todavía”"
+      },
+      {
+        "given": "un detalle abierto",
+        "when": "se usa el botón atrás",
+        "then": "se vuelve a la pantalla anterior sin perder la navegación"
+      }
+    ]
+  },
+  {
+    "id": "HU-05",
+    "title": "Alta y edición de surtidores",
+    "story": "Como administrador, quiero cargar y editar surtidores con nombre, ubicación y combustibles, para que el mapa tenga datos desde el inicio.",
+    "epic": "E6",
+    "priority": "Must",
+    "points": 5,
+    "sprint": 1,
+    "owner": "Andrick",
+    "criteria": [
+      {
+        "given": "un administrador",
+        "when": "guarda nombre, ubicación y combustibles válidos",
+        "then": "el surtidor aparece en el mapa de todos los usuarios"
+      },
+      {
+        "given": "un formulario de surtidor",
+        "when": "se omite un dato obligatorio o se ingresa una coordenada inválida",
+        "then": "se informa el error y no se guarda"
+      },
+      {
+        "given": "un surtidor existente",
+        "when": "el administrador modifica datos y guarda",
+        "then": "el detalle y el mapa reflejan la edición sin duplicar el registro"
+      }
+    ]
+  },
+  {
+    "id": "HU-06",
+    "title": "Filtro por combustible",
+    "story": "Como conductor, quiero filtrar por combustible (especial, premium, diésel, GNV), para ver solo los surtidores que me sirven.",
+    "epic": "E2",
+    "priority": "Must",
+    "points": 3,
+    "sprint": 2,
+    "owner": "Lucas",
+    "criteria": [
+      {
+        "given": "surtidores con distintos combustibles",
+        "when": "se elige Diésel",
+        "then": "solo se muestran surtidores que lo ofrecen"
+      },
+      {
+        "given": "un filtro activo",
+        "when": "se elimina el filtro",
+        "then": "se muestran nuevamente todos los surtidores"
+      },
+      {
+        "given": "un combustible sin coincidencias",
+        "when": "se aplica el filtro",
+        "then": "se informa que no hay resultados"
+      }
+    ]
+  },
+  {
+    "id": "HU-07",
+    "title": "Surtidores cercanos",
+    "story": "Como conductor, quiero ver los surtidores más cercanos a mi ubicación ordenados por distancia, para elegir el que me queda mejor.",
+    "epic": "E2",
+    "priority": "Must",
+    "points": 5,
+    "sprint": 2,
+    "owner": "Andrick",
+    "criteria": [
+      {
+        "given": "el permiso de ubicación concedido",
+        "when": "se abre Cercanos",
+        "then": "los surtidores se ordenan por distancia y se muestran kilómetros"
+      },
+      {
+        "given": "el permiso denegado",
+        "when": "se abre Cercanos",
+        "then": "se explica por qué se necesita ubicación y cómo habilitarla"
+      },
+      {
+        "given": "una ubicación actualizada",
+        "when": "se vuelve a consultar Cercanos",
+        "then": "se recalculan distancias y orden"
+      }
+    ]
+  },
+  {
+    "id": "HU-08",
+    "title": "Reportar combustible y fila",
+    "story": "Como conductor, quiero reportar si hay combustible y el tamaño de la fila (corta, media, larga), para ayudar a otros conductores.",
+    "epic": "E3",
+    "priority": "Must",
+    "points": 5,
+    "sprint": 2,
+    "owner": "Ricardo",
+    "criteria": [
+      {
+        "given": "un conductor con sesión",
+        "when": "envía combustible, disponibilidad y fila",
+        "then": "el reporte conserva autor y hora y el marcador se actualiza en menos de 5 segundos"
+      },
+      {
+        "given": "un reporte recién enviado",
+        "when": "se intenta repetir en el mismo surtidor antes de 15 minutos",
+        "then": "se bloquea el duplicado y se informa la espera"
+      },
+      {
+        "given": "un formulario incompleto",
+        "when": "se intenta publicar",
+        "then": "se señalan los campos obligatorios"
+      }
+    ]
+  },
+  {
+    "id": "HU-09",
+    "title": "Confirmar o desmentir reportes",
+    "story": "Como conductor, quiero confirmar o desmentir el reporte de otro usuario, para que la información sea confiable.",
+    "epic": "E3",
+    "priority": "Must",
+    "points": 3,
+    "sprint": 2,
+    "owner": "Ricardo",
+    "criteria": [
+      {
+        "given": "el reporte de otro conductor",
+        "when": "se confirma o desmiente",
+        "then": "se actualiza el contador correspondiente"
+      },
+      {
+        "given": "un usuario que ya votó",
+        "when": "intenta votar otra vez en ese reporte",
+        "then": "no se registra un segundo voto"
+      },
+      {
+        "given": "un reporte propio",
+        "when": "se consultan sus acciones",
+        "then": "no se permite votar por el propio aporte"
+      }
+    ]
+  },
+  {
+    "id": "HU-10",
+    "title": "Antigüedad y expiración",
+    "story": "Como conductor, quiero ver hace cuánto se hizo cada reporte y que los viejos expiren, para no guiarme por datos desactualizados.",
+    "epic": "E3",
+    "priority": "Must",
+    "points": 3,
+    "sprint": 2,
+    "owner": "Cristopher",
+    "criteria": [
+      {
+        "given": "un reporte reciente",
+        "when": "se consulta su detalle",
+        "then": "se muestra su antigüedad"
+      },
+      {
+        "given": "un reporte de más de dos horas",
+        "when": "se abre o actualiza el mapa",
+        "then": "deja de definir el color y figura como expirado"
+      },
+      {
+        "given": "un nuevo reporte vigente",
+        "when": "se consulta el surtidor",
+        "then": "el estado se calcula con el reporte vigente más reciente"
+      }
+    ]
+  },
+  {
+    "id": "HU-11",
+    "title": "Surtidores favoritos",
+    "story": "Como conductor, quiero marcar surtidores como favoritos, para encontrar rápido los que uso siempre.",
+    "epic": "E4",
+    "priority": "Must",
+    "points": 2,
+    "sprint": 2,
+    "owner": "Naira",
+    "criteria": [
+      {
+        "given": "un conductor con sesión",
+        "when": "marca la estrella de un surtidor",
+        "then": "este aparece en Favoritos"
+      },
+      {
+        "given": "un favorito guardado",
+        "when": "se cierra y vuelve a abrir la app",
+        "then": "el favorito se conserva"
+      },
+      {
+        "given": "un favorito existente",
+        "when": "se desmarca la estrella",
+        "then": "sale de la lista sin eliminar el surtidor"
+      }
+    ]
+  },
+  {
+    "id": "HU-12",
+    "title": "Favoritos sin conexión",
+    "story": "Como conductor, quiero ver mis favoritos y su último estado sin internet, para consultar aunque tenga mala señal.",
+    "epic": "E4",
+    "priority": "Should",
+    "points": 3,
+    "sprint": 2,
+    "owner": "Naira",
+    "criteria": [
+      {
+        "given": "favoritos consultados previamente",
+        "when": "se pierde internet",
+        "then": "se muestran sus datos guardados y la fecha de actualización"
+      },
+      {
+        "given": "una instalación sin datos guardados",
+        "when": "se abre Favoritos sin conexión",
+        "then": "se explica que no hay información disponible"
+      },
+      {
+        "given": "la conectividad recuperada",
+        "when": "se actualiza la lista",
+        "then": "se obtiene la información nueva sin perder favoritos"
+      }
+    ]
+  },
+  {
+    "id": "HU-13",
+    "title": "Alertas de disponibilidad",
+    "story": "Como conductor, quiero recibir una notificación cuando un favorito vuelve a tener combustible, para llegar antes de que se forme la fila.",
+    "epic": "E5",
+    "priority": "Should",
+    "points": 8,
+    "sprint": 3,
+    "owner": "Naira",
+    "criteria": [
+      {
+        "given": "un favorito sin combustible y alertas autorizadas",
+        "when": "un reporte válido indica disponibilidad",
+        "then": "se genera una notificación de recuperación"
+      },
+      {
+        "given": "el permiso de notificaciones denegado",
+        "when": "se activan alertas",
+        "then": "se informa cómo habilitarlo sin bloquear la consulta"
+      },
+      {
+        "given": "un evento ya notificado",
+        "when": "se sincroniza nuevamente",
+        "then": "no se repite la notificación del mismo evento"
+      }
+    ]
+  },
+  {
+    "id": "HU-14",
+    "title": "Preferencias del conductor",
+    "story": "Como conductor, quiero indicar en mi perfil mi tipo de vehículo y combustible, para que el mapa se filtre solo.",
+    "epic": "E1",
+    "priority": "Should",
+    "points": 2,
+    "sprint": 3,
+    "owner": "Cristopher",
+    "criteria": [
+      {
+        "given": "un conductor con sesión",
+        "when": "guarda vehículo y combustible preferido",
+        "then": "las preferencias quedan asociadas al perfil"
+      },
+      {
+        "given": "un combustible preferido guardado",
+        "when": "se abre el mapa",
+        "then": "se aplica el filtro correspondiente"
+      },
+      {
+        "given": "un usuario que cambia la preferencia",
+        "when": "guarda y vuelve a abrir la app",
+        "then": "se conserva la nueva selección"
+      }
+    ]
+  },
+  {
+    "id": "HU-15",
+    "title": "Ruta al surtidor",
+    "story": "Como conductor, quiero un botón \"Cómo llegar\" que abra la ruta en Google Maps, para ir directo al surtidor.",
+    "epic": "E2",
+    "priority": "Should",
+    "points": 2,
+    "sprint": 2,
+    "owner": "Andrick",
+    "criteria": [
+      {
+        "given": "el detalle con coordenadas válidas",
+        "when": "se toca Cómo llegar",
+        "then": "se abre Google Maps con el destino correcto"
+      },
+      {
+        "given": "Google Maps no instalado",
+        "when": "se solicita la ruta",
+        "then": "se ofrece abrir el destino en el navegador"
+      },
+      {
+        "given": "una ubicación de surtidor inválida",
+        "when": "se intenta abrir una ruta",
+        "then": "se explica el problema sin cerrar la app"
+      }
+    ]
+  },
+  {
+    "id": "HU-16",
+    "title": "Moderación de reportes",
+    "story": "Como administrador, quiero ocultar reportes falsos o abusivos, para mantener la confianza en la app.",
+    "epic": "E6",
+    "priority": "Should",
+    "points": 3,
+    "sprint": 3,
+    "owner": "Andrick",
+    "criteria": [
+      {
+        "given": "un administrador y un reporte denunciado",
+        "when": "se decide ocultarlo",
+        "then": "deja de mostrarse como reporte público"
+      },
+      {
+        "given": "un usuario sin permiso administrativo",
+        "when": "intenta moderar",
+        "then": "la operación se rechaza"
+      },
+      {
+        "given": "una moderación aplicada",
+        "when": "se consulta el registro",
+        "then": "se conservan motivo, responsable y fecha"
+      }
+    ]
+  },
+  {
+    "id": "HU-17",
+    "title": "Denunciar un reporte",
+    "story": "Como conductor, quiero denunciar un reporte que creo falso, para que el administrador lo revise.",
+    "epic": "E6",
+    "priority": "Should",
+    "points": 2,
+    "sprint": 3,
+    "owner": "Andrick",
+    "criteria": [
+      {
+        "given": "un conductor con sesión",
+        "when": "denuncia un reporte e indica un motivo",
+        "then": "la denuncia llega a revisión administrativa"
+      },
+      {
+        "given": "un motivo vacío",
+        "when": "se envía la denuncia",
+        "then": "se pide completar el motivo"
+      },
+      {
+        "given": "el mismo usuario y reporte",
+        "when": "se repite la denuncia",
+        "then": "no se duplica la solicitud pendiente"
+      }
+    ]
+  },
+  {
+    "id": "HU-18",
+    "title": "Foto de la fila",
+    "story": "Como conductor, quiero adjuntar una foto de la fila a mi reporte, para que otros vean la situación real.",
+    "epic": "E3",
+    "priority": "Could",
+    "points": 5,
+    "sprint": 4,
+    "owner": "Cristopher",
+    "criteria": [
+      {
+        "given": "un conductor redactando un reporte",
+        "when": "adjunta una imagen válida",
+        "then": "la foto queda vinculada a ese reporte"
+      },
+      {
+        "given": "un permiso de cámara o galería denegado",
+        "when": "se intenta adjuntar",
+        "then": "se explica el permiso y se permite continuar sin foto"
+      },
+      {
+        "given": "una imagen no válida o demasiado grande",
+        "when": "se selecciona",
+        "then": "se informa el límite antes de publicar"
+      }
+    ]
+  },
+  {
+    "id": "HU-19",
+    "title": "Radio y horario de alertas",
+    "story": "Como conductor, quiero elegir el radio y el horario de mis alertas, para no recibir notificaciones que no me sirven.",
+    "epic": "E5",
+    "priority": "Could",
+    "points": 3,
+    "sprint": 4,
+    "owner": "Naira",
+    "criteria": [
+      {
+        "given": "un conductor con alertas",
+        "when": "guarda radio y horario válidos",
+        "then": "se conservan sus preferencias"
+      },
+      {
+        "given": "un evento fuera del radio u horario",
+        "when": "se evalúa la alerta",
+        "then": "no se envía una notificación"
+      },
+      {
+        "given": "un horario o radio inválido",
+        "when": "se guarda",
+        "then": "se informa el error sin sustituir la configuración anterior"
+      }
+    ]
+  },
+  {
+    "id": "HU-20",
+    "title": "Modo oscuro",
+    "story": "Como conductor, quiero usar la app en modo oscuro, para verla cómoda de noche mientras manejo.",
+    "epic": "E7",
+    "priority": "Could",
+    "points": 2,
+    "sprint": 4,
+    "owner": "Lucas",
+    "criteria": [
+      {
+        "given": "la configuración visual",
+        "when": "se activa el modo oscuro",
+        "then": "las pantallas principales usan el tema oscuro con textos legibles"
+      },
+      {
+        "given": "el modo oscuro guardado",
+        "when": "se reinicia la app",
+        "then": "la preferencia permanece"
+      },
+      {
+        "given": "una leyenda de estados",
+        "when": "se cambia de tema",
+        "then": "los estados se distinguen por texto y color"
+      }
+    ]
+  },
+  {
+    "id": "HU-21",
+    "title": "Historial de aportes",
+    "story": "Como conductor, quiero ver el historial de mis reportes y mi nivel de confianza, para sentir que mi aporte cuenta.",
+    "epic": "E3",
+    "priority": "Could",
+    "points": 3,
+    "sprint": 3,
+    "owner": "Ricardo",
+    "criteria": [
+      {
+        "given": "un conductor con aportes",
+        "when": "abre Mis reportes",
+        "then": "se listan sus reportes con surtidor, fecha y estado"
+      },
+      {
+        "given": "un conductor sin aportes",
+        "when": "consulta el historial",
+        "then": "ve un mensaje de lista vacía"
+      },
+      {
+        "given": "un nivel de confianza mostrado",
+        "when": "se consulta su explicación",
+        "then": "se indica cómo se calcula y qué datos lo sustentan"
+      }
+    ]
+  },
+  {
+    "id": "HU-22",
+    "title": "Widget del surtidor favorito",
+    "story": "Como conductor, quiero un widget en la pantalla de inicio con mi surtidor favorito, para ver su estado sin abrir la app.",
+    "epic": "E7",
+    "priority": "Could",
+    "points": 5,
+    "sprint": 3,
+    "owner": "Lucas",
+    "criteria": [
+      {
+        "given": "un favorito elegido",
+        "when": "se agrega el widget Android",
+        "then": "se muestran nombre, último estado y hora de actualización"
+      },
+      {
+        "given": "un widget visible",
+        "when": "se toca",
+        "then": "se abre el detalle del surtidor"
+      },
+      {
+        "given": "el teléfono sin conexión",
+        "when": "se consulta el widget",
+        "then": "se distingue el último dato guardado de una actualización en vivo"
+      }
+    ]
+  },
+  {
+    "id": "HU-23",
+    "title": "Idiomas aymara y quechua",
+    "story": "Como conductor, quiero usar la app en aymara o quechua, para entenderla en mi idioma.",
+    "epic": "E7",
+    "priority": "Could",
+    "points": 5,
+    "sprint": 4,
+    "owner": "Lucas",
+    "criteria": [
+      {
+        "given": "idiomas disponibles",
+        "when": "se elige aymara o quechua",
+        "then": "los textos de navegación cambian al idioma seleccionado"
+      },
+      {
+        "given": "un idioma guardado",
+        "when": "se vuelve a abrir la app",
+        "then": "se conserva la elección"
+      },
+      {
+        "given": "una traducción faltante",
+        "when": "se abre esa sección",
+        "then": "se usa español como respaldo sin mostrar claves internas"
+      }
+    ]
+  },
+  {
+    "id": "HU-24",
+    "title": "Búsqueda por nombre o zona",
+    "story": "Como conductor, quiero buscar surtidores por nombre o zona, para encontrar el que necesito sin recorrer todo el mapa.",
+    "epic": "E2",
+    "priority": "Should",
+    "points": 3,
+    "sprint": 4,
+    "owner": "Cristopher",
+    "criteria": [
+      {
+        "given": "una lista de surtidores",
+        "when": "se escribe parte de un nombre o zona",
+        "then": "se muestran coincidencias sin distinguir mayúsculas ni tildes"
+      },
+      {
+        "given": "una búsqueda sin coincidencias",
+        "when": "se consulta el resultado",
+        "then": "se muestra un mensaje de lista vacía"
+      },
+      {
+        "given": "una búsqueda activa",
+        "when": "se limpia el texto",
+        "then": "se restaura la lista completa"
+      }
+    ]
+  },
+  {
+    "id": "HU-25",
+    "title": "Compartir un surtidor",
+    "story": "Como conductor, quiero compartir la información de un surtidor mediante otras aplicaciones, para avisar a otra persona dónde consultar su ubicación y último estado.",
+    "epic": "E2",
+    "priority": "Could",
+    "points": 2,
+    "sprint": 4,
+    "owner": "Ricardo",
+    "criteria": [
+      {
+        "given": "el detalle de un surtidor",
+        "when": "se toca Compartir",
+        "then": "se abre el selector Android con nombre, dirección, coordenadas y último estado fechado"
+      },
+      {
+        "given": "un surtidor sin reporte vigente",
+        "when": "se comparte su ficha",
+        "then": "el texto indica que no hay datos vigentes"
+      },
+      {
+        "given": "el selector de aplicaciones abierto",
+        "when": "se cancela",
+        "then": "se vuelve al detalle sin publicar ni modificar datos"
+      }
+    ]
+  }
+]
