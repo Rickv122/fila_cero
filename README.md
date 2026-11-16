@@ -1,72 +1,101 @@
-# FilaCero Sprint 1
+# FilaCero Sprint 2
 
-Aplicaciones Móviles I. Incremento Android basado en el proyecto de Naira con HU-01 a HU-05 integradas. Se conserva la identidad visual original y se agregan acceso por correo, mapa, detalle y administración.
+Aplicación Flutter y Dart para Android e iOS. El conductor consulta gasolineras sin cuenta. El administrador mantiene el catálogo y las asignaciones. Solo el encargado activo y asignado publica disponibilidad de combustible.
 
-## Abrir y ejecutar
+Este incremento usa listas, filtros, detalles y formularios. El mapa y sus dependencias se retiraron del código activo. No incorpora GPS, rutas, geocodificación, notificaciones ni reportes de conductores. La conexión a Supabase se limita a base de datos y autenticación, autorizadas para el Sprint 2.
 
-Abre esta carpeta en Android Studio o VS Code con las extensiones Flutter y Dart. Se necesita Flutter 3.47.9 (Dart 3.13.7), JDK 21 y Android SDK. Configura el SDK y sus licencias con flutter doctor. El proyecto usa compile/target API 36, Build Tools 36.0.0 y minSdk 26 (Android 8.0). La primera compilación puede descargar Gradle y dependencias.
+## Ejecutar
+
+Entorno utilizado: Flutter 3.47.9, Dart 3.13.7 y JDK 21. Android mínimo 8.0 API 26. La plataforma iOS tiene objetivo mínimo 15.0.
 
 ```sh
 flutter pub get
-flutter doctor -v
 flutter analyze
 flutter test
 flutter devices
-flutter run -d ID_DEL_DISPOSITIVO
+flutter run -d ID_DISPOSITIVO
 ```
 
-Siempre ejecuta flutter pub get al preparar una copia nueva: regenera los complementos nativos. El paquete se concentra en Android; no incluye la plataforma Windows, por lo que no necesita crear enlaces simbólicos para compilar Android. Las rutas locales se generan en android/local.properties y no se versionan.
+La URL y la clave **pública** del proyecto están en `lib/core/supabase_config.dart`. Se pueden sustituir con `--dart-define=SUPABASE_URL=...` y `--dart-define=SUPABASE_PUBLISHABLE_KEY=...`. La clave pública no concede permisos administrativos: cada operación comprueba identidad, rol y asignación en el servidor.
+
+Proyecto de base de datos: https://supabase.com/dashboard/project/oejouwwxngyafftzfkux
+
+Repositorio: https://github.com/Rickv122/fila_cero
 
 ```sh
 flutter build apk --debug
 ```
 
-El APK generado queda en build/app/outputs/flutter-apk/app-debug.apk. Para APK por arquitectura: flutter build apk --debug --split-per-abi. El emulador probado utiliza Android 15 API 35 x86_64. Si el entorno presenta fallos gráficos del emulador, inicia un arranque en frío; el APK también puede ejecutarse en un teléfono compatible.
+## iOS
 
-## Cuentas para la presentación
-
-Administrador: admin@filacero.test
-
-Conductor: conductor@filacero.test
-
-Contraseña de ambas: FilaCero2026!
-
-También se puede crear una cuenta con nombre, correo y contraseña de 8 caracteres como mínimo. Utiliza datos ficticios y una clave que no uses en otros servicios. Las contraseñas se derivan con PBKDF2 HMAC SHA-256, salt de 16 bytes e iteraciones 120000. Esta implementación de aula no debe utilizarse como autenticación de producción.
-
-## Recorrido de las historias
-
-1. HU-01: crear cuenta, cerrar sesión, entrar con correo, comprobar el error con contraseña incorrecta y revisar nombre en Mi perfil.
-2. HU-02: Entrar sin cuenta, consultar y abrir un surtidor; Reportar solicita acceso.
-3. HU-03: consultar marcadores verde, amarillo, rojo y gris y usar la leyenda. Acercar el mapa para distinguir marcadores próximos o elegir desde Surtidores.
-4. HU-04: abrir el detalle con dirección, combustibles y fecha del último reporte; consultar Obrajes para el estado sin reportes.
-5. HU-05: entrar como administrador, Mi perfil > Administración > Agregar surtidor. Completar nombre, dirección, ciudad, latitud, longitud y uno o más combustibles. Guardar, editar y consultar el cambio como visitante en la misma instalación.
-
-## Alcance y pendientes
-
-El almacenamiento es local. No hay Google Sign-In, servidor de autenticación ni sincronización entre teléfonos. El criterio original de HU-05 sobre todos los usuarios se demuestra entre sesiones de la misma instalación; la sincronización remota sigue pendiente. Los datos iniciales son ejemplos académicos, no información de abastecimiento real. El mapa utiliza internet para las teselas de OpenStreetMap; no hay GPS ni ubicación del usuario en este sprint. El botón Reportar conserva la restricción del visitante y la publicación se implementará en HU-08. La sesión se mantiene en memoria y se cierra al reiniciar la aplicación; cuentas y surtidores sí persisten.
-
-La aceptación de Product Owner, la prueba en teléfono físico y la revisión de otro compañero están pendientes. No se declara la Definition of Done formalmente cumplida.
-
-## Estructura
-
-- lib/main.dart: inicio y tema.
-- lib/core/app_store.dart: modelos, sesión, permisos y persistencia.
-- lib/core/app_strings.dart: textos visibles.
-- lib/screens/sprint_screens.dart: pantallas del incremento.
-- test/sprint_test.dart: 9 pruebas automatizadas.
-- docs/: backlog de 25 HU, tarjetas para Trello y evidencias.
-
-## Repositorio GitHub
-
-Proyecto: https://github.com/Rickv122/fila_cero
+Se incluye `ios/` y se comparte el mismo código Dart. Se necesita macOS con Xcode y sus herramientas de desarrollo para compilar y ejecutar iOS. En un Mac:
 
 ```sh
-git clone https://github.com/Rickv122/fila_cero.git
-cd fila_cero
 flutter pub get
-flutter run -d ID_DEL_DISPOSITIVO
+flutter build ios --simulator --debug
+flutter devices
+flutter run -d ID_SIMULADOR_IOS
 ```
 
-El repositorio es público y se puede consultar con el enlace sin iniciar sesión. El tablero Trello y la aceptación de la Product Owner siguen pendientes. No se atribuyen revisiones de código ni Pull Requests que no se hayan realizado.
+La configuración del proyecto por sí sola no demuestra una ejecución iOS. Consultar `docs/ESTADO_SPRINT_2.md` y los resultados de CI para conocer la verificación realmente realizada.
 
-docs/Trello_tarjetas.csv contiene las tarjetas preparadas para el tablero, docs/backlog_25_hu.json contiene las 25 historias y docs/capturas conserva las evidencias y los resultados de pruebas. Las carpetas de compilación y las rutas locales se regeneran al abrir el proyecto.
+## Las cinco historias
+
+| Historia | Recorrido |
+|---|---|
+| HU-06 Catálogo | Acceso de personal, Administrador, Mi cuenta, Administrar catálogo. Registrar o editar nombre, dirección, ciudad, coordenadas manuales y combustibles. Desde el detalle se asignan encargados autorizados. |
+| HU-07 Autenticación | Acceso de personal con correo y contraseña. La cuenta activa define las funciones disponibles. Cerrar sesión retira las pantallas protegidas. |
+| HU-08 Disponibilidad | Encargado, Mi cuenta, Mis gasolineras, Detalle, Actualizar disponibilidad. Estados por combustible: Hay, Poco y No hay. El servidor registra autor, hora e historial. |
+| HU-09 Consultas | Consulta pública por nombre, ciudad y combustible, veinte resultados por página y detalle de la información. Actualizar lista recupera cambios de otras sesiones. |
+| HU-10 Baja lógica | Administrador, Detalle, Desactivar o Reactivar, Confirmar. Las inactivas desaparecen de la consulta pública, conservan datos e historial y no admiten publicaciones. |
+
+Una actualización dura dos horas. La ausencia o vencimiento se muestra como **Sin información vigente**. Reactivar una gasolinera no renueva estados anteriores. Las cuentas con rol administrador tampoco pueden publicar disponibilidad.
+
+## Base de datos y seguridad
+
+La migración en `supabase/migrations/` crea seis tablas de negocio: `perfiles`, `surtidores`, `combustibles`, `surtidor_combustible`, `asignaciones_encargado` e `historial_disponibilidad`. Las cuentas y contraseñas las administra Auth. No hay tablas de funciones futuras del Sprint 3.
+
+Todas las tablas de negocio tienen `activo`. Se aplican claves, validaciones, índices y RLS. No se conceden escrituras directas ni DELETE a los clientes. Las operaciones de varias tablas son transacciones mediante funciones con parámetros acotados. Los auxiliares privilegiados permanecen en el esquema privado, con comprobación de rol y sin usar metadatos editables del usuario para autorizar.
+
+`supabase/seed.sql` prepara datos académicos para la evaluación, sin afirmar que sean información real de abastecimiento. Las gasolineras y disponibilidades de prueba se guardan en la base remota y se comparten entre instalaciones.
+
+## Cuentas para evaluar
+
+Las cuentas de personal se crean mediante un procedimiento administrativo controlado. No existe autorregistro de encargados ni selección de rol en la app. Las credenciales se entregan al equipo y a la docente por separado en el archivo privado de accesos, fuera del repositorio público y del ZIP de código.
+
+Para crear cuentas equivalentes en otro proyecto, un administrador puede ejecutar `scripts/provision_staff.py` desde un equipo de confianza con la CLI de Supabase autenticada. El programa consulta una clave privilegiada únicamente en memoria y no la escribe en archivos ni en Flutter. Después aplica el archivo de datos iniciales para vincular los perfiles. Revisar los correos del script antes de usarlo fuera de esta evaluación.
+
+## Comprobar
+
+```sh
+flutter analyze
+flutter test
+python scripts/verify_backend.py --credentials RUTA_ACCESOS_PRIVADOS_JSON --output docs/evidencias/supabase-tests.json
+flutter drive --driver=test_driver/integration_test.dart --target=integration_test/public_smoke_test.dart -d ID_DISPOSITIVO
+```
+
+El archivo privado se usa solo desde el equipo de desarrollo. Las pruebas remotas crean registros de evaluación y los desactivan al terminar; conservan su historial sin borrado físico. Los resultados publicados no contienen contraseñas ni tokens.
+
+## Organización del código
+
+```text
+lib/
+  main.dart                     inicio y tema
+  models/domain.dart            perfiles, gasolineras, combustibles y validaciones
+  core/app_controller.dart      sesión y coordinación de interfaz
+  core/supabase_config.dart     configuración pública
+  data/fila_repository.dart     contrato de datos
+  data/supabase_repository.dart  conexión, consultas y operaciones
+  screens/                      lista, acceso, detalle, formulario, disponibilidad y asignaciones
+supabase/                       migración reproducible y datos de evaluación
+test/                           pruebas de modelos, permisos de interfaz y navegación
+integration_test/               recorridos contra el servidor real en dispositivo
+scripts/                        alta controlada y pruebas remotas
+android/                        proyecto nativo Android
+ios/                            proyecto nativo iOS
+docs/                           planificación, resultados y evidencias
+```
+
+El proyecto separa modelos, repositorio, controlador y vistas. No se presenta como una implementación estricta de MVC. Cada capa tiene una responsabilidad y las pantallas no contienen SQL ni claves de administración.
+
+La aceptación de la docente, el consenso real de Planning Poker y las ceremonias del equipo se registran después de realizarlos. Los documentos no los dan por celebrados.

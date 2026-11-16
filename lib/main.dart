@@ -1,27 +1,64 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'core/app_store.dart';
-import 'core/app_strings.dart';
-import 'screens/sprint_screens.dart';
+import 'core/app_controller.dart';
+import 'core/supabase_config.dart';
+import 'data/supabase_repository.dart';
+import 'screens/catalog_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final store = AppStore(await SharedPreferences.getInstance());
-  await store.load();
-  runApp(FilaCeroApp(store: store));
+  try {
+    await Supabase.initialize(
+      url: SupabaseConfig.url,
+      publishableKey: SupabaseConfig.publishableKey,
+    );
+    final controller = AppController(
+      SupabaseRepository(Supabase.instance.client),
+    );
+    await controller.initialize();
+    runApp(FilaCeroApp(controller: controller));
+  } catch (_) {
+    runApp(
+      MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.cloud_off, size: 48),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'No se pudo iniciar FilaCero. Revisa la conexión y vuelve a intentar.',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton(
+                    onPressed: main,
+                    child: const Text('Reintentar'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class FilaCeroApp extends StatelessWidget {
-  final AppStore store;
-  final bool mapEnabled;
-  const FilaCeroApp({super.key, required this.store, this.mapEnabled = true});
+  final AppController controller;
+  const FilaCeroApp({super.key, required this.controller});
   @override
   Widget build(BuildContext context) => MaterialApp(
-    title: S.appName,
+    title: 'FilaCero',
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
       useMaterial3: true,
+      scaffoldBackgroundColor: const Color(0xFFF7F8FA),
       colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFF4511E)),
       inputDecorationTheme: const InputDecorationTheme(
         border: OutlineInputBorder(),
@@ -30,11 +67,6 @@ class FilaCeroApp extends StatelessWidget {
         style: FilledButton.styleFrom(minimumSize: const Size(48, 52)),
       ),
     ),
-    home: AnimatedBuilder(
-      animation: store,
-      builder: (_, _) => store.hasAccess
-          ? HomeScreen(store: store, mapEnabled: mapEnabled)
-          : WelcomeScreen(store: store),
-    ),
+    home: CatalogScreen(controller: controller),
   );
 }
