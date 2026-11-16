@@ -93,12 +93,22 @@ class FuelBadge extends StatelessWidget {
   @override
   Widget build(BuildContext c) {
     final status = fuel.effectiveStatus();
-    return Chip(
-      avatar: Icon(Icons.circle, size: 11, color: statusColors[status.index]),
-      label: Text('${fuel.fuelName}: ${status.label}'),
-      visualDensity: VisualDensity.compact,
-      backgroundColor: statusColors[status.index].withValues(alpha: 0.07),
-      side: BorderSide.none,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+      decoration: BoxDecoration(
+        color: statusColors[status.index].withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.circle, size: 10, color: statusColors[status.index]),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text('${fuel.fuelName}: ${status.label}', softWrap: true),
+          ),
+        ],
+      ),
     );
   }
 }

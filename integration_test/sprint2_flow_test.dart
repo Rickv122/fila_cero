@@ -28,6 +28,8 @@ void main() {
     final repo = SupabaseRepository(Supabase.instance.client);
     final controller = AppController(repo);
     await controller.initialize();
+    final stationName =
+        'Gasolinera San Miguel ${DateTime.now().millisecondsSinceEpoch % 10000}';
     String? created;
     Future<void> settle() => tester.pumpAndSettle(
       const Duration(milliseconds: 200),
@@ -41,7 +43,7 @@ void main() {
 
     Future<void> visible(String text) async {
       await tester.scrollUntilVisible(
-        find.text(text).first,
+        find.text(text),
         250,
         scrollable: find.byType(Scrollable).first,
       );
@@ -77,10 +79,7 @@ void main() {
       await shot('pantalla4-HU-06-catalogo');
       await tester.tap(find.text('Agregar gasolinera'));
       await settle();
-      await tester.enterText(
-        find.byType(TextFormField).at(0),
-        'Gasolinera San Miguel',
-      );
+      await tester.enterText(find.byType(TextFormField).at(0), stationName);
       await tester.enterText(
         find.byType(TextFormField).at(1),
         'Av. Ballivián, zona San Miguel',
@@ -102,12 +101,15 @@ void main() {
       await visible('Guardar gasolinera');
       await tester.tap(find.text('Guardar gasolinera'));
       await settle();
-      expect(find.text('Gasolinera San Miguel'), findsOneWidget);
-      final record = await repo.stations(
-        const StationQuery(name: 'Gasolinera San Miguel'),
+      expect(
+        find.byWidgetPredicate((w) => w is Text && w.data == stationName),
+        findsOneWidget,
       );
+      final record = await repo.stations(StationQuery(name: stationName));
       created = record.stations.first.id;
-      await tester.tap(find.text('Gasolinera San Miguel'));
+      await tester.tap(
+        find.byWidgetPredicate((w) => w is Text && w.data == stationName),
+      );
       await settle();
       await visible('Asignar encargados');
       await tester.tap(find.text('Asignar encargados'));
@@ -132,14 +134,13 @@ void main() {
         find.widgetWithText(SwitchListTile, 'Mostrar inactivas'),
       );
       await settle();
-      await tester.enterText(
-        find.byType(TextField).first,
-        'Gasolinera San Miguel',
-      );
+      await tester.enterText(find.byType(TextField).first, stationName);
       await tester.pump(const Duration(milliseconds: 500));
       await settle();
       await shot('pantalla8-HU-10-inactivas');
-      await tester.tap(find.text('Gasolinera San Miguel'));
+      await tester.tap(
+        find.byWidgetPredicate((w) => w is Text && w.data == stationName),
+      );
       await settle();
       await visible('Reactivar gasolinera');
       await tester.tap(find.text('Reactivar gasolinera'));
@@ -164,7 +165,9 @@ void main() {
       await tester.tap(find.text('Mis gasolineras'));
       await settle();
       await shot('pantalla9-HU-08-mis-gasolineras');
-      await tester.tap(find.text('Gasolinera San Miguel'));
+      await tester.tap(
+        find.byWidgetPredicate((w) => w is Text && w.data == stationName),
+      );
       await settle();
       await visible('Actualizar disponibilidad');
       await tester.tap(find.text('Actualizar disponibilidad'));
@@ -191,7 +194,9 @@ void main() {
       await settle();
       await tester.tap(find.byTooltip('Actualizar lista'));
       await settle();
-      await tester.tap(find.text('Gasolinera San Miguel'));
+      await tester.tap(
+        find.byWidgetPredicate((w) => w is Text && w.data == stationName),
+      );
       await settle();
       expect(find.text('Actualizar disponibilidad'), findsNothing);
       expect(
