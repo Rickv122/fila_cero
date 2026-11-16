@@ -1,0 +1,17 @@
+00:00 +0: loading D:/FilaCero_Proyecto/test/sprint2_test.dart
+00:00 +0: HU08 la vigencia expira exactamente a las dos horas
+00:00 +1: HU06 rechaza coordenadas no finitas y fuera de rango
+00:00 +2: HU06 valida nombre, dirección y al menos un combustible
+00:00 +3: HU07 cerrar sesión elimina los permisos locales
+00:00 +4: HU09 consulta pública con lista y sin acciones de publicación
+00:01 +5: HU09 buscar y limpiar filtros actualiza la consulta
+00:01 +6: HU09 error de conexión ofrece reintentar sin datos inventados
+00:01 +7: HU07 formulario rechaza correo inválido antes de iniciar sesión
+00:02 +8: HU08 administrador no recibe acción para publicar disponibilidad
+00:02 +9: HU08 encargado asignado recibe acción de disponibilidad
+00:02 +10: HU06 un visitante no abre el formulario protegido
+00:02 +11: HU08 cerrar sesión retira pantalla protegida
+00:02 +12: Lista adaptable sin desbordamiento Size(360.0, 640.0)
+00:02 +13: Lista adaptable sin desbordamiento Size(390.0, 844.0)
+00:02 +14: Lista adaptable sin desbordamiento Size(768.0, 1024.0)
+00:02 +15: All tests passed!

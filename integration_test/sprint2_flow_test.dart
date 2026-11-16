@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -14,7 +15,7 @@ void main() {
   const adminPassword = String.fromEnvironment('TEST_ADMIN_PASSWORD');
   const managerEmail = String.fromEnvironment('TEST_MANAGER_EMAIL');
   const managerPassword = String.fromEnvironment('TEST_MANAGER_PASSWORD');
-  testWidgets('HU06 a HU10 contra Supabase en Android', (tester) async {
+  testWidgets('HU06 a HU10 contra Supabase en dispositivo', (tester) async {
     expect(
       adminEmail,
       isNotEmpty,
@@ -37,7 +38,11 @@ void main() {
       const Duration(seconds: 40),
     );
     Future<void> shot(String name) async {
+      FocusManager.instance.primaryFocus?.unfocus();
+      ScaffoldMessenger.maybeOf(tester.element(find.byType(Scaffold).last))
+          ?.removeCurrentSnackBar();
       await settle();
+      debugPrint('CAPTURA: $name');
       await binding.takeScreenshot(name);
     }
 
@@ -53,8 +58,10 @@ void main() {
       await tester.pumpWidget(FilaCeroApp(controller: controller));
       await settle();
       expect(find.text('Surtidor El Alto Central'), findsOneWidget);
-      await binding.convertFlutterSurfaceToImage();
-      await tester.pump();
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        await binding.convertFlutterSurfaceToImage();
+        await tester.pump();
+      }
       await shot('pantalla1-HU-09-lista');
       await visible('Surtidor Sopocachi');
       await tester.tap(find.text('Surtidor Sopocachi'));
@@ -74,6 +81,7 @@ void main() {
       expect(controller.isAdmin, isTrue);
       await tester.tap(find.byTooltip('Mi cuenta'));
       await settle();
+      await shot('pantalla13-HU-07-perfil-personal');
       await tester.tap(find.text('Administrar catálogo'));
       await settle();
       await shot('pantalla4-HU-06-catalogo');
@@ -135,6 +143,7 @@ void main() {
       );
       await settle();
       await tester.enterText(find.byType(TextField).first, stationName);
+      await tester.testTextInput.receiveAction(TextInputAction.search);
       await tester.pump(const Duration(milliseconds: 500));
       await settle();
       await shot('pantalla8-HU-10-inactivas');
@@ -194,6 +203,18 @@ void main() {
       await settle();
       await tester.tap(find.byTooltip('Actualizar lista'));
       await settle();
+      await tester.scrollUntilVisible(
+        find.byType(TextField),
+        -350,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.enterText(find.byType(TextField).first, stationName);
+      await tester.testTextInput.receiveAction(TextInputAction.search);
+      await tester.pump(const Duration(milliseconds: 500));
+      await settle();
+      await tester.ensureVisible(
+        find.byWidgetPredicate((w) => w is Text && w.data == stationName),
+      );
       await tester.tap(
         find.byWidgetPredicate((w) => w is Text && w.data == stationName),
       );

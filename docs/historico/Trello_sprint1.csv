@@ -1,0 +1,126 @@
+﻿Nombre,Lista propuesta,Responsable,SP,Sprint,Prioridad,Descripcion
+HU-01 Registro e inicio de sesión,En progreso,Cristopher,5,1,Must,"Como conductor, quiero registrarme e iniciar sesión con correo o Google, para que mis reportes queden a mi nombre.
+
+Dado un conductor sin cuenta, cuando se registra con correo y contraseña o con Google, entonces entra al mapa y ve su nombre en el perfil.
+Dado un conductor registrado, cuando ingresa una contraseña incorrecta, entonces ve “Correo o contraseña incorrectos” y no se abre una sesión.
+Dado el formulario de registro, cuando se escribe un correo inválido o se repite uno existente, entonces se informa el error y no se crea una cuenta duplicada."
+HU-02 Acceso de visitante,En revisión,Naira,1,1,Must,"Como visitante, quiero ver el mapa sin crear cuenta, para consultar rápido antes de salir.
+
+Dado un visitante sin sesión, cuando toca “Entrar sin cuenta”, entonces puede consultar el mapa.
+Dado un visitante en el detalle, cuando toca “Reportar”, entonces se le solicita iniciar sesión y no se publica un reporte.
+Dado un visitante, cuando abre un surtidor y vuelve al mapa, entonces consulta datos en modo lectura y conserva la navegación."
+HU-03 Mapa de surtidores por estado,En revisión,Lucas,8,1,Must,"Como conductor, quiero ver un mapa con los surtidores y un color por estado (hay, poco, no hay), para saber de un vistazo dónde ir.
+
+Dado surtidores con reportes vigentes, cuando se abre el mapa, entonces los marcadores usan verde para hay, amarillo para poco y rojo para no hay.
+Dado un surtidor sin reporte vigente, cuando se consulta el mapa, entonces su marcador es gris y se identifica como sin reporte vigente.
+Dado el mapa abierto, cuando se toca un marcador, entonces se abre el detalle del surtidor seleccionado."
+HU-04 Detalle de un surtidor,En revisión,Ricardo,3,1,Must,"Como conductor, quiero ver el detalle de un surtidor (dirección, combustibles, último reporte y su hora), para decidir si vale la pena ir.
+
+Dado el mapa o la lista, cuando se selecciona un surtidor, entonces se muestran nombre, dirección, combustibles, último estado y antigüedad del reporte.
+Dado un surtidor sin reportes, cuando se abre su detalle, entonces se indica “Sin reportes todavía”.
+Dado un detalle abierto, cuando se usa el botón atrás, entonces se vuelve a la pantalla anterior sin perder la navegación."
+HU-05 Alta y edición de surtidores,En progreso,Andrick,5,1,Must,"Como administrador, quiero cargar y editar surtidores con nombre, ubicación y combustibles, para que el mapa tenga datos desde el inicio.
+
+Dado un administrador, cuando guarda nombre, ubicación y combustibles válidos, entonces el surtidor aparece en el mapa de todos los usuarios.
+Dado un formulario de surtidor, cuando se omite un dato obligatorio o se ingresa una coordenada inválida, entonces se informa el error y no se guarda.
+Dado un surtidor existente, cuando el administrador modifica datos y guarda, entonces el detalle y el mapa reflejan la edición sin duplicar el registro."
+HU-06 Filtro por combustible,Backlog,Lucas,3,2,Must,"Como conductor, quiero filtrar por combustible (especial, premium, diésel, GNV), para ver solo los surtidores que me sirven.
+
+Dado surtidores con distintos combustibles, cuando se elige Diésel, entonces solo se muestran surtidores que lo ofrecen.
+Dado un filtro activo, cuando se elimina el filtro, entonces se muestran nuevamente todos los surtidores.
+Dado un combustible sin coincidencias, cuando se aplica el filtro, entonces se informa que no hay resultados."
+HU-07 Surtidores cercanos,Backlog,Andrick,5,2,Must,"Como conductor, quiero ver los surtidores más cercanos a mi ubicación ordenados por distancia, para elegir el que me queda mejor.
+
+Dado el permiso de ubicación concedido, cuando se abre Cercanos, entonces los surtidores se ordenan por distancia y se muestran kilómetros.
+Dado el permiso denegado, cuando se abre Cercanos, entonces se explica por qué se necesita ubicación y cómo habilitarla.
+Dado una ubicación actualizada, cuando se vuelve a consultar Cercanos, entonces se recalculan distancias y orden."
+HU-08 Reportar combustible y fila,Backlog,Ricardo,5,2,Must,"Como conductor, quiero reportar si hay combustible y el tamaño de la fila (corta, media, larga), para ayudar a otros conductores.
+
+Dado un conductor con sesión, cuando envía combustible, disponibilidad y fila, entonces el reporte conserva autor y hora y el marcador se actualiza en menos de 5 segundos.
+Dado un reporte recién enviado, cuando se intenta repetir en el mismo surtidor antes de 15 minutos, entonces se bloquea el duplicado y se informa la espera.
+Dado un formulario incompleto, cuando se intenta publicar, entonces se señalan los campos obligatorios."
+HU-09 Confirmar o desmentir reportes,Backlog,Ricardo,3,2,Must,"Como conductor, quiero confirmar o desmentir el reporte de otro usuario, para que la información sea confiable.
+
+Dado el reporte de otro conductor, cuando se confirma o desmiente, entonces se actualiza el contador correspondiente.
+Dado un usuario que ya votó, cuando intenta votar otra vez en ese reporte, entonces no se registra un segundo voto.
+Dado un reporte propio, cuando se consultan sus acciones, entonces no se permite votar por el propio aporte."
+HU-10 Antigüedad y expiración,Backlog,Cristopher,3,2,Must,"Como conductor, quiero ver hace cuánto se hizo cada reporte y que los viejos expiren, para no guiarme por datos desactualizados.
+
+Dado un reporte reciente, cuando se consulta su detalle, entonces se muestra su antigüedad.
+Dado un reporte de más de dos horas, cuando se abre o actualiza el mapa, entonces deja de definir el color y figura como expirado.
+Dado un nuevo reporte vigente, cuando se consulta el surtidor, entonces el estado se calcula con el reporte vigente más reciente."
+HU-11 Surtidores favoritos,Backlog,Naira,2,2,Must,"Como conductor, quiero marcar surtidores como favoritos, para encontrar rápido los que uso siempre.
+
+Dado un conductor con sesión, cuando marca la estrella de un surtidor, entonces este aparece en Favoritos.
+Dado un favorito guardado, cuando se cierra y vuelve a abrir la app, entonces el favorito se conserva.
+Dado un favorito existente, cuando se desmarca la estrella, entonces sale de la lista sin eliminar el surtidor."
+HU-12 Favoritos sin conexión,Backlog,Naira,3,2,Should,"Como conductor, quiero ver mis favoritos y su último estado sin internet, para consultar aunque tenga mala señal.
+
+Dado favoritos consultados previamente, cuando se pierde internet, entonces se muestran sus datos guardados y la fecha de actualización.
+Dado una instalación sin datos guardados, cuando se abre Favoritos sin conexión, entonces se explica que no hay información disponible.
+Dado la conectividad recuperada, cuando se actualiza la lista, entonces se obtiene la información nueva sin perder favoritos."
+HU-13 Alertas de disponibilidad,Backlog,Naira,8,3,Should,"Como conductor, quiero recibir una notificación cuando un favorito vuelve a tener combustible, para llegar antes de que se forme la fila.
+
+Dado un favorito sin combustible y alertas autorizadas, cuando un reporte válido indica disponibilidad, entonces se genera una notificación de recuperación.
+Dado el permiso de notificaciones denegado, cuando se activan alertas, entonces se informa cómo habilitarlo sin bloquear la consulta.
+Dado un evento ya notificado, cuando se sincroniza nuevamente, entonces no se repite la notificación del mismo evento."
+HU-14 Preferencias del conductor,Backlog,Cristopher,2,3,Should,"Como conductor, quiero indicar en mi perfil mi tipo de vehículo y combustible, para que el mapa se filtre solo.
+
+Dado un conductor con sesión, cuando guarda vehículo y combustible preferido, entonces las preferencias quedan asociadas al perfil.
+Dado un combustible preferido guardado, cuando se abre el mapa, entonces se aplica el filtro correspondiente.
+Dado un usuario que cambia la preferencia, cuando guarda y vuelve a abrir la app, entonces se conserva la nueva selección."
+HU-15 Ruta al surtidor,Backlog,Andrick,2,2,Should,"Como conductor, quiero un botón ""Cómo llegar"" que abra la ruta en Google Maps, para ir directo al surtidor.
+
+Dado el detalle con coordenadas válidas, cuando se toca Cómo llegar, entonces se abre Google Maps con el destino correcto.
+Dado Google Maps no instalado, cuando se solicita la ruta, entonces se ofrece abrir el destino en el navegador.
+Dado una ubicación de surtidor inválida, cuando se intenta abrir una ruta, entonces se explica el problema sin cerrar la app."
+HU-16 Moderación de reportes,Backlog,Andrick,3,3,Should,"Como administrador, quiero ocultar reportes falsos o abusivos, para mantener la confianza en la app.
+
+Dado un administrador y un reporte denunciado, cuando se decide ocultarlo, entonces deja de mostrarse como reporte público.
+Dado un usuario sin permiso administrativo, cuando intenta moderar, entonces la operación se rechaza.
+Dado una moderación aplicada, cuando se consulta el registro, entonces se conservan motivo, responsable y fecha."
+HU-17 Denunciar un reporte,Backlog,Andrick,2,3,Should,"Como conductor, quiero denunciar un reporte que creo falso, para que el administrador lo revise.
+
+Dado un conductor con sesión, cuando denuncia un reporte e indica un motivo, entonces la denuncia llega a revisión administrativa.
+Dado un motivo vacío, cuando se envía la denuncia, entonces se pide completar el motivo.
+Dado el mismo usuario y reporte, cuando se repite la denuncia, entonces no se duplica la solicitud pendiente."
+HU-18 Foto de la fila,Backlog,Cristopher,5,4,Could,"Como conductor, quiero adjuntar una foto de la fila a mi reporte, para que otros vean la situación real.
+
+Dado un conductor redactando un reporte, cuando adjunta una imagen válida, entonces la foto queda vinculada a ese reporte.
+Dado un permiso de cámara o galería denegado, cuando se intenta adjuntar, entonces se explica el permiso y se permite continuar sin foto.
+Dado una imagen no válida o demasiado grande, cuando se selecciona, entonces se informa el límite antes de publicar."
+HU-19 Radio y horario de alertas,Backlog,Naira,3,4,Could,"Como conductor, quiero elegir el radio y el horario de mis alertas, para no recibir notificaciones que no me sirven.
+
+Dado un conductor con alertas, cuando guarda radio y horario válidos, entonces se conservan sus preferencias.
+Dado un evento fuera del radio u horario, cuando se evalúa la alerta, entonces no se envía una notificación.
+Dado un horario o radio inválido, cuando se guarda, entonces se informa el error sin sustituir la configuración anterior."
+HU-20 Modo oscuro,Backlog,Lucas,2,4,Could,"Como conductor, quiero usar la app en modo oscuro, para verla cómoda de noche mientras manejo.
+
+Dado la configuración visual, cuando se activa el modo oscuro, entonces las pantallas principales usan el tema oscuro con textos legibles.
+Dado el modo oscuro guardado, cuando se reinicia la app, entonces la preferencia permanece.
+Dado una leyenda de estados, cuando se cambia de tema, entonces los estados se distinguen por texto y color."
+HU-21 Historial de aportes,Backlog,Ricardo,3,3,Could,"Como conductor, quiero ver el historial de mis reportes y mi nivel de confianza, para sentir que mi aporte cuenta.
+
+Dado un conductor con aportes, cuando abre Mis reportes, entonces se listan sus reportes con surtidor, fecha y estado.
+Dado un conductor sin aportes, cuando consulta el historial, entonces ve un mensaje de lista vacía.
+Dado un nivel de confianza mostrado, cuando se consulta su explicación, entonces se indica cómo se calcula y qué datos lo sustentan."
+HU-22 Widget del surtidor favorito,Backlog,Lucas,5,3,Could,"Como conductor, quiero un widget en la pantalla de inicio con mi surtidor favorito, para ver su estado sin abrir la app.
+
+Dado un favorito elegido, cuando se agrega el widget Android, entonces se muestran nombre, último estado y hora de actualización.
+Dado un widget visible, cuando se toca, entonces se abre el detalle del surtidor.
+Dado el teléfono sin conexión, cuando se consulta el widget, entonces se distingue el último dato guardado de una actualización en vivo."
+HU-23 Idiomas aymara y quechua,Backlog,Lucas,5,4,Could,"Como conductor, quiero usar la app en aymara o quechua, para entenderla en mi idioma.
+
+Dado idiomas disponibles, cuando se elige aymara o quechua, entonces los textos de navegación cambian al idioma seleccionado.
+Dado un idioma guardado, cuando se vuelve a abrir la app, entonces se conserva la elección.
+Dado una traducción faltante, cuando se abre esa sección, entonces se usa español como respaldo sin mostrar claves internas."
+HU-24 Búsqueda por nombre o zona,Backlog,Cristopher,3,4,Should,"Como conductor, quiero buscar surtidores por nombre o zona, para encontrar el que necesito sin recorrer todo el mapa.
+
+Dado una lista de surtidores, cuando se escribe parte de un nombre o zona, entonces se muestran coincidencias sin distinguir mayúsculas ni tildes.
+Dado una búsqueda sin coincidencias, cuando se consulta el resultado, entonces se muestra un mensaje de lista vacía.
+Dado una búsqueda activa, cuando se limpia el texto, entonces se restaura la lista completa."
+HU-25 Compartir un surtidor,Backlog,Ricardo,2,4,Could,"Como conductor, quiero compartir la información de un surtidor mediante otras aplicaciones, para avisar a otra persona dónde consultar su ubicación y último estado.
+
+Dado el detalle de un surtidor, cuando se toca Compartir, entonces se abre el selector Android con nombre, dirección, coordenadas y último estado fechado.
+Dado un surtidor sin reporte vigente, cuando se comparte su ficha, entonces el texto indica que no hay datos vigentes.
+Dado el selector de aplicaciones abierto, cuando se cancela, entonces se vuelve al detalle sin publicar ni modificar datos."

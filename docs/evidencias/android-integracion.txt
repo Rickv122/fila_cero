@@ -1,0 +1,16 @@
+Recorrido Android contra Supabase. Resultado de la ejecución del 16 de noviembre de 2026.
+CAPTURA: pantalla1-HU-09-lista
+CAPTURA: pantalla2-HU-09-detalle
+CAPTURA: pantalla3-HU-07-inicio-sesion
+CAPTURA: pantalla13-HU-07-perfil-personal
+CAPTURA: pantalla4-HU-06-catalogo
+CAPTURA: pantalla5-HU-06-formulario
+CAPTURA: pantalla6-HU-06-asignacion
+CAPTURA: pantalla7-HU-10-confirmacion
+CAPTURA: pantalla8-HU-10-inactivas
+CAPTURA: pantalla9-HU-08-mis-gasolineras
+CAPTURA: pantalla10-HU-08-disponibilidad
+CAPTURA: pantalla11-HU-08-historial
+CAPTURA: pantalla12-HU-09-consulta-actualizada
+Recorrido aprobado.
+Recorrido aprobado.

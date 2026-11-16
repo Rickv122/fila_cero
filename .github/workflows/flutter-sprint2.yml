@@ -2,6 +2,16 @@ name: Verificación Sprint 2
 on:
   pull_request:
     branches: [main]
+    paths:
+      - 'lib/**'
+      - 'test/**'
+      - 'integration_test/**'
+      - 'test_driver/**'
+      - 'ios/**'
+      - 'android/**'
+      - 'supabase/**'
+      - 'pubspec.*'
+      - '.github/workflows/**'
   workflow_dispatch:
 permissions:
   contents: read
@@ -23,17 +33,30 @@ jobs:
       - run: flutter analyze
       - run: flutter test
       - run: flutter build ios --simulator --debug
-      - name: Consulta pública en simulador iOS
+      - name: Recorrido de las cinco historias en simulador iOS
         shell: bash
+        timeout-minutes: 15
+        env:
+          FILACERO_CAPTURE_DIR: docs/capturas_ios
+          TEST_ADMIN_EMAIL: ${{ secrets.FILACERO_TEST_ADMIN_EMAIL }}
+          TEST_ADMIN_PASSWORD: ${{ secrets.FILACERO_TEST_ADMIN_PASSWORD }}
+          TEST_MANAGER_EMAIL: ${{ secrets.FILACERO_TEST_MANAGER_EMAIL }}
+          TEST_MANAGER_PASSWORD: ${{ secrets.FILACERO_TEST_MANAGER_PASSWORD }}
         run: |
+          python3 - <<'PY'
+          import json, os
+          names=['TEST_ADMIN_EMAIL','TEST_ADMIN_PASSWORD','TEST_MANAGER_EMAIL','TEST_MANAGER_PASSWORD']
+          values={name:os.environ[name] for name in names}
+          assert all(values.values()), 'Faltan accesos de evaluación en Secrets.'
+          with open(os.path.join(os.environ['RUNNER_TEMP'],'test-defines.json'),'w') as f:
+              json.dump(values,f)
+          PY
           DEVICE_ID=$(xcrun simctl list devices available -j | jq -r '[.devices[][] | select(.name | startswith("iPhone"))][0].udid')
           xcrun simctl boot "$DEVICE_ID" || true
           xcrun simctl bootstatus "$DEVICE_ID" -b
-          flutter drive --driver=test_driver/integration_test.dart --target=integration_test/public_smoke_test.dart -d "$DEVICE_ID"
+          flutter drive --driver=test_driver/integration_test.dart --target=integration_test/sprint2_flow_test.dart -d "$DEVICE_ID" --dart-define-from-file="$RUNNER_TEMP/test-defines.json"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: evidencia-ios-sprint2
-          path: |
-            docs/capturas_sprint2/
-            build/ios/iphonesimulator/Runner.app/
+          path: docs/capturas_ios/

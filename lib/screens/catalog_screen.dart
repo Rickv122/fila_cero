@@ -123,7 +123,7 @@ class _CatalogState extends State<CatalogScreen> {
           ),
       ],
     ),
-    floatingActionButton: widget.admin
+    floatingActionButton: widget.admin && !inactive
         ? FloatingActionButton.extended(
             onPressed: () async {
               final saved = await openPage<bool>(
@@ -140,6 +140,7 @@ class _CatalogState extends State<CatalogScreen> {
       child: RefreshIndicator(
         onRefresh: () => load(),
         child: ListView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           controller: scroll,
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
           physics: const AlwaysScrollableScrollPhysics(),
@@ -182,6 +183,9 @@ class _CatalogState extends State<CatalogScreen> {
               ),
             TextField(
               controller: search,
+              textInputAction: TextInputAction.search,
+              onSubmitted: (_) => FocusScope.of(context).unfocus(),
+              onTapOutside: (_) => FocusScope.of(context).unfocus(),
               decoration: InputDecoration(
                 labelText: 'Buscar por nombre',
                 prefixIcon: const Icon(Icons.search),
