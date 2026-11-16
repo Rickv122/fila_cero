@@ -37,6 +37,15 @@ void main() {
       EnginePhase.sendSemanticsUpdate,
       const Duration(seconds: 40),
     );
+    Future<void> waitFor(bool Function() ready, String description) async {
+      final deadline = DateTime.now().add(const Duration(seconds: 35));
+      while (!ready() && DateTime.now().isBefore(deadline)) {
+        await tester.pump(const Duration(milliseconds: 200));
+      }
+      expect(ready(), isTrue, reason: description);
+      await settle();
+    }
+
     Future<void> shot(String name) async {
       FocusManager.instance.primaryFocus?.unfocus();
       ScaffoldMessenger.maybeOf(tester.element(find.byType(Scaffold).last))
@@ -77,7 +86,12 @@ void main() {
       await tester.enterText(find.byType(TextFormField).first, adminEmail);
       await tester.enterText(find.byType(TextFormField).last, adminPassword);
       await tester.tap(find.text('Iniciar sesión'));
-      await settle();
+      await waitFor(
+        () =>
+            controller.isAdmin &&
+            find.byTooltip('Mi cuenta').evaluate().isNotEmpty,
+        'El administrador debe terminar de iniciar sesión.',
+      );
       expect(controller.isAdmin, isTrue);
       await tester.tap(find.byTooltip('Mi cuenta'));
       await settle();
@@ -108,7 +122,15 @@ void main() {
       await shot('pantalla5-HU-06-formulario');
       await visible('Guardar gasolinera');
       await tester.tap(find.text('Guardar gasolinera'));
-      await settle();
+      await waitFor(
+        () =>
+            find
+                .byWidgetPredicate((w) => w is Text && w.data == stationName)
+                .evaluate()
+                .isNotEmpty &&
+            find.text('Catálogo de gasolineras').evaluate().isNotEmpty,
+        'El guardado y la recarga del catálogo deben terminar antes de consultar el registro.',
+      );
       expect(
         find.byWidgetPredicate((w) => w is Text && w.data == stationName),
         findsOneWidget,
@@ -134,7 +156,10 @@ void main() {
       await settle();
       await shot('pantalla7-HU-10-confirmacion');
       await tester.tap(find.text('Confirmar'));
-      await settle();
+      await waitFor(
+        () => find.text('Gasolinera inactiva').evaluate().isNotEmpty,
+        'La baja debe confirmarse en el detalle.',
+      );
       expect(find.text('Gasolinera inactiva'), findsOneWidget);
       await tester.pageBack();
       await settle();
@@ -155,7 +180,10 @@ void main() {
       await tester.tap(find.text('Reactivar gasolinera'));
       await settle();
       await tester.tap(find.text('Confirmar'));
-      await settle();
+      await waitFor(
+        () => find.text('Desactivar gasolinera').evaluate().isNotEmpty,
+        'La reactivación debe terminar antes de salir.',
+      );
       await tester.pageBack();
       await settle();
       await tester.pageBack();
@@ -167,7 +195,12 @@ void main() {
       await tester.enterText(find.byType(TextFormField).first, managerEmail);
       await tester.enterText(find.byType(TextFormField).last, managerPassword);
       await tester.tap(find.text('Iniciar sesión'));
-      await settle();
+      await waitFor(
+        () =>
+            controller.isManager &&
+            find.byTooltip('Mi cuenta').evaluate().isNotEmpty,
+        'El encargado debe terminar de iniciar sesión.',
+      );
       expect(controller.isManager, isTrue);
       await tester.tap(find.byTooltip('Mi cuenta'));
       await settle();
@@ -187,7 +220,10 @@ void main() {
       await settle();
       await shot('pantalla10-HU-08-disponibilidad');
       await tester.tap(find.text('Guardar disponibilidad'));
-      await settle();
+      await waitFor(
+        () => find.text('Guardar disponibilidad').evaluate().isEmpty,
+        'La publicación debe guardarse antes de consultar el historial.',
+      );
       await visible('Ver historial de disponibilidad');
       await tester.tap(find.text('Ver historial de disponibilidad'));
       await settle();
@@ -226,6 +262,15 @@ void main() {
       );
       await shot('pantalla12-HU-09-consulta-actualizada');
     } finally {
+      if (created == null) {
+        await controller.login(adminEmail, adminPassword);
+        final records = await repo.stations(StationQuery(name: stationName));
+        for (final station in records.stations.where(
+          (s) => s.name == stationName,
+        )) {
+          await repo.setActive(station.id, false);
+        }
+      }
       if (created != null) {
         await controller.login(adminEmail, adminPassword);
         await repo.setActive(created, false);

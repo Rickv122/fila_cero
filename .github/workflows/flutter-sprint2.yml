@@ -21,7 +21,7 @@ concurrency:
 jobs:
   ios:
     runs-on: macos-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
@@ -29,13 +29,19 @@ jobs:
           flutter-version: 3.47.9
           channel: stable
           cache: true
+      - name: Iniciar simulador durante las comprobaciones
+        shell: bash
+        run: |
+          DEVICE_ID=$(xcrun simctl list devices available -j | jq -r '[.devices[][] | select(.name | startswith("iPhone"))][0].udid')
+          echo "FILACERO_IOS_DEVICE=$DEVICE_ID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$DEVICE_ID" || true
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test
       - run: flutter build ios --simulator --debug
       - name: Recorrido de las cinco historias en simulador iOS
         shell: bash
-        timeout-minutes: 15
+        timeout-minutes: 25
         env:
           FILACERO_CAPTURE_DIR: docs/capturas_ios
           TEST_ADMIN_EMAIL: ${{ secrets.FILACERO_TEST_ADMIN_EMAIL }}
@@ -51,8 +57,7 @@ jobs:
           with open(os.path.join(os.environ['RUNNER_TEMP'],'test-defines.json'),'w') as f:
               json.dump(values,f)
           PY
-          DEVICE_ID=$(xcrun simctl list devices available -j | jq -r '[.devices[][] | select(.name | startswith("iPhone"))][0].udid')
-          xcrun simctl boot "$DEVICE_ID" || true
+          DEVICE_ID="$FILACERO_IOS_DEVICE"
           xcrun simctl bootstatus "$DEVICE_ID" -b
           flutter drive --driver=test_driver/integration_test.dart --target=integration_test/sprint2_flow_test.dart -d "$DEVICE_ID" --dart-define-from-file="$RUNNER_TEMP/test-defines.json"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

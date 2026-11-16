@@ -8,6 +8,15 @@ Este incremento usa listas, filtros, detalles y formularios. El mapa y sus depen
 
 Entorno utilizado: Flutter 3.47.9, Dart 3.13.7 y JDK 21. Android mínimo 8.0 API 26. La plataforma iOS tiene objetivo mínimo 15.0.
 
+El Sprint 2 está en la rama `sprint-2`; `main` conserva el primer incremento. Para descargar esta versión:
+
+```sh
+git clone --branch sprint-2 https://github.com/Rickv122/fila_cero.git FilaCero_Proyecto
+cd FilaCero_Proyecto
+```
+
+En el equipo donde se desarrolló, la carpeta es `D:\FilaCero_Proyecto`. Abrir esa carpeta completa en Visual Studio Code y seleccionar un dispositivo Android, o un simulador iOS desde un Mac.
+
 ```sh
 flutter pub get
 flutter analyze
@@ -20,7 +29,7 @@ La URL y la clave **pública** del proyecto están en `lib/core/supabase_config.
 
 Proyecto de base de datos: https://supabase.com/dashboard/project/oejouwwxngyafftzfkux
 
-Repositorio: https://github.com/Rickv122/fila_cero
+Código del incremento: https://github.com/Rickv122/fila_cero/tree/sprint-2
 
 ```sh
 flutter build apk --debug
@@ -75,6 +84,8 @@ flutter drive --driver=test_driver/integration_test.dart --target=integration_te
 ```
 
 El archivo privado se usa solo desde el equipo de desarrollo. Las pruebas remotas crean registros de evaluación y los desactivan al terminar; conservan su historial sin borrado físico. Los resultados publicados no contienen contraseñas ni tokens.
+
+El recorrido completo de personal utiliza `integration_test/sprint2_flow_test.dart` y cuatro valores `TEST_ADMIN_EMAIL`, `TEST_ADMIN_PASSWORD`, `TEST_MANAGER_EMAIL` y `TEST_MANAGER_PASSWORD`. Se pasan desde un JSON privado mediante `--dart-define-from-file`, únicamente para las pruebas. No compartir la compilación de integración, que incorpora esos valores. La aplicación normal se compila con `lib/main.dart` y sin ese archivo. En CI las credenciales se leen de Secrets y solo se publican capturas PNG.
 
 ## Organización del código
 
