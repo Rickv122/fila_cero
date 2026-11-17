@@ -54,6 +54,12 @@ jobs:
         run: |
           python3 - <<'PY'
           import json, os
+          from pathlib import Path
+          capture=(Path.cwd()/os.environ['FILACERO_CAPTURE_DIR']).resolve()
+          assert capture.is_relative_to((Path.cwd()/'docs').resolve())
+          capture.mkdir(parents=True,exist_ok=True)
+          for image in capture.glob('*.png'):
+              image.unlink()
           names=['TEST_ADMIN_EMAIL','TEST_ADMIN_PASSWORD','TEST_MANAGER_EMAIL','TEST_MANAGER_PASSWORD','TEST_DRIVER_EMAIL','TEST_DRIVER_PASSWORD','TEST_UNASSIGNED_EMAIL']
           values={name:os.environ[name] for name in names}
           assert all(values.values()), 'Faltan accesos de evaluación en Secrets.'

@@ -71,6 +71,8 @@ El archivo privado contiene `TEST_ADMIN_EMAIL`, `TEST_ADMIN_PASSWORD`, `TEST_MAN
 
 Las 22 comprobaciones de `supabase/tests/sprint2_rules.sql` se ejecutan dentro de una transacción con ROLLBACK. Verifican alta directa, asignaciones, aislamiento, revocación, bajas lógicas e idempotencia. Los recorridos de dispositivo generan capturas por historia. El estado de la verificación está en `docs/ESTADO_SPRINT_2.md`.
 
+Las capturas Android actuales están en [docs/capturas_sprint2](docs/capturas_sprint2) y los resultados vigentes, en [docs/evidencias](docs/evidencias). Las interfaces y comprobaciones de versiones anteriores se conservan únicamente en `docs/historico/`, con su contexto.
+
 ## Preparación de Supabase
 
 Aplicar las migraciones en orden, configurar Auth sin confirmación de correo y desplegar `staff-admin`. Conservar la primera cuenta administrativa autorizada. El registro público siempre crea conductores, incluso si el cliente envía otro rol. `supabase/seed.sql` carga el catálogo; las identidades se crean mediante Auth, nunca insertando contraseñas en tablas del negocio.

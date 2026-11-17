@@ -1,0 +1,27 @@
+{
+  "passed": 22,
+  "checks": [
+    "Acceso real administrador",
+    "Acceso real responsable",
+    "Acceso real conductor",
+    "Diez estaciones consultables",
+    "Miraflores sin publicaciones",
+    "Conductor no lista usuarios",
+    "Conductor no eleva su rol",
+    "Alta de personal restringida al administrador",
+    "Conductor no restablece claves ajenas",
+    "Conductor no publica",
+    "Administrador no publica",
+    "Responsable no publica en otra estación",
+    "Asignación cruzada rechazada",
+    "Rechazo conserva asignaciones",
+    "Rechazo conserva rol",
+    "Favoritas del conductor persisten",
+    "Acceso directo a favoritas denegado",
+    "Contraseña incorrecta rechazada",
+    "Alta valida formato de correo",
+    "Listado sin estados pendientes",
+    "Registro inicia sesión sin confirmar correo",
+    "Registro público ignora rol administrativo enviado"
+  ]
+}

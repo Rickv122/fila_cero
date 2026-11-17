@@ -1,18 +1,14 @@
 {
-  "run_id": 43978863216,
-  "job_id": 133689800340,
-  "code_sha": "5c32ad83e1026b27393d225e8a2134f59401cce2",
-  "conclusion": "success",
+  "run_id": 44177029760,
+  "job_id": 134371010667,
+  "code_sha": "f05077a7a5982ab900ec308a8d6f1850b6b67033",
+  "test_conclusion": "success",
+  "workflow_status": "completed",
+  "workflow_conclusion": "success",
   "full_flow_passed": true,
-  "platform": "iOS simulator on GitHub macOS runner",
-  "screenshots": 13,
-  "user_stories": [
-    "HU-06",
-    "HU-07",
-    "HU-08",
-    "HU-09",
-    "HU-10"
-  ],
+  "platform": "iOS simulator on macOS Intel",
+  "screenshots": 21,
+  "url": "https://github.com/Rickv122/fila_cero/actions/runs/44177029760",
   "steps": [
     {
       "name": "Set up job",
@@ -63,7 +59,7 @@
       "number": 8
     },
     {
-      "name": "Recorrido de las cinco historias en simulador iOS",
+      "name": "Recorridos de consulta, acceso y gestión en iOS",
       "status": "completed",
       "conclusion": "success",
       "number": 9
@@ -92,6 +88,5 @@
       "conclusion": "success",
       "number": 21
     }
-  ],
-  "output": []
+  ]
 }

@@ -1,0 +1,138 @@
+Resolving dependencies...
+Downloading packages...
+  cupertino_icons 1.0.9 (2.0.0 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.3 (1.19.0 available)
+  shared_preferences_foundation 2.5.7 (2.6.2 available)
+  test_api 0.7.12 (0.7.15 available)
+  vector_math 2.4.0 (2.4.4 available)
+Got dependencies!
+6 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Running Gradle task 'assembleDebug'...
+Picked up JAVA_TOOL_OPTIONS: -Duser.home=D:/AndroidDev/home -Djava.io.tmpdir=D:/AndroidDev/tmp
+Running Gradle task 'assembleDebug'...                             13,4s
+√ Built build\app\outputs\flutter-apk\app-debug.apk
+Installing build\app\outputs\flutter-apk\app-debug.apk...        1.540ms
+I/Gralloc4( 4731): mapper 4.x is not supported
+I/xample.filacero( 4731): Compiler allocated 5174KB to compile void android.view.ViewRootImpl.performTraversals()
+I/Choreographer( 4731): Skipped 59 frames!  The application may be doing too much work on its main thread.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+VMServiceFlutterDriver: Connecting to Flutter application at http://127.0.0.1:53985/F9_4HH_dHlw=/
+VMServiceFlutterDriver: Isolate found with number: 6585470155226327
+VMServiceFlutterDriver: Isolate 6585470155226327 is runnable.
+VMServiceFlutterDriver: Isolate is paused at start.
+VMServiceFlutterDriver: Attempting to resume isolate
+I/flutter ( 4731): 00:00 +0: Alta directa, permisos del responsable y consulta del conductor
+VMServiceFlutterDriver: Connected to Flutter application.
+I/flutter ( 4731): supabase.supabase_flutter: INFO: ***** Supabase init completed *****
+I/flutter ( 4731): supabase.auth: INFO: Signing out user with scope: local
+I/Choreographer( 4731): Skipped 31 frames!  The application may be doing too much work on its main thread.
+D/ProfileInstaller( 4731): Installing profile for com.example.filacero
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+VMServiceFlutterDriver: request_data message is taking a long time to complete...
+D/EGL_emulation( 4731): app_time_stats: avg=681.90ms min=216.29ms max=2145.61ms count=5
+W/WindowOnBackDispatcher( 4731): OnBackInvokedCallback is not enabled for the application.
+W/WindowOnBackDispatcher( 4731): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+D/EGL_emulation( 4731): app_time_stats: avg=172.52ms min=19.92ms max=269.62ms count=6
+D/EGL_emulation( 4731): app_time_stats: avg=150.07ms min=33.42ms max=255.49ms count=7
+I/ImeTracker( 4731): com.example.filacero:e847f82f: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager( 4731): showSoftInput() view=io.flutter.embedding.android.FlutterView{6bf1c13 VFE...... .F....ID 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+I/ImeTracker( 4731): com.example.filacero:8a4226fb: onRequestShow at ORIGIN_CLIENT reason SHOW_SOFT_INPUT fromUser false
+D/InputMethodManager( 4731): showSoftInput() view=io.flutter.embedding.android.FlutterView{6bf1c13 VFE...... .F....ID 0,0-1080,2340 #1 aid=1073741824} flags=0 reason=SHOW_SOFT_INPUT
+D/EGL_emulation( 4731): app_time_stats: avg=160.95ms min=27.10ms max=428.70ms count=7
+D/EGL_emulation( 4731): app_time_stats: avg=3881.82ms min=1052.81ms max=6710.83ms count=2
+I/AssistStructure( 4731): Flattened final assist data: 420 bytes, containing 1 windows, 3 views
+I/ImeTracker( 4731): com.example.filacero:1828c7dc: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT fromUser false
+W/RemoteInputConnectionImpl( 4731): requestCursorUpdates on inactive InputConnection
+D/InsetsController( 4731): show(ime(), fromIme=true)
+D/InsetsController( 4731): show(ime(), fromIme=true)
+I/ImeTracker( 4731): com.example.filacero:8a4226fb: onCancelled at PHASE_CLIENT_APPLY_ANIMATION
+W/InteractionJankMonitor( 4731): Initializing without READ_DEVICE_CONFIG permission. enabled=true, interval=1, missedFrameThreshold=3, frameTimeThreshold=64, package=com.example.filacero
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+I/xample.filacero( 4731): NativeAlloc concurrent mark compact GC freed 2633KB AllocSpace bytes, 7(268KB) LOS objects, 49% free, 2895KB/5791KB, paused 1.951ms,7.072ms total 103.956ms
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+W/xample.filacero( 4731): ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/talkback/talkback.apk' with 1 weak references
+W/xample.filacero( 4731): ApkAssets: Deleting an ApkAssets object '/vendor/overlay/EmulatorTalkBackOverlay/EmulatorTalkBackOverlay.apk' with 1 weak references
+D/InsetsController( 4731): hide(ime(), fromIme=true)
+I/ImeTracker( 4731): com.example.filacero:e847f82f: onCancelled at PHASE_CLIENT_ANIMATION_CANCEL
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+I/ImeTracker( 4731): com.example.filacero:28ef6daf: onRequestHide at ORIGIN_CLIENT reason HIDE_SOFT_INPUT_ON_ANIMATION_STATE_CHANGED fromUser false
+I/ImeTracker( 4731): com.example.filacero:1828c7dc: onHidden
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/FlutterJNI( 4731): Sending viewport metrics to the engine.
+D/EGL_emulation( 4731): app_time_stats: avg=290.18ms min=221.88ms max=430.31ms count=4
+D/EGL_emulation( 4731): app_time_stats: avg=135.46ms min=22.37ms max=221.34ms count=8
+D/EGL_emulation( 4731): app_time_stats: avg=108.15ms min=1.04ms max=2139.34ms count=28
+D/EGL_emulation( 4731): app_time_stats: avg=255.31ms min=205.45ms max=378.51ms count=5
+D/EGL_emulation( 4731): app_time_stats: avg=142.39ms min=30.09ms max=357.50ms count=7
+D/EGL_emulation( 4731): app_time_stats: avg=1845.73ms min=1845.73ms max=1845.73ms count=1
+W/xample.filacero( 4731): ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/talkback/talkback.apk' with 1 weak references
+W/xample.filacero( 4731): ApkAssets: Deleting an ApkAssets object '/vendor/overlay/EmulatorTalkBackOverlay/EmulatorTalkBackOverlay.apk' with 1 weak references
+I/flutter ( 4731): supabase.auth: INFO: Signing out user with scope: local
+D/EGL_emulation( 4731): app_time_stats: avg=350.86ms min=218.71ms max=606.04ms count=3
+D/EGL_emulation( 4731): app_time_stats: avg=309.66ms min=205.85ms max=587.87ms count=5
+W/WindowOnBackDispatcher( 4731): OnBackInvokedCallback is not enabled for the application.
+W/WindowOnBackDispatcher( 4731): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+D/EGL_emulation( 4731): app_time_stats: avg=148.60ms min=42.31ms max=269.49ms count=8
+D/EGL_emulation( 4731): app_time_stats: avg=3781.88ms min=3781.88ms max=3781.88ms count=1
+D/EGL_emulation( 4731): app_time_stats: avg=160.17ms min=21.14ms max=386.78ms count=7
+D/EGL_emulation( 4731): app_time_stats: avg=219.98ms min=206.57ms max=233.02ms count=5
+E/FrameTracker( 4731): force finish cuj, time out: J<IME_INSETS_HIDE_ANIMATION::1@1@com.example.filacero>
+D/EGL_emulation( 4731): app_time_stats: avg=135.36ms min=31.52ms max=218.48ms count=8
+W/xample.filacero( 4731): ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/talkback/talkback.apk' with 1 weak references
+W/xample.filacero( 4731): ApkAssets: Deleting an ApkAssets object '/vendor/overlay/EmulatorTalkBackOverlay/EmulatorTalkBackOverlay.apk' with 1 weak references
+D/EGL_emulation( 4731): app_time_stats: avg=3733.48ms min=3733.48ms max=3733.48ms count=1
+D/EGL_emulation( 4731): app_time_stats: avg=155.89ms min=3.93ms max=377.72ms count=8
+I/flutter ( 4731): supabase.auth: INFO: Signing out user with scope: local
+D/EGL_emulation( 4731): app_time_stats: avg=150.06ms min=12.04ms max=311.14ms count=7
+D/EGL_emulation( 4731): app_time_stats: avg=267.78ms min=226.35ms max=368.46ms count=4
+D/EGL_emulation( 4731): app_time_stats: avg=347.81ms min=216.78ms max=594.99ms count=3
+W/WindowOnBackDispatcher( 4731): OnBackInvokedCallback is not enabled for the application.
+W/WindowOnBackDispatcher( 4731): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+D/EGL_emulation( 4731): app_time_stats: avg=137.35ms min=30.38ms max=227.21ms count=8
+D/EGL_emulation( 4731): app_time_stats: avg=4652.78ms min=4652.78ms max=4652.78ms count=1
+W/xample.filacero( 4731): ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/talkback/talkback.apk' with 1 weak references
+W/xample.filacero( 4731): ApkAssets: Deleting an ApkAssets object '/vendor/overlay/EmulatorTalkBackOverlay/EmulatorTalkBackOverlay.apk' with 1 weak references
+I/flutter ( 4731): supabase.auth: INFO: Signing out user with scope: local
+D/EGL_emulation( 4731): app_time_stats: avg=292.11ms min=208.57ms max=516.78ms count=4
+D/EGL_emulation( 4731): app_time_stats: avg=299.66ms min=210.65ms max=553.88ms count=4
+D/EGL_emulation( 4731): app_time_stats: avg=2363.96ms min=2363.96ms max=2363.96ms count=1
+W/WindowOnBackDispatcher( 4731): OnBackInvokedCallback is not enabled for the application.
+W/WindowOnBackDispatcher( 4731): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+D/EGL_emulation( 4731): app_time_stats: avg=215.73ms min=39.28ms max=632.68ms count=5
+D/EGL_emulation( 4731): app_time_stats: avg=1982.24ms min=1982.24ms max=1982.24ms count=1
+W/xample.filacero( 4731): ApkAssets: Deleting an ApkAssets object '<empty> and /product/app/talkback/talkback.apk' with 1 weak references
+W/xample.filacero( 4731): ApkAssets: Deleting an ApkAssets object '/vendor/overlay/EmulatorTalkBackOverlay/EmulatorTalkBackOverlay.apk' with 1 weak references
+I/flutter ( 4731): supabase.auth: INFO: Signing out user with scope: local
+D/EGL_emulation( 4731): app_time_stats: avg=290.93ms min=209.65ms max=551.52ms count=5
+I/flutter ( 4731): supabase.auth: INFO: Signing out user with scope: local
+I/flutter ( 4731): 00:31 +1: (tearDownAll)
+D/EGL_emulation( 4731): app_time_stats: avg=1502.01ms min=1502.01ms max=1502.01ms count=1
+I/flutter ( 4731): 00:31 +2: All tests passed!
+All tests passed.

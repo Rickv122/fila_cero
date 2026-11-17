@@ -1,19 +1,131 @@
 {
-  "android_integration": "passed",
-  "user_stories": [
+  "date": "2026-11-17",
+  "app_code_sha": "f05077a7a5982ab900ec308a8d6f1850b6b67033",
+  "stories": [
     "HU-06",
     "HU-07",
     "HU-08",
     "HU-09",
     "HU-10"
   ],
-  "screenshots": 13,
-  "physical_deletes": 0,
-  "backend_http_cases": 46,
-  "local_tests": 15,
-  "server_expiration_check": true,
-  "ios_integration": "passed",
-  "ios_captures": 13,
-  "ios_run": "https://github.com/Rickv122/fila_cero/actions/runs/43978863216",
-  "physical_devices_tested": false
+  "acceptance_criteria": 33,
+  "flutter_analyze": "passed",
+  "flutter_tests": {
+    "result": "passed",
+    "count": 12
+  },
+  "sql": {
+    "result": "passed",
+    "checks": 22,
+    "rollback": true,
+    "source": "supabase/tests/sprint2_rules.sql"
+  },
+  "https": {
+    "result": "passed",
+    "checks": 22,
+    "source": "supabase-https.json"
+  },
+  "android": {
+    "result": "passed",
+    "flows": [
+      "sprint2_flow_test.dart",
+      "direct_staff_flow_test.dart"
+    ],
+    "emulator": "Pixel 5, Android 15 API 35",
+    "screenshots": 21
+  },
+  "ios": {
+    "run_id": 44177029760,
+    "job_id": 134371010667,
+    "code_sha": "f05077a7a5982ab900ec308a8d6f1850b6b67033",
+    "test_conclusion": "success",
+    "workflow_status": "completed",
+    "workflow_conclusion": "success",
+    "full_flow_passed": true,
+    "platform": "iOS simulator on macOS Intel",
+    "screenshots": 21,
+    "url": "https://github.com/Rickv122/fila_cero/actions/runs/44177029760",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1
+      },
+      {
+        "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2
+      },
+      {
+        "name": "Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3
+      },
+      {
+        "name": "Iniciar simulador durante las comprobaciones",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4
+      },
+      {
+        "name": "Run flutter pub get",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5
+      },
+      {
+        "name": "Run flutter analyze",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6
+      },
+      {
+        "name": "Run flutter test",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7
+      },
+      {
+        "name": "Run flutter build ios --simulator --debug",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      {
+        "name": "Recorridos de consulta, acceso y gestión en iOS",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9
+      },
+      {
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10
+      },
+      {
+        "name": "Post Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 19
+      },
+      {
+        "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 20
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 21
+      }
+    ]
+  },
+  "physical_devices_tested": false,
+  "academic_acceptance": "Pending Sprint Review"
 }
