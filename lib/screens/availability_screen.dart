@@ -54,6 +54,7 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
   @override
   Widget build(BuildContext c) => ProtectedPage(
     controller: widget.controller,
+    managerOnly: true,
     child: Scaffold(
       appBar: AppBar(title: const Text('Actualizar disponibilidad')),
       body: ListView(

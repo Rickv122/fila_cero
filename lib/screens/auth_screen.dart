@@ -85,17 +85,10 @@ class _AuthScreenState extends State<AuthScreen> {
           final entered = token.text.trim();
           final uri = Uri.tryParse(entered);
           if (uri != null && uri.scheme == 'https') {
-            if (uri.host != 'oejouwwxngyafftzfkux.supabase.co' ||
-                uri.path != '/auth/v1/verify' ||
-                uri.queryParameters['token'] == null) {
-              throw Exception('El enlace no corresponde a FilaCero.');
-            }
-            final kind = uri.queryParameters['type'];
-            if (!['signup', 'email', 'invite', 'recovery'].contains(kind)) {
-              throw Exception('Tipo de enlace no admitido aquí.');
-            }
+            final link = verificationLink(entered);
+            final kind = link['type'];
             await auth.verifyOTP(
-              tokenHash: uri.queryParameters['token'],
+              tokenHash: link['token'],
               type: kind == 'invite'
                   ? OtpType.invite
                   : kind == 'recovery'

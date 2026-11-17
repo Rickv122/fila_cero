@@ -13,6 +13,7 @@ Color statusColor(String? s) => switch (s) {
   _ => const Color(0xFF738399),
 };
 String readableError(Object error) {
+  if (error is FormatException) return error.message;
   if (error is PostgrestException) {
     if (error.code == '23505') return 'Ya existe un registro con estos datos.';
     if (error.code == '23514' || error.code == '23502') {
@@ -166,16 +167,21 @@ class ProtectedPage extends StatelessWidget {
   final AppController controller;
   final Widget child;
   final bool adminOnly;
+  final bool managerOnly;
   const ProtectedPage({
     super.key,
     required this.controller,
     required this.child,
     this.adminOnly = false,
+    this.managerOnly = false,
   });
   @override
   Widget build(BuildContext c) => ListenableBuilder(
     listenable: controller,
-    builder: (c, _) => controller.signedIn && (!adminOnly || controller.admin)
+    builder: (c, _) =>
+        controller.signedIn &&
+            (!adminOnly || controller.admin) &&
+            (!managerOnly || controller.manager)
         ? child
         : Scaffold(
             appBar: AppBar(title: const Text('Acceso restringido')),

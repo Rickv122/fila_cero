@@ -13,7 +13,7 @@ class UsersScreen extends StatefulWidget {
 
 class _UsersScreenState extends State<UsersScreen> {
   final search = TextEditingController();
-  String status = 'all';
+  String status = 'active';
   String? role;
   late Future<dynamic> data;
   @override
@@ -547,14 +547,22 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
 
   Future<void> assign(AppRecord member) async {
     try {
-      final result = row(
-        await widget.controller.query('catalog', {
-          'mode': 'admin',
-          'status': 'active',
-          'company': member['empresa_id'],
-        }),
-      );
-      final stations = rows(result['rows']);
+      final stations = <AppRecord>[];
+      var page = 0;
+      var hasMore = true;
+      while (hasMore) {
+        final result = row(
+          await widget.controller.query('catalog', {
+            'mode': 'admin',
+            'status': 'active',
+            'company': member['empresa_id'],
+            'page': page,
+          }),
+        );
+        stations.addAll(rows(result['rows']));
+        hasMore = result['has_more'] == true;
+        page++;
+      }
       if (!mounted) return;
       String? chosen;
       final ok = await showDialog<bool>(

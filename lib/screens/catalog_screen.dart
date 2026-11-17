@@ -507,6 +507,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
       content = ProtectedPage(
         controller: widget.controller,
         adminOnly: widget.mode == 'admin',
+        managerOnly: widget.mode == 'assigned',
         child: content,
       );
     }

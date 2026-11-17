@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -8,6 +11,8 @@ import 'package:filacero/main.dart';
 import 'package:filacero/screens/catalog_screen.dart';
 import 'package:filacero/screens/auth_screen.dart';
 import 'package:filacero/screens/availability_screen.dart';
+import 'package:filacero/screens/company_screen.dart';
+import 'package:filacero/screens/users_screen.dart';
 
 class MemoryRepository extends SupabaseRepository {
   MemoryRepository()
@@ -20,6 +25,8 @@ class MemoryRepository extends SupabaseRepository {
       );
   bool offline = false;
   int calls = 0;
+  String role = 'administrador';
+  Completer<dynamic>? profileGate;
   @override
   Future<dynamic> query(String resource, [AppRecord params = const {}]) async {
     calls++;
@@ -28,11 +35,155 @@ class MemoryRepository extends SupabaseRepository {
       return {'empresas': [], 'ciudades': [], 'combustibles': []};
     }
     if (resource == 'catalog') return {'rows': [], 'has_more': false};
+    if (resource == 'profile') {
+      return profileGate?.future ??
+          {
+            'id': 'unit-user',
+            'nombre': 'Persona de evaluación',
+            'rol': role,
+            'activo': true,
+            'confirmado': true,
+          };
+    }
+    if (['companies', 'users', 'history'].contains(resource)) return [];
     return null;
   }
 }
 
+class UiController extends AppController {
+  final MemoryRepository memory;
+  UiController(this.memory) : super(memory) {
+    profile = {
+      'id': 'unit-user',
+      'nombre': 'Persona',
+      'rol': memory.role,
+      'activo': true,
+      'confirmado': true,
+    };
+  }
+  @override
+  bool get signedIn => profile?['activo'] == true;
+  @override
+  Future<void> refreshProfile() async {
+    profile = {
+      'id': 'unit-user',
+      'nombre': 'Persona',
+      'rol': memory.role,
+      'activo': true,
+      'confirmado': true,
+    };
+    notifyListeners();
+  }
+}
+
+// Local SDK session fixture. No network identity or database account is created.
+Future<AppController> authenticatedMemory(MemoryRepository repo) async {
+  String encode(Object value) =>
+      base64Url.encode(utf8.encode(jsonEncode(value))).replaceAll('=', '');
+  final jwt =
+      '${encode({'alg': 'none'})}.${encode({'sub': 'unit-user', 'exp': 4102444800})}.unit';
+  await repo.client.auth.recoverSession(
+    jsonEncode({
+      'access_token': jwt,
+      'refresh_token': 'unit-only',
+      'token_type': 'bearer',
+      'user': {
+        'id': 'unit-user',
+        'app_metadata': {},
+        'user_metadata': {},
+        'aud': 'authenticated',
+        'created_at': '2026-11-17T00:00:00Z',
+      },
+    }),
+  );
+  final c = AppController(repo);
+  await c.refreshProfile();
+  return c;
+}
+
 void main() {
+  test('Los enlaces copiados de Gmail se interpretan sin abrir Google', () {
+    const direct =
+        'https://oejouwwxngyafftzfkux.supabase.co/auth/v1/verify?token=unit-challenge&type=recovery';
+    final wrapped = Uri.https('www.google.com', '/url', {
+      'q': direct,
+    }).toString();
+    expect(verificationLink(wrapped), {
+      'token': 'unit-challenge',
+      'type': 'recovery',
+    });
+    expect(verificationLink(direct)['type'], 'recovery');
+    expect(
+      () => verificationLink(
+        'https://example.com/auth/v1/verify?token=unit&type=recovery',
+      ),
+      throwsFormatException,
+    );
+  });
+  test('Dos lecturas simultáneas esperan el mismo perfil', () async {
+    final repo = MemoryRepository();
+    final c = await authenticatedMemory(repo);
+    repo.calls = 0;
+    repo.profileGate = Completer<dynamic>();
+    final first = c.refreshProfile(), second = c.refreshProfile();
+    expect(repo.calls, 1);
+    repo.profileGate!.complete({
+      'id': 'unit-user',
+      'nombre': 'Persona',
+      'rol': 'administrador',
+      'activo': true,
+      'confirmado': true,
+    });
+    await Future.wait([first, second]);
+    expect(c.admin, isTrue);
+    c.dispose();
+    await repo.client.dispose();
+  });
+  testWidgets(
+    'Empresas, usuarios e historial cargan sin devolver futuros a setState',
+    (t) async {
+      final repo = MemoryRepository();
+      final c = UiController(repo);
+      for (final page in [
+        CompanyScreen(controller: c),
+        UsersScreen(controller: c),
+        HistoryScreen(controller: c, id: 'station'),
+      ]) {
+        await t.pumpWidget(MaterialApp(home: page));
+        await t.pumpAndSettle();
+        expect(t.takeException(), isNull);
+      }
+      await t.pumpWidget(const SizedBox());
+      c.dispose();
+    },
+  );
+  testWidgets('Solo el responsable ve el formulario de publicación', (t) async {
+    final repo = MemoryRepository();
+    final c = UiController(repo);
+    final page = AvailabilityScreen(
+      controller: c,
+      station: {
+        'id': 'station',
+        'nombre': 'Estación',
+        'combustibles': [
+          {'id': 'fuel', 'nombre': 'Gasolina Especial'},
+        ],
+      },
+    );
+    await t.pumpWidget(MaterialApp(home: page));
+    await t.pumpAndSettle();
+    expect(find.text('Publicar actualización'), findsNothing);
+    repo.role = 'responsable';
+    await c.refreshProfile();
+    await t.pumpAndSettle();
+    expect(find.text('Publicar actualización'), findsOneWidget);
+    expect(find.text('Disponible'), findsOneWidget);
+    expect(find.text('Disponibilidad limitada'), findsOneWidget);
+    expect(find.text('Agotado'), findsOneWidget);
+    expect(find.text('Sin actualizar'), findsNothing);
+    await t.pumpWidget(const SizedBox());
+    c.dispose();
+  });
   test('Correo exige un arroba, dominio y ausencia de espacios', () {
     for (final s in [
       'ana',

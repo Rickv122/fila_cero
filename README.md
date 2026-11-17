@@ -1,112 +1,149 @@
-# FilaCero Sprint 2
+# FilaCero · Sprint 2 revisado
 
-Aplicación Flutter y Dart para Android e iOS. El conductor consulta gasolineras sin cuenta. El administrador mantiene el catálogo y las asignaciones. Solo el encargado activo y asignado publica disponibilidad de combustible.
+Aplicación Flutter para Android e iOS. Permite consultar estaciones de La Paz y El Alto, guardar favoritas y administrar el catálogo, las cuentas y los permisos del personal. Solo el responsable asignado a una estación puede publicar su disponibilidad.
 
-Este incremento usa listas, filtros, detalles y formularios. El mapa y sus dependencias se retiraron del código activo. No incorpora GPS, rutas, geocodificación, notificaciones ni reportes de conductores. La conexión a Supabase se limita a base de datos y autenticación, autorizadas para el Sprint 2.
+## Ejecutar en Windows
 
-## Ejecutar
+Proyecto local: `D:\FilaCero_Proyecto`.
 
-Entorno utilizado: Flutter 3.47.9, Dart 3.13.7 y JDK 21. Android mínimo 8.0 API 26. La plataforma iOS tiene objetivo mínimo 15.0.
-
-El Sprint 2 está en la rama `sprint-2`; `main` conserva el primer incremento. Para descargar esta versión:
-
-```sh
-git clone --branch sprint-2 https://github.com/Rickv122/fila_cero.git FilaCero_Proyecto
-cd FilaCero_Proyecto
+```powershell
+cd D:\FilaCero_Proyecto
+D:\AndroidDev\bin\flutter.cmd pub get
+D:\AndroidDev\bin\flutter.cmd devices
+D:\AndroidDev\bin\flutter.cmd run -d emulator-5554
 ```
 
-En el equipo donde se desarrolló, la carpeta es `D:\FilaCero_Proyecto`. Abrir esa carpeta completa en Visual Studio Code y seleccionar un dispositivo Android, o un simulador iOS desde un Mac.
+En otro equipo, instalar Flutter 3.47.9 y ejecutar `flutter pub get` y `flutter run`. Usar el identificador que muestre `flutter devices`. En VS Code abrir la carpeta completa del proyecto y ejecutar `lib/main.dart` con F5.
 
-```sh
-flutter pub get
-flutter analyze
-flutter test
-flutter devices
-flutter run -d ID_DISPOSITIVO
-```
+Android requiere SDK/JDK compatibles. iOS requiere macOS y Xcode para compilar o ejecutar el simulador. La carpeta `ios/` comparte el código Dart; el workflow de GitHub realiza su verificación en un equipo macOS. Esta comprobación no instala un simulador iOS en Windows ni distribuye una aplicación firmada para iPhone.
 
-La URL y la clave **pública** del proyecto están en `lib/core/supabase_config.dart`. Se pueden sustituir con `--dart-define=SUPABASE_URL=...` y `--dart-define=SUPABASE_PUBLISHABLE_KEY=...`. La clave pública no concede permisos administrativos: cada operación comprueba identidad, rol y asignación en el servidor.
-
-Proyecto de base de datos: https://supabase.com/dashboard/project/oejouwwxngyafftzfkux
-
-Código del incremento: https://github.com/Rickv122/fila_cero/tree/sprint-2
-
-```sh
-flutter build apk --debug
-```
-
-## iOS
-
-Se incluye `ios/` y se comparte el mismo código Dart. Se necesita macOS con Xcode y sus herramientas de desarrollo para compilar y ejecutar iOS. En un Mac:
-
-```sh
-flutter pub get
-flutter build ios --simulator --debug
-flutter devices
-flutter run -d ID_SIMULADOR_IOS
-```
-
-La compilación y el recorrido de las cinco historias pasaron en un simulador iOS mediante GitHub Actions en Mac. Consultar `docs/ESTADO_SPRINT_2.md` para los resultados, evidencias y límites de esa verificación. Ejecución: https://github.com/Rickv122/fila_cero/actions/runs/43978863216
-
-## Las cinco historias
+## Alcance de las historias
 
 | Historia | Recorrido |
-|---|---|
-| HU-06 Catálogo | Acceso de personal, Administrador, Mi cuenta, Administrar catálogo. Registrar o editar nombre, dirección, ciudad, coordenadas manuales y combustibles. Desde el detalle se asignan encargados autorizados. |
-| HU-07 Autenticación | Acceso de personal con correo y contraseña. La cuenta activa define las funciones disponibles. Cerrar sesión retira las pantallas protegidas. |
-| HU-08 Disponibilidad | Encargado, Mi cuenta, Mis gasolineras, Detalle, Actualizar disponibilidad. Estados por combustible: Hay, Poco y No hay. El servidor registra autor, hora e historial. |
-| HU-09 Consultas | Consulta pública por nombre, ciudad y combustible, veinte resultados por página y detalle de la información. Actualizar lista recupera cambios de otras sesiones. |
-| HU-10 Baja lógica | Administrador, Detalle, Desactivar o Reactivar, Confirmar. Las inactivas desaparecen de la consulta pública, conservan datos e historial y no admiten publicaciones. |
+| --- | --- |
+| HU-06 | Administrador → Empresas → Estaciones → Registrar, editar, desactivar o reactivar |
+| HU-07 | Bienvenida → Consulta pública, registro de conductor o acceso → Mi cuenta |
+| HU-08 | Administrador → Usuarios → Ficha → Invitaciones, estado, rol, vinculaciones y asignaciones |
+| HU-09 | Responsable → Mis estaciones → Actualizar disponibilidad → Historial |
+| HU-10 | Catálogo → Filtros → Detalle → Favoritas personales |
 
-Una actualización dura dos horas. La ausencia o vencimiento se muestra como **Sin información vigente**. Reactivar una gasolinera no renueva estados anteriores. Las cuentas con rol administrador tampoco pueden publicar disponibilidad.
+Las cinco historias revisadas tienen 50 criterios. Los 55 SP de la planificación son una propuesta de estimación; no representan una votación realizada.
 
-## Base de datos y seguridad
+No se solicitan latitud ni longitud. No se consumen mapas, geocodificación, ubicación ni notificaciones externas en este sprint. Las comunicaciones remotas corresponden a la base de datos y autenticación de Supabase.
 
-La migración en `supabase/migrations/` crea seis tablas de negocio: `perfiles`, `surtidores`, `combustibles`, `surtidor_combustible`, `asignaciones_encargado` e `historial_disponibilidad`. Las cuentas y contraseñas las administra Auth. No hay tablas de funciones futuras del Sprint 3.
+## Usuarios y permisos
 
-Todas las tablas de negocio tienen `activo`. Se aplican claves, validaciones, índices y RLS. No se conceden escrituras directas ni DELETE a los clientes. Las operaciones de varias tablas son transacciones mediante funciones con parámetros acotados. Los auxiliares privilegiados permanecen en el esquema privado, con comprobación de rol y sin usar metadatos editables del usuario para autorizar.
+- **Visitante:** consulta pública sin crear una identidad en Auth.
+- **Conductor:** registro con correo verificado; perfil y favoritas propias.
+- **Responsable de estación:** funciones personales, vínculos aceptados y estaciones asignadas explícitamente.
+- **Administrador:** empresas, estaciones, cuentas, roles, bajas lógicas, invitaciones y asignaciones. No publica disponibilidad ni consulta favoritas ajenas.
 
-`supabase/seed.sql` prepara datos académicos para la evaluación, sin afirmar que sean información real de abastecimiento. Las gasolineras y disponibilidades de prueba se guardan en la base remota y se comparten entre instalaciones.
+El nombre del rol es una autorización dentro de FilaCero. Una vinculación utilizada en la evaluación académica no acredita una relación laboral con una empresa real.
 
-## Cuentas para evaluar
+El registro público crea exclusivamente conductores. Los roles se consultan en la base y nunca se obtienen de metadatos editables por el usuario. Las operaciones protegidas comprueban la cuenta activa y confirmada en cada solicitud; desactivar una cuenta bloquea su siguiente operación incluso si conserva un JWT.
 
-Las cuentas de personal se crean mediante un procedimiento administrativo controlado. No existe autorregistro de encargados ni selección de rol en la app. Las credenciales se entregan al equipo y a la docente por separado en el archivo privado de accesos, fuera del repositorio público y del ZIP de código.
+El administrador puede filtrar Activos, Inactivos, Pendientes o Todos, editar datos y gestionar estado y rol desde la ficha. Los cambios requieren confirmación. No puede desactivarse ni quitarse su propio rol. Las operaciones que modifican permisos se serializan en la base para proteger el último administrador y coordinar revocaciones con publicaciones.
 
-Para crear cuentas equivalentes en otro proyecto, un administrador puede ejecutar `scripts/provision_staff.py` desde un equipo de confianza con la CLI de Supabase autenticada. El programa consulta una clave privilegiada únicamente en memoria y no la escribe en archivos ni en Flutter. Después aplica el archivo de datos iniciales para vincular los perfiles. Revisar los correos del script antes de usarlo fuera de esta evaluación.
+## Alta de personal
 
-## Comprobar
+1. Administrador → Usuarios → Invitar personal.
+2. Registrar nombre, correo, función y, para responsables, empresa activa.
+3. Un correo nuevo recibe una invitación de acceso. La cuenta conserva permisos de conductor hasta confirmar y aceptar su habilitación.
+4. Si el correo ya existe, se reutiliza la identidad. La persona acepta o rechaza desde Mi cuenta → Invitaciones de personal; conserva sus favoritas.
+5. Desde la ficha se asignan estaciones de la misma empresa a una vinculación aceptada.
+6. Retirar una asignación, finalizar una vinculación y desactivar la cuenta son operaciones diferentes. Reactivar no recrea permisos retirados.
 
-```sh
-flutter analyze
-flutter test
-python scripts/verify_backend.py --credentials RUTA_ACCESOS_PRIVADOS_JSON --output docs/evidencias/supabase-tests.json
-flutter drive --driver=test_driver/integration_test.dart --target=integration_test/public_smoke_test.dart -d ID_DISPOSITIVO
-```
+La creación de identidades usa la función de servidor `staff-admin`. Su clave administrativa nunca forma parte de Flutter. Si la habilitación falla después de crear la identidad, queda pendiente sin permisos de personal y se puede reintentar con el mismo correo.
 
-El archivo privado se usa solo desde el equipo de desarrollo. Las pruebas remotas crean registros de evaluación y los desactivan al terminar; conservan su historial sin borrado físico. Los resultados publicados no contienen contraseñas ni tokens.
+## Correos: configuración pendiente para destinatarios generales
 
-El recorrido completo de personal utiliza `integration_test/sprint2_flow_test.dart` y cuatro valores `TEST_ADMIN_EMAIL`, `TEST_ADMIN_PASSWORD`, `TEST_MANAGER_EMAIL` y `TEST_MANAGER_PASSWORD`. Se pasan desde un JSON privado mediante `--dart-define-from-file`, únicamente para las pruebas. No compartir la compilación de integración, que incorpora esos valores. La aplicación normal se compila con `lib/main.dart` y sin ese archivo. En CI las credenciales se leen de Secrets y solo se publican capturas PNG.
+El proyecto mantiene la confirmación obligatoria, contraseña mínima de ocho caracteres y verificación de los cambios de correo. El retorno a la aplicación es `filacero://auth-callback`, declarado en Android, iOS y Supabase.
 
-## Organización del código
+El proveedor predeterminado de Supabase limita destinatarios a miembros de la organización y actualmente permite dos mensajes por hora. Para que cualquier integrante pueda registrarse, recibir invitaciones o recuperar su contraseña hace falta configurar **SMTP propio** en Authentication → Email → SMTP Settings. No se ha contratado un proveedor ni se ha desactivado la verificación para evitar esa dependencia.
+
+Se comprobó la entrega de registro y recuperación al titular del proyecto. Su correo fue confirmado. El enlace de recuperación recibido ya se había abierto; se comprobó su rechazo al reutilizarlo y el protocolo de restablecimiento con un desafío nuevo de uso único generado de forma administrativa, sin otro envío.
+
+Los HTML de `supabase/templates/` están preparados en español. Su publicación requiere SMTP propio: el plan gratuito con proveedor predeterminado rechazó modificar plantillas. Los mensajes activos siguen siendo los predeterminados. No configurar esas plantillas como si ya estuvieran publicadas.
+
+Referencias: [SMTP en Supabase](https://supabase.com/docs/guides/auth/auth-smtp), [seguridad de contraseñas](https://supabase.com/docs/guides/auth/password-security).
+
+## Datos de partida
+
+Cuatro estaciones y tres operadoras, con dirección, licencia y productos documentados en el [catálogo ANH](https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40), consultado el 17/11/2026:
+
+| Estación | Operadora | Ciudad | Dirección |
+| --- | --- | --- | --- |
+| San Jorge | Automóvil Club Boliviano | La Paz | Av. 6 de Agosto Nº 2993 |
+| Calacoto | Automóvil Club Boliviano | La Paz | Calle 12 esq. Gral. Inofuentes Nº 7823 |
+| Obrajes | BASSAM LIMITADA | La Paz | Av. Hernando Siles Nº 4554 |
+| Senkata | E.S. C. Redentor S.R.L. | El Alto | Av. 6 de Marzo Nº 110 |
+
+Los productos habilitados no son existencias actuales. No se cargaron publicaciones de combustible inventadas para estas estaciones. La disponibilidad inicial es **Sin actualizar**. Las pruebas de publicación se ejecutan dentro de una transacción que se revierte.
+
+La migración conservó los 35 registros, relaciones y 16 publicaciones anteriores en `historico_sprint2`, fuera de la API pública. Las identidades previas se conservan para trazabilidad; sus accesos de evaluación quedan inactivos al finalizar las comprobaciones. Los accesos personales y cualquier archivo con contraseñas se entregan fuera del repositorio.
+
+## Modelo de datos
+
+Once tablas de negocio: `perfiles`, `empresas_operadoras`, `ciudades`, `estaciones`, `combustibles`, `estacion_combustible`, `vinculaciones_personal`, `asignaciones_responsables`, `historial_disponibilidad`, `favoritas` y `auditoria_cuentas`.
+
+Las relaciones usan UUID completos y claves foráneas. Los códigos PER-, EMP- y EST- son referencias legibles. El correo de acceso tiene su fuente en Auth; la contraseña no se almacena en tablas de negocio. No hay un campo de disponibilidad actual que duplique el historial: se calcula a partir del último evento válido.
+
+Todas las tablas públicas tienen RLS y una política que deniega acceso directo. Las operaciones se realizan mediante dos RPC públicas con funciones internas que verifican identidad, estado y autorización. Las bajas son lógicas y los eventos no se editan ni borran desde los clientes.
+
+La categoría informada es Disponible, Disponibilidad limitada o Agotado. Al alcanzar dos horas, o cuando una reactivación invalida una publicación anterior, la consulta devuelve Sin actualizar. El indicador visual es cualitativo; no representa litros, porcentajes ni tiempos de espera.
+
+## Estructura
 
 ```text
 lib/
-  main.dart                     inicio y tema
-  models/domain.dart            perfiles, gasolineras, combustibles y validaciones
-  core/app_controller.dart      sesión y coordinación de interfaz
-  core/supabase_config.dart     configuración pública
-  data/fila_repository.dart     contrato de datos
-  data/supabase_repository.dart  conexión, consultas y operaciones
-  screens/                      lista, acceso, detalle, formulario, disponibilidad y asignaciones
-supabase/                       migración reproducible y datos de evaluación
-test/                           pruebas de modelos, permisos de interfaz y navegación
-integration_test/               recorridos contra el servidor real en dispositivo
-scripts/                        alta controlada y pruebas remotas
-android/                        proyecto nativo Android
-ios/                            proyecto nativo iOS
-docs/                           planificación, resultados y evidencias
+  main.dart                     Tema y navegación raíz
+  core/app_controller.dart      Sesión, perfil y cambios de identidad
+  core/supabase_config.dart     URL y clave publicable
+  models/domain.dart            Validaciones y tipos compartidos
+  data/                         Acceso a consultas, comandos y Auth administrativo
+  screens/
+    home_screen.dart            Bienvenida e inicio por rol
+    auth_screen.dart            Registro, acceso y recuperación
+    account_screen.dart         Perfil, seguridad e invitaciones
+    company_screen.dart         Gestión de empresas
+    users_screen.dart           Cuentas, vínculos, asignaciones y auditoría
+    catalog_screen.dart         Listas, filtros, paginación y favoritas
+    station_form_screen.dart    Alta y edición sin coordenadas
+    station_detail_screen.dart  Detalle e indicadores
+    availability_screen.dart    Publicación e historial
+supabase/
+  migrations/                   Historial reproducible de cambios
+  functions/staff-admin/         Operaciones privilegiadas de Auth
+  templates/                    Plantillas preparadas, pendientes de SMTP
+  tests/sprint2_rules.sql        Pruebas transaccionales de reglas
+test/                           Pruebas unitarias y de widgets
+integration_test/               Recorrido real contra Supabase
+android/ · ios/                 Configuración nativa
 ```
 
-El proyecto separa modelos, repositorio, controlador y vistas. No se presenta como una implementación estricta de MVC. Cada capa tiene una responsabilidad y las pantallas no contienen SQL ni claves de administración.
+La organización separa presentación, coordinación de estado y acceso a datos. No se presenta como una implementación formal de MVC.
 
-La aceptación de la docente, el consenso real de Planning Poker y las ceremonias del equipo se registran después de realizarlos. Los documentos no los dan por celebrados.
+## Validación
+
+```powershell
+flutter analyze
+flutter test
+flutter build apk --debug
+```
+
+- 58 comprobaciones de reglas de negocio en la base, con rollback: permisos, baja lógica, vínculos, asignaciones, favoritas, vigencia e historial.
+- 13 comprobaciones HTTPS: consulta pública, bloqueo de lecturas directas, Auth y función administrativa.
+- 12 pruebas de Flutter y navegación Android. La evidencia de la revisión está separada de los documentos y capturas de la versión anterior.
+- GitHub Actions compila y prueba iOS en macOS. Consultar el resultado del último commit de código en [Actions](https://github.com/Rickv122/fila_cero/actions).
+
+El test `supabase/tests/sprint2_rules.sql` reutiliza identidades de evaluación conservadas en el proyecto para probar varias autorizaciones dentro de una transacción. No crea correos, no envía mensajes y revierte sus datos temporales. En una base nueva deben prepararse identidades de evaluación controladas antes de ejecutarlo.
+
+Para integración, proporcionar `TEST_ADMIN_EMAIL` y `TEST_ADMIN_PASSWORD` mediante un archivo privado externo al repositorio. GitHub los mantiene cifrados en Secrets. Nunca distribuir el binario generado para la integración, porque contiene esas constantes. Después de las pruebas compilar otra vez `lib/main.dart` sin definiciones privadas.
+
+## Preparar otra base
+
+Aplicar las migraciones en orden, desplegar `staff-admin`, exigir confirmación de correo y longitud mínima de ocho caracteres, y autorizar el enlace de retorno. Registrar y verificar una cuenta controlada antes de habilitar al primer administrador mediante un procedimiento administrativo auditado. No promover roles desde Flutter ni ejecutar scripts antiguos de alta masiva.
+
+La comprobación adicional de contraseñas filtradas aparece deshabilitada en el asesor de Supabase. No se anuncia como activa. Su disponibilidad y configuración deben revisarse según el plan del proyecto.
+
+Los informes y capturas previos de `docs/` documentan la primera implementación de Sprint 2. No representan la revisión actual de HU-06 a HU-10; ver `docs/REVISION_SPRINT2.md`.
