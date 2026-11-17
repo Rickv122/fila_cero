@@ -46,7 +46,7 @@ flutter devices
 flutter run -d ID_SIMULADOR_IOS
 ```
 
-La configuración del proyecto por sí sola no demuestra una ejecución iOS. Consultar `docs/ESTADO_SPRINT_2.md` y los resultados de CI para conocer la verificación realmente realizada.
+La compilación y el recorrido de las cinco historias pasaron en un simulador iOS mediante GitHub Actions en Mac. Consultar `docs/ESTADO_SPRINT_2.md` para los resultados, evidencias y límites de esa verificación. Ejecución: https://github.com/Rickv122/fila_cero/actions/runs/43978863216
 
 ## Las cinco historias
 
