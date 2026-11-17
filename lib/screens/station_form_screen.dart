@@ -6,252 +6,223 @@ import 'common.dart';
 
 class StationFormScreen extends StatefulWidget {
   final AppController controller;
-  final Station? station;
-  const StationFormScreen({super.key, required this.controller, this.station});
+  final AppRecord? station;
+  final String? initialCompany;
+  const StationFormScreen({
+    super.key,
+    required this.controller,
+    this.station,
+    this.initialCompany,
+  });
   @override
-  State<StationFormScreen> createState() => _StationFormState();
+  State<StationFormScreen> createState() => _StationFormScreenState();
 }
 
-class _StationFormState extends State<StationFormScreen> {
+class _StationFormScreenState extends State<StationFormScreen> {
   final form = GlobalKey<FormState>();
-  late final TextEditingController name, address, latitude, longitude;
-  String city = 'La Paz';
-  final selected = <String>{};
-  List<Map<String, dynamic>> fuels = [];
-  bool busy = false, loading = true;
-  Object? error;
-  String? validation;
+  final name = TextEditingController(),
+      address = TextEditingController(),
+      license = TextEditingController(),
+      source = TextEditingController();
+  late String id;
+  String? company, city;
+  Set<String> fuels = {};
+  AppRecord? options;
+  Object? loadError;
+  String? error;
+  bool busy = false;
   @override
   void initState() {
     super.initState();
     final s = widget.station;
-    name = TextEditingController(text: s?.name);
-    address = TextEditingController(text: s?.address);
-    latitude = TextEditingController(text: s?.latitude.toString());
-    longitude = TextEditingController(text: s?.longitude.toString());
-    city = s?.city ?? 'La Paz';
-    selected.addAll(s?.fuels.map((f) => f.fuelId) ?? <String>[]);
+    id = s?['id'] ?? newId();
+    company = s?['empresa_id'] ?? widget.initialCompany;
+    city = s?['ciudad_id'];
+    name.text = s?['nombre'] ?? '';
+    address.text = s?['direccion'] ?? '';
+    license.text = s?['licencia'] ?? '';
+    source.text = s?['fuente_url'] ?? '';
+    fuels = rows(s?['combustibles']).map((f) => f['id'] as String).toSet();
     load();
   }
 
   @override
   void dispose() {
-    name.dispose();
-    address.dispose();
-    latitude.dispose();
-    longitude.dispose();
+    for (final c in [name, address, license, source]) {
+      c.dispose();
+    }
     super.dispose();
   }
 
   Future<void> load() async {
-    setState(() {
-      loading = true;
-      error = null;
-    });
     try {
-      final r = await widget.controller.repository.fuels();
-      if (mounted) setState(() => fuels = r);
+      final o = row(await widget.controller.query('options'));
+      if (mounted) {
+        setState(() {
+          options = o;
+          loadError = null;
+        });
+      }
     } catch (e) {
-      if (mounted) setState(() => error = e);
-    } finally {
-      if (mounted) setState(() => loading = false);
+      if (mounted) setState(() => loadError = e);
     }
-  }
-
-  double? coordinate(String value) =>
-      double.tryParse(value.trim().replaceAll(',', '.'));
-  String? checkCoordinate(String? value, double limit) {
-    final n = coordinate(value ?? '');
-    return n == null || !n.isFinite || n.abs() > limit
-        ? 'Usa un número entre -$limit y $limit'
-        : null;
   }
 
   Future<void> save() async {
     if (!form.currentState!.validate()) return;
-    if (selected.isEmpty) {
-      setState(() => validation = 'Selecciona al menos un combustible.');
+    if (fuels.isEmpty) {
+      setState(() => error = 'Selecciona al menos un combustible.');
       return;
     }
     setState(() {
       busy = true;
-      validation = null;
+      error = null;
     });
     try {
-      await widget.controller.repository.saveStation(
-        StationDraft(
-          id: widget.station?.id,
-          name: name.text,
-          address: address.text,
-          city: city,
-          latitude: coordinate(latitude.text)!,
-          longitude: coordinate(longitude.text)!,
-          fuelIds: selected.toList(),
-        ),
-      );
-      if (mounted) {
-        message(context, 'Gasolinera guardada');
-        Navigator.pop(context, true);
-      }
+      await widget.controller.command('station_save', {
+        'id': id,
+        'empresa_id': company,
+        'ciudad_id': city,
+        'nombre': name.text,
+        'direccion': address.text,
+        'licencia': license.text.trim(),
+        'fuente_url': source.text.trim(),
+        'combustibles': fuels.toList(),
+      });
+      if (mounted) Navigator.pop(context, true);
     } catch (e) {
-      if (mounted) setState(() => validation = friendlyError(e));
+      if (mounted) setState(() => error = readableError(e));
     } finally {
       if (mounted) setState(() => busy = false);
     }
   }
 
   @override
-  Widget build(BuildContext c) => StaffGuard(
+  Widget build(BuildContext c) => ProtectedPage(
     controller: widget.controller,
-    role: UserRole.administrador,
+    adminOnly: true,
     child: Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.station == null ? 'Registrar gasolinera' : 'Editar gasolinera',
+          widget.station == null ? 'Nueva estación' : 'Editar estación',
         ),
       ),
-      body: PageBody(
-        child: loading
-            ? const Center(child: CircularProgressIndicator())
-            : error != null
-            ? ErrorPane(error: error!, retry: load)
-            : SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Form(
-                  key: form,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Text(
-                        'Datos generales',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
+      body: loadError != null
+          ? ErrorPane(error: loadError!, retry: load)
+          : options == null
+          ? const Center(child: CircularProgressIndicator())
+          : Form(
+              key: form,
+              child: ListView(
+                padding: const EdgeInsets.all(20),
+                children: [
+                  if (widget.station != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 18),
+                      child: Text(
+                        widget.station!['codigo'],
+                        style: const TextStyle(color: Colors.blueGrey),
                       ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        controller: name,
-                        enabled: !busy,
-                        maxLength: 120,
-                        decoration: const InputDecoration(
-                          labelText: 'Nombre de la gasolinera',
-                        ),
-                        validator: (v) => v == null || v.trim().isEmpty
-                            ? 'Completa el nombre'
-                            : null,
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: address,
-                        enabled: !busy,
-                        maxLength: 240,
-                        decoration: const InputDecoration(
-                          labelText: 'Dirección',
-                        ),
-                        validator: (v) => v == null || v.trim().isEmpty
-                            ? 'Completa la dirección'
-                            : null,
-                      ),
-                      const SizedBox(height: 12),
-                      DropdownButtonFormField<String>(
-                        initialValue: city,
-                        decoration: const InputDecoration(labelText: 'Ciudad'),
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'La Paz',
-                            child: Text('La Paz'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'El Alto',
-                            child: Text('El Alto'),
-                          ),
-                        ],
-                        onChanged: busy
-                            ? null
-                            : (v) => setState(() => city = v!),
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Ubicación de la gasolinera',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextFormField(
-                        controller: latitude,
-                        enabled: !busy,
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                          signed: true,
-                        ),
-                        decoration: const InputDecoration(
-                          labelText: 'Latitud',
-                          hintText: '-16.512',
-                        ),
-                        validator: (v) => checkCoordinate(v, 90),
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: longitude,
-                        enabled: !busy,
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                          signed: true,
-                        ),
-                        decoration: const InputDecoration(
-                          labelText: 'Longitud',
-                          hintText: '-68.131',
-                        ),
-                        validator: (v) => checkCoordinate(v, 180),
-                      ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        'Combustibles habilitados',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      ...fuels.map(
-                        (f) => CheckboxListTile(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(f['nombre'] as String),
-                          value: selected.contains(f['id']),
-                          onChanged: busy
-                              ? null
-                              : (v) => setState(() {
-                                  if (v == true) {
-                                    selected.add(f['id'] as String);
-                                  } else {
-                                    selected.remove(f['id']);
-                                  }
-                                }),
-                        ),
-                      ),
-                      if (validation != null)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          child: Text(
-                            validation!,
-                            style: TextStyle(
-                              color: Theme.of(c).colorScheme.error,
+                    ),
+                  _text(name, 'Nombre de la estación'),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    initialValue: company,
+                    isExpanded: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Empresa operadora',
+                    ),
+                    validator: requiredText,
+                    items: rows(options!['empresas'])
+                        .map(
+                          (e) => DropdownMenuItem(
+                            value: e['id'] as String,
+                            child: Text(
+                              e['denominacion'],
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                        ),
-                      const SizedBox(height: 12),
-                      FilledButton(
-                        onPressed: busy ? null : save,
-                        child: Text(busy ? 'Guardando…' : 'Guardar gasolinera'),
-                      ),
-                    ],
+                        )
+                        .toList(),
+                    onChanged: busy ? null : (v) => setState(() => company = v),
                   ),
-                ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    initialValue: city,
+                    decoration: const InputDecoration(labelText: 'Ciudad'),
+                    validator: requiredText,
+                    items: rows(options!['ciudades'])
+                        .map(
+                          (e) => DropdownMenuItem(
+                            value: e['id'] as String,
+                            child: Text(e['nombre']),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: busy ? null : (v) => setState(() => city = v),
+                  ),
+                  const SizedBox(height: 16),
+                  _text(address, 'Dirección'),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Combustibles habilitados',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 17,
+                      color: navy,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  ...rows(options!['combustibles']).map(
+                    (f) => CheckboxListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(f['nombre']),
+                      value: fuels.contains(f['id']),
+                      onChanged: busy
+                          ? null
+                          : (value) => setState(() {
+                              if (value == true) {
+                                fuels.add(f['id']);
+                              } else {
+                                fuels.remove(f['id']);
+                              }
+                            }),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _text(
+                    license,
+                    'Referencia de licencia (opcional)',
+                    required: false,
+                  ),
+                  const SizedBox(height: 16),
+                  _text(
+                    source,
+                    'Fuente del catálogo (opcional)',
+                    required: false,
+                  ),
+                  const SizedBox(height: 24),
+                  if (error != null) ...[
+                    Text(error!, style: const TextStyle(color: Colors.red)),
+                    const SizedBox(height: 16),
+                  ],
+                  FilledButton(
+                    onPressed: busy ? null : save,
+                    child: Text(busy ? 'Guardando…' : 'Guardar estación'),
+                  ),
+                ],
               ),
-      ),
+            ),
     ),
+  );
+  Widget _text(
+    TextEditingController ctrl,
+    String label, {
+    bool required = true,
+  }) => TextFormField(
+    controller: ctrl,
+    enabled: !busy,
+    validator: required ? requiredText : null,
+    decoration: InputDecoration(labelText: label),
   );
 }

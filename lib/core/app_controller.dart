@@ -1,72 +1,118 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../data/fila_repository.dart';
 import '../models/domain.dart';
+import '../data/supabase_repository.dart';
 
-String friendlyError(Object error) {
-  if (error is AppFailure) return error.message;
-  if (error is AuthException) {
-    return 'Correo o contraseña incorrectos, o acceso de personal no disponible.';
-  }
-  if (error is PostgrestException && ['42501', '22023'].contains(error.code)) {
-    return error.message;
-  }
-  return 'No se pudo completar la operación. Revisa tu conexión y vuelve a intentar.';
-}
-
-class AppController extends ChangeNotifier {
-  final FilaRepository repository;
-  StaffProfile? staff;
-  StreamSubscription<void>? _subscription;
-  bool _disposed = false;
+class AppController extends ChangeNotifier with WidgetsBindingObserver {
+  final SupabaseRepository repository;
+  AppRecord? profile;
+  bool recovery = false;
+  String? sessionError;
   int _generation = 0;
+  Future<void>? _profileRequest;
+  StreamSubscription<AuthState>? _subscription;
+  static const callback = 'filacero://auth-callback';
   AppController(this.repository);
-  bool get isAdmin =>
-      staff?.active == true && staff?.role == UserRole.administrador;
-  bool get isManager =>
-      staff?.active == true && staff?.role == UserRole.encargado;
+  SupabaseClient get client => repository.client;
+  bool get signedIn =>
+      client.auth.currentSession != null &&
+      profile?['activo'] == true &&
+      profile?['confirmado'] == true &&
+      sessionError == null;
+  bool get admin => signedIn && profile?['rol'] == 'administrador';
+  bool get manager => signedIn && profile?['rol'] == 'responsable';
+  String get name => profile?['nombre'] ?? 'Mi cuenta';
   Future<void> initialize() async {
-    try {
-      staff = await repository.profile();
-    } catch (_) {
-      staff = null;
-    }
-    _subscription = repository.authChanges.listen((_) {
-      refreshProfile();
+    WidgetsBinding.instance.addObserver(this);
+    _subscription = client.auth.onAuthStateChange.listen((event) {
+      if (event.event == AuthChangeEvent.passwordRecovery) recovery = true;
+      final authUser = event.session?.user;
+      if (authUser?.toJson()['invited_at'] != null &&
+          authUser?.userMetadata?['password_configurada'] != true) {
+        recovery = true;
+      }
+      if (event.event == AuthChangeEvent.signedOut) {
+        _generation++;
+        _profileRequest = null;
+        profile = null;
+        sessionError = null;
+        recovery = false;
+        notifyListeners();
+      } else {
+        unawaited(refreshProfile());
+      }
+    });
+    await refreshProfile();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) unawaited(refreshProfile());
+  }
+
+  Future<void> refreshProfile() {
+    if (_profileRequest != null) return _profileRequest!;
+    final request = _loadProfile();
+    _profileRequest = request;
+    return request.whenComplete(() {
+      if (identical(_profileRequest, request)) _profileRequest = null;
     });
   }
 
-  Future<void> refreshProfile() async {
-    final ticket = ++_generation;
-    StaffProfile? next;
-    try {
-      next = await repository.profile();
-    } catch (_) {
-      next = null;
+  Future<void> _loadProfile() async {
+    final generation = ++_generation;
+    if (client.auth.currentSession == null) {
+      profile = null;
+      sessionError = null;
+      notifyListeners();
+      return;
     }
-    if (_disposed || ticket != _generation) return;
-    staff = next;
+    try {
+      final result = await repository.query('profile');
+      if (generation != _generation) return;
+      profile = result == null ? null : row(result);
+      sessionError = profile == null
+          ? 'No se pudo habilitar el perfil. Vuelve a intentar.'
+          : profile?['activo'] != true
+          ? 'Tu cuenta está desactivada. Contacta al administrador.'
+          : null;
+    } catch (_) {
+      if (generation != _generation) return;
+      sessionError = 'No se pudo verificar tu cuenta. Revisa la conexión.';
+    }
     notifyListeners();
   }
 
   Future<void> login(String email, String password) async {
-    staff = await repository.login(email, password);
-    notifyListeners();
+    await client.auth.signInWithPassword(
+      email: email.trim(),
+      password: password,
+    );
+    await refreshProfile();
+    if (!signedIn) {
+      throw Exception(sessionError ?? 'Confirma tu correo para continuar.');
+    }
   }
 
   Future<void> logout() async {
+    await client.auth.signOut();
     _generation++;
-    staff = null;
+    profile = null;
+    recovery = false;
+    sessionError = null;
     notifyListeners();
-    await repository.logout();
   }
 
+  Future<dynamic> query(String resource, [AppRecord params = const {}]) =>
+      repository.query(resource, params);
+  Future<dynamic> command(String action, AppRecord data) =>
+      repository.command(action, data);
   @override
   void dispose() {
-    _disposed = true;
+    WidgetsBinding.instance.removeObserver(this);
     _subscription?.cancel();
     super.dispose();
   }

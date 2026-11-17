@@ -7,277 +7,178 @@ import 'package:filacero/core/app_controller.dart';
 import 'package:filacero/core/supabase_config.dart';
 import 'package:filacero/data/supabase_repository.dart';
 import 'package:filacero/main.dart';
-import 'package:filacero/models/domain.dart';
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   const adminEmail = String.fromEnvironment('TEST_ADMIN_EMAIL');
   const adminPassword = String.fromEnvironment('TEST_ADMIN_PASSWORD');
-  const managerEmail = String.fromEnvironment('TEST_MANAGER_EMAIL');
-  const managerPassword = String.fromEnvironment('TEST_MANAGER_PASSWORD');
-  testWidgets('HU06 a HU10 contra Supabase en dispositivo', (tester) async {
-    expect(
-      adminEmail,
-      isNotEmpty,
-      reason: 'Se requieren accesos privados mediante dart-define-from-file.',
-    );
+  testWidgets('Recorridos revisados de Sprint 2 en dispositivo', (t) async {
+    expect(adminEmail, isNotEmpty);
     await Supabase.initialize(
       url: SupabaseConfig.url,
       publishableKey: SupabaseConfig.publishableKey,
     );
-    await Supabase.instance.client.auth.signOut();
-    final repo = SupabaseRepository(Supabase.instance.client);
-    final controller = AppController(repo);
-    await controller.initialize();
-    final stationName =
-        'Gasolinera San Miguel ${DateTime.now().millisecondsSinceEpoch % 10000}';
-    String? created;
-    Future<void> settle() => tester.pumpAndSettle(
+    final client = Supabase.instance.client;
+    await client.auth.signOut();
+    final c = AppController(SupabaseRepository(client));
+    await c.initialize();
+    Future<void> settle() => t.pumpAndSettle(
       const Duration(milliseconds: 200),
       EnginePhase.sendSemanticsUpdate,
-      const Duration(seconds: 40),
+      const Duration(seconds: 30),
     );
-    Future<void> waitFor(bool Function() ready, String description) async {
-      final deadline = DateTime.now().add(const Duration(seconds: 35));
-      while (!ready() && DateTime.now().isBefore(deadline)) {
-        await tester.pump(const Duration(milliseconds: 200));
+    Future<void> waitFor(bool Function() predicate, String label) async {
+      final end = DateTime.now().add(const Duration(seconds: 40));
+      while (!predicate() && DateTime.now().isBefore(end)) {
+        await t.pump(const Duration(milliseconds: 200));
       }
-      expect(ready(), isTrue, reason: description);
+      if (!predicate()) {
+        debugPrint(
+          'ESTADO: sesión=${c.client.auth.currentSession != null}; rol=${c.profile?['rol']}; error=${c.sessionError}',
+        );
+        await binding.takeScreenshot('fallo-recorrido');
+      }
+      expect(predicate(), isTrue, reason: label);
       await settle();
     }
 
     Future<void> shot(String name) async {
       FocusManager.instance.primaryFocus?.unfocus();
-      ScaffoldMessenger.maybeOf(tester.element(find.byType(Scaffold).last))
-          ?.removeCurrentSnackBar();
       await settle();
-      debugPrint('CAPTURA: $name');
       await binding.takeScreenshot(name);
     }
 
-    Future<void> visible(String text) async {
-      await tester.scrollUntilVisible(
-        find.text(text),
-        250,
-        scrollable: find.byType(Scrollable).first,
-      );
+    Future<void> tapText(String text) async {
+      await t.ensureVisible(find.text(text).last);
+      await t.tap(find.text(text).last);
+      await settle();
     }
 
     try {
-      await tester.pumpWidget(FilaCeroApp(controller: controller));
+      await t.pumpWidget(FilaCeroApp(controller: c));
       await settle();
-      expect(find.text('Surtidor El Alto Central'), findsOneWidget);
       if (defaultTargetPlatform == TargetPlatform.android) {
         await binding.convertFlutterSurfaceToImage();
-        await tester.pump();
+        await t.pump();
       }
-      await shot('pantalla1-HU-09-lista');
-      await visible('Surtidor Sopocachi');
-      await tester.tap(find.text('Surtidor Sopocachi'));
+      await shot('pantalla1-HU-07-bienvenida');
+      await tapText('Crear cuenta');
+      expect(find.text('Nombre completo'), findsOneWidget);
+      await shot('pantalla2-HU-07-registro');
+      await t.pageBack();
       await settle();
-      expect(find.text('Disponibilidad por combustible'), findsOneWidget);
+      await tapText('Consultar estaciones');
+      await waitFor(
+        () => find.text('Calacoto').evaluate().isNotEmpty,
+        'Catálogo público cargado',
+      );
+      await shot('pantalla3-HU-10-lista');
+      await t.tap(find.byTooltip('Filtrar estaciones'));
+      await settle();
+      await shot('pantalla4-HU-10-filtros');
+      await tapText('Aplicar filtros');
+      await waitFor(
+        () => find.text('Calacoto').evaluate().isNotEmpty,
+        'Lista filtrada',
+      );
+      await tapText('Calacoto');
+      await waitFor(
+        () => find.text('Combustibles').evaluate().isNotEmpty,
+        'Detalle cargado',
+      );
       expect(find.text('Actualizar disponibilidad'), findsNothing);
-      await shot('pantalla2-HU-09-detalle');
-      await tester.pageBack();
+      await shot('pantalla5-HU-10-detalle');
+      await t.tap(find.byTooltip('Guardar favorita'));
       await settle();
-      await tester.tap(find.byTooltip('Acceso de personal'));
+      await shot('pantalla6-HU-07-acceso');
+      await t.enterText(find.byType(TextFormField).first, adminEmail);
+      await t.enterText(find.byType(TextFormField).last, adminPassword);
+      await t.ensureVisible(find.byKey(const Key('auth-submit')));
+      await t.tap(find.byKey(const Key('auth-submit')));
+      await waitFor(
+        () => c.admin && find.byType(TextFormField).evaluate().isEmpty,
+        'Acceso y retorno al detalle',
+      );
+      await waitFor(
+        () => find.byTooltip('Quitar favorita').evaluate().isNotEmpty,
+        'Se recupera intención de guardar',
+      );
+      await shot('pantalla7-HU-10-favorita');
+      await t.tap(find.byTooltip('Quitar favorita'));
+      await waitFor(
+        () => find.byTooltip('Guardar favorita').evaluate().isNotEmpty,
+        'Baja lógica de favorita',
+      );
+      await t.pageBack();
       await settle();
-      await shot('pantalla3-HU-07-inicio-sesion');
-      await tester.enterText(find.byType(TextFormField).first, adminEmail);
-      await tester.enterText(find.byType(TextFormField).last, adminPassword);
-      await tester.tap(find.text('Iniciar sesión'));
+      await t.pageBack();
+      await settle();
+      expect(find.text('Panel administrativo'), findsOneWidget);
+      await shot('pantalla8-HU-07-panel');
+      await tapText('Empresas');
+      await waitFor(
+        () => find.text('Automóvil Club Boliviano').evaluate().isNotEmpty,
+        'Empresas cargadas',
+      );
+      await shot('pantalla9-HU-06-empresas');
+      await tapText('Nueva empresa');
+      await shot('pantalla10-HU-06-formulario-empresa');
+      await t.pageBack();
+      await settle();
+      await t.pageBack();
+      await settle();
+      await tapText('Estaciones');
+      await waitFor(
+        () => find.text('Calacoto').evaluate().isNotEmpty,
+        'Administración de estaciones',
+      );
+      await tapText('Nueva estación');
+      await waitFor(
+        () => find.text('Empresa operadora').evaluate().isNotEmpty,
+        'Formulario de estación cargado',
+      );
+      expect(find.text('Latitud'), findsNothing);
+      expect(find.text('Longitud'), findsNothing);
+      await shot('pantalla11-HU-06-formulario-estacion');
+      await t.pageBack();
+      await settle();
+      await t.pageBack();
+      await settle();
+      await tapText('Usuarios');
       await waitFor(
         () =>
-            controller.isAdmin &&
-            find.byTooltip('Mi cuenta').evaluate().isNotEmpty,
-        'El administrador debe terminar de iniciar sesión.',
+            find.text('Invitar personal').evaluate().isNotEmpty &&
+            find.byType(CircularProgressIndicator).evaluate().isEmpty,
+        'Usuarios cargados',
       );
-      expect(controller.isAdmin, isTrue);
-      await tester.tap(find.byTooltip('Mi cuenta'));
-      await settle();
-      await shot('pantalla13-HU-07-perfil-personal');
-      await tester.tap(find.text('Administrar catálogo'));
-      await settle();
-      await shot('pantalla4-HU-06-catalogo');
-      await tester.tap(find.text('Agregar gasolinera'));
-      await settle();
-      await tester.enterText(find.byType(TextFormField).at(0), stationName);
-      await tester.enterText(
-        find.byType(TextFormField).at(1),
-        'Av. Ballivián, zona San Miguel',
+      await shot('pantalla12-HU-08-usuarios');
+      await tapText('Invitar personal');
+      await waitFor(
+        () => find.text('Función autorizada').evaluate().isNotEmpty,
+        'Formulario de personal',
       );
-      await tester.enterText(find.byType(TextFormField).at(2), '-16.541');
-      await tester.enterText(find.byType(TextFormField).at(3), '-68.078');
-      await visible('Diésel');
-      await tester.tap(find.text('Diésel').first);
+      await shot('pantalla13-HU-08-invitacion');
+      await t.pageBack();
       await settle();
-      await visible('Gasolina Especial');
-      await tester.tap(find.text('Gasolina Especial').first);
+      await t.pageBack();
       await settle();
-      await tester.scrollUntilVisible(
-        find.text('Datos generales'),
-        -300,
-        scrollable: find.byType(Scrollable).first,
+      await tapText('Mi cuenta');
+      await waitFor(
+        () => find.text('Invitaciones de personal').evaluate().isNotEmpty,
+        'Mi cuenta cargada',
       );
-      await shot('pantalla5-HU-06-formulario');
-      await visible('Guardar gasolinera');
-      await tester.tap(find.text('Guardar gasolinera'));
+      await shot('pantalla14-HU-07-mi-cuenta');
+      await tapText('Cerrar sesión');
       await waitFor(
         () =>
-            find
-                .byWidgetPredicate((w) => w is Text && w.data == stationName)
-                .evaluate()
-                .isNotEmpty &&
-            find.text('Catálogo de gasolineras').evaluate().isNotEmpty,
-        'El guardado y la recarga del catálogo deben terminar antes de consultar el registro.',
+            !c.signedIn &&
+            find.text('Consultar estaciones').evaluate().isNotEmpty,
+        'Salida limpia a bienvenida',
       );
-      expect(
-        find.byWidgetPredicate((w) => w is Text && w.data == stationName),
-        findsOneWidget,
-      );
-      final record = await repo.stations(StationQuery(name: stationName));
-      created = record.stations.first.id;
-      await tester.tap(
-        find.byWidgetPredicate((w) => w is Text && w.data == stationName),
-      );
-      await settle();
-      await visible('Asignar encargados');
-      await tester.tap(find.text('Asignar encargados'));
-      await settle();
-      await tester.tap(
-        find.widgetWithText(SwitchListTile, 'Encargado Sopocachi'),
-      );
-      await settle();
-      await shot('pantalla6-HU-06-asignacion');
-      await tester.pageBack();
-      await settle();
-      await visible('Desactivar gasolinera');
-      await tester.tap(find.text('Desactivar gasolinera'));
-      await settle();
-      await shot('pantalla7-HU-10-confirmacion');
-      await tester.tap(find.text('Confirmar'));
-      await waitFor(
-        () => find.text('Gasolinera inactiva').evaluate().isNotEmpty,
-        'La baja debe confirmarse en el detalle.',
-      );
-      expect(find.text('Gasolinera inactiva'), findsOneWidget);
-      await tester.pageBack();
-      await settle();
-      await tester.tap(
-        find.widgetWithText(SwitchListTile, 'Mostrar inactivas'),
-      );
-      await settle();
-      await tester.enterText(find.byType(TextField).first, stationName);
-      await tester.testTextInput.receiveAction(TextInputAction.search);
-      await tester.pump(const Duration(milliseconds: 500));
-      await settle();
-      await shot('pantalla8-HU-10-inactivas');
-      await tester.tap(
-        find.byWidgetPredicate((w) => w is Text && w.data == stationName),
-      );
-      await settle();
-      await visible('Reactivar gasolinera');
-      await tester.tap(find.text('Reactivar gasolinera'));
-      await settle();
-      await tester.tap(find.text('Confirmar'));
-      await waitFor(
-        () => find.text('Desactivar gasolinera').evaluate().isNotEmpty,
-        'La reactivación debe terminar antes de salir.',
-      );
-      await tester.pageBack();
-      await settle();
-      await tester.pageBack();
-      await settle();
-      await controller.logout();
-      await settle();
-      await tester.tap(find.byTooltip('Acceso de personal'));
-      await settle();
-      await tester.enterText(find.byType(TextFormField).first, managerEmail);
-      await tester.enterText(find.byType(TextFormField).last, managerPassword);
-      await tester.tap(find.text('Iniciar sesión'));
-      await waitFor(
-        () =>
-            controller.isManager &&
-            find.byTooltip('Mi cuenta').evaluate().isNotEmpty,
-        'El encargado debe terminar de iniciar sesión.',
-      );
-      expect(controller.isManager, isTrue);
-      await tester.tap(find.byTooltip('Mi cuenta'));
-      await settle();
-      await tester.tap(find.text('Mis gasolineras'));
-      await settle();
-      await shot('pantalla9-HU-08-mis-gasolineras');
-      await tester.tap(
-        find.byWidgetPredicate((w) => w is Text && w.data == stationName),
-      );
-      await settle();
-      await visible('Actualizar disponibilidad');
-      await tester.tap(find.text('Actualizar disponibilidad'));
-      await settle();
-      await tester.tap(find.byType(DropdownButtonFormField<FuelStatus>).first);
-      await settle();
-      await tester.tap(find.text('Hay').last);
-      await settle();
-      await shot('pantalla10-HU-08-disponibilidad');
-      await tester.tap(find.text('Guardar disponibilidad'));
-      await waitFor(
-        () => find.text('Guardar disponibilidad').evaluate().isEmpty,
-        'La publicación debe guardarse antes de consultar el historial.',
-      );
-      await visible('Ver historial de disponibilidad');
-      await tester.tap(find.text('Ver historial de disponibilidad'));
-      await settle();
-      expect(find.textContaining('Encargado Sopocachi'), findsWidgets);
-      await shot('pantalla11-HU-08-historial');
-      await tester.pageBack();
-      await settle();
-      await tester.pageBack();
-      await settle();
-      await tester.pageBack();
-      await settle();
-      await controller.logout();
-      await settle();
-      await tester.tap(find.byTooltip('Actualizar lista'));
-      await settle();
-      await tester.scrollUntilVisible(
-        find.byType(TextField),
-        -350,
-        scrollable: find.byType(Scrollable).first,
-      );
-      await tester.enterText(find.byType(TextField).first, stationName);
-      await tester.testTextInput.receiveAction(TextInputAction.search);
-      await tester.pump(const Duration(milliseconds: 500));
-      await settle();
-      await tester.ensureVisible(
-        find.byWidgetPredicate((w) => w is Text && w.data == stationName),
-      );
-      await tester.tap(
-        find.byWidgetPredicate((w) => w is Text && w.data == stationName),
-      );
-      await settle();
-      expect(find.text('Actualizar disponibilidad'), findsNothing);
-      expect(
-        find.textContaining('Informado por Encargado Sopocachi'),
-        findsWidgets,
-      );
-      await shot('pantalla12-HU-09-consulta-actualizada');
+      expect(find.text('Usuarios'), findsNothing);
     } finally {
-      if (created == null) {
-        await controller.login(adminEmail, adminPassword);
-        final records = await repo.stations(StationQuery(name: stationName));
-        for (final station in records.stations.where(
-          (s) => s.name == stationName,
-        )) {
-          await repo.setActive(station.id, false);
-        }
-      }
-      if (created != null) {
-        await controller.login(adminEmail, adminPassword);
-        await repo.setActive(created, false);
-      }
-      await controller.logout();
-      await tester.pumpWidget(const SizedBox.shrink());
-      controller.dispose();
+      await client.auth.signOut();
+      c.dispose();
     }
-  }, timeout: const Timeout(Duration(minutes: 8)));
+  });
 }

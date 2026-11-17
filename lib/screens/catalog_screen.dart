@@ -4,470 +4,512 @@ import 'package:flutter/material.dart';
 
 import '../core/app_controller.dart';
 import '../models/domain.dart';
-import 'auth_screen.dart';
 import 'common.dart';
+import 'auth_screen.dart';
 import 'station_detail_screen.dart';
 import 'station_form_screen.dart';
 
 class CatalogScreen extends StatefulWidget {
   final AppController controller;
-  final bool admin, assigned;
+  final String mode;
+  final String? company;
   const CatalogScreen({
     super.key,
     required this.controller,
-    this.admin = false,
-    this.assigned = false,
+    this.mode = 'public',
+    this.company,
   });
   @override
-  State<CatalogScreen> createState() => _CatalogState();
+  State<CatalogScreen> createState() => _CatalogScreenState();
 }
 
-class _CatalogState extends State<CatalogScreen> {
+class _CatalogScreenState extends State<CatalogScreen> {
   final search = TextEditingController();
   final scroll = ScrollController();
-  List<Map<String, dynamic>> fuels = [];
-  List<Station> rows = [];
-  String? city, fuelId;
-  bool inactive = false, busy = true, hasMore = false;
-  int page = 0, generation = 0;
+  Timer? debounce;
+  List<AppRecord> items = [];
+  AppRecord options = {};
+  String? company, city, fuel;
+  String status = 'all';
+  bool loading = true, more = false, loadingMore = false;
   Object? error;
-  Timer? debounce, clock;
+  Object? optionsError;
+  int page = 0, generation = 0;
   @override
   void initState() {
     super.initState();
+    company = widget.company;
     load();
-    clock = Timer.periodic(const Duration(minutes: 1), (_) {
-      if (mounted) setState(() {});
-    });
+    loadOptions();
   }
 
   @override
   void dispose() {
     debounce?.cancel();
-    clock?.cancel();
     search.dispose();
     scroll.dispose();
     super.dispose();
   }
 
-  Future<void> load({bool reset = false}) async {
-    if (reset) {
-      page = 0;
-      if (scroll.hasClients) scroll.jumpTo(0);
-    }
-    final ticket = ++generation;
-    setState(() {
-      busy = true;
-      error = null;
-    });
+  Future<void> loadOptions() async {
     try {
-      final options = await widget.controller.repository.fuels();
-      final result = await widget.controller.repository.stations(
-        StationQuery(
-          name: search.text,
-          city: city,
-          fuelId: fuelId,
-          inactive: inactive,
-          assigned: widget.assigned,
-          page: page,
-        ),
-      );
-      if (mounted && ticket == generation) {
+      final result = row(await widget.controller.query('options'));
+      if (mounted) {
         setState(() {
-          fuels = options;
-          rows = result.stations;
-          hasMore = result.hasMore;
+          options = result;
+          optionsError = null;
         });
       }
     } catch (e) {
-      if (mounted && ticket == generation) setState(() => error = e);
-    } finally {
-      if (mounted && ticket == generation) setState(() => busy = false);
+      if (mounted) setState(() => optionsError = e);
     }
   }
 
-  Future<void> openStation(Station station) async {
-    await openPage(
-      context,
-      StationDetailScreen(controller: widget.controller, stationId: station.id),
-    );
-    if (mounted) load();
+  Future<void> load({bool next = false}) async {
+    final g = ++generation;
+    if (!next) {
+      page = 0;
+      setState(() {
+        loading = true;
+        error = null;
+      });
+    } else {
+      setState(() => loadingMore = true);
+    }
+    try {
+      final result = row(
+        await widget.controller.query('catalog', {
+          'mode': widget.mode,
+          'name': search.text.trim(),
+          'company': company,
+          'city': city,
+          'fuel': fuel,
+          'status': status,
+          'page': next ? page + 1 : 0,
+        }),
+      );
+      if (!mounted || g != generation) return;
+      setState(() {
+        items = next
+            ? [...items, ...rows(result['rows'])]
+            : rows(result['rows']);
+        more = result['has_more'] == true;
+        if (next) page++;
+        error = null;
+      });
+    } catch (e) {
+      if (mounted && g == generation) setState(() => error = e);
+    } finally {
+      if (mounted && g == generation) {
+        setState(() {
+          loading = false;
+          loadingMore = false;
+        });
+      }
+    }
   }
 
-  Widget content(BuildContext c) => Scaffold(
-    appBar: AppBar(
-      title: Text(
-        widget.admin
-            ? 'Catálogo de gasolineras'
-            : widget.assigned
-            ? 'Mis gasolineras'
-            : 'FilaCero',
-      ),
-      actions: [
-        IconButton(
-          tooltip: 'Actualizar lista',
-          onPressed: busy ? null : () => load(),
-          icon: const Icon(Icons.refresh),
-        ),
-        if (!widget.admin && !widget.assigned)
-          IconButton(
-            tooltip: widget.controller.staff == null
-                ? 'Acceso de personal'
-                : 'Mi cuenta',
-            onPressed: () => account(c),
-            icon: Icon(
-              widget.controller.staff == null
-                  ? Icons.login
-                  : Icons.account_circle_outlined,
+  Future<void> favorite(AppRecord station) async {
+    if (!widget.controller.signedIn) {
+      final ok = await openPage<bool>(
+        context,
+        AuthScreen(controller: widget.controller),
+      );
+      if (ok != true || !widget.controller.signedIn) return;
+    }
+    try {
+      await widget.controller.command('favorite', {
+        'id': station['id'],
+        'activo': station['favorita'] != true,
+      });
+      await load();
+    } catch (e) {
+      if (mounted) notice(context, readableError(e));
+    }
+  }
+
+  Future<void> filters() async {
+    if (optionsError != null) {
+      await loadOptions();
+      if (optionsError != null) {
+        if (mounted) {
+          notice(context, 'No se pudieron cargar los filtros. Reintenta.');
+        }
+        return;
+      }
+      if (!mounted) return;
+    }
+    String? chosenCompany = company, chosenCity = city, chosenFuel = fuel;
+    String chosenStatus = status;
+    final accepted = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (c) => StatefulBuilder(
+        builder: (c, set) => Padding(
+          padding: EdgeInsets.fromLTRB(
+            24,
+            0,
+            24,
+            24 + MediaQuery.viewInsetsOf(c).bottom,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Filtrar estaciones',
+                  style: Theme.of(c).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 22),
+                _dropdown(
+                  'Empresa',
+                  rows(options['empresas']),
+                  'denominacion',
+                  chosenCompany,
+                  (v) => set(() => chosenCompany = v),
+                ),
+                const SizedBox(height: 14),
+                _dropdown(
+                  'Ciudad',
+                  rows(options['ciudades']),
+                  'nombre',
+                  chosenCity,
+                  (v) => set(() => chosenCity = v),
+                ),
+                const SizedBox(height: 14),
+                _dropdown(
+                  'Combustible',
+                  rows(options['combustibles']),
+                  'nombre',
+                  chosenFuel,
+                  (v) => set(() => chosenFuel = v),
+                ),
+                const SizedBox(height: 14),
+                if (widget.mode == 'admin')
+                  DropdownButtonFormField<String>(
+                    initialValue: chosenStatus,
+                    decoration: const InputDecoration(labelText: 'Estado'),
+                    items: const [
+                      DropdownMenuItem(value: 'all', child: Text('Todos')),
+                      DropdownMenuItem(value: 'active', child: Text('Activos')),
+                      DropdownMenuItem(
+                        value: 'inactive',
+                        child: Text('Inactivos'),
+                      ),
+                    ],
+                    onChanged: (v) => set(() => chosenStatus = v!),
+                  ),
+                const SizedBox(height: 22),
+                FilledButton(
+                  onPressed: () => Navigator.pop(c, true),
+                  child: const Text('Aplicar filtros'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      company = null;
+                      city = null;
+                      fuel = null;
+                      status = 'all';
+                      search.clear();
+                    });
+                    Navigator.pop(c, false);
+                    load();
+                  },
+                  child: const Text('Limpiar filtros'),
+                ),
+              ],
             ),
           ),
-      ],
-    ),
-    floatingActionButton: widget.admin && !inactive
-        ? FloatingActionButton.extended(
-            onPressed: () async {
-              final saved = await openPage<bool>(
-                c,
-                StationFormScreen(controller: widget.controller),
-              );
-              if (saved == true && mounted) load(reset: true);
-            },
-            icon: const Icon(Icons.add),
-            label: const Text('Agregar gasolinera'),
-          )
-        : null,
-    body: PageBody(
-      child: RefreshIndicator(
-        onRefresh: () => load(),
-        child: ListView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          controller: scroll,
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
-          physics: const AlwaysScrollableScrollPhysics(),
-          children: [
-            if (!widget.admin && !widget.assigned)
-              Container(
-                padding: const EdgeInsets.all(20),
-                margin: const EdgeInsets.only(bottom: 20),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [brand, Color(0xFFC63C46)],
+        ),
+      ),
+    );
+    if (accepted == true) {
+      setState(() {
+        company = chosenCompany;
+        city = chosenCity;
+        fuel = chosenFuel;
+        status = chosenStatus;
+      });
+      await load();
+    }
+  }
+
+  Widget _dropdown(
+    String label,
+    List<AppRecord> values,
+    String field,
+    String? selected,
+    ValueChanged<String?> change,
+  ) => DropdownButtonFormField<String>(
+    initialValue: selected,
+    isExpanded: true,
+    decoration: InputDecoration(labelText: label),
+    items: [
+      const DropdownMenuItem<String>(
+        value: null,
+        child: Text('Todas las opciones'),
+      ),
+      ...values.map(
+        (v) => DropdownMenuItem(
+          value: v['id'] as String,
+          child: Text(v[field], overflow: TextOverflow.ellipsis),
+        ),
+      ),
+    ],
+    onChanged: change,
+  );
+  @override
+  Widget build(BuildContext context) {
+    final title = switch (widget.mode) {
+      'admin' => 'Estaciones',
+      'favorites' => 'Mis favoritas',
+      'assigned' => 'Mis estaciones',
+      _ => 'Encuentra tu estación',
+    };
+    Widget content = Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+        actions: [
+          IconButton(
+            tooltip: 'Actualizar',
+            onPressed: () => load(),
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
+      ),
+      floatingActionButton: widget.mode == 'admin'
+          ? FloatingActionButton.extended(
+              onPressed: () async {
+                await openPage(
+                  context,
+                  StationFormScreen(
+                    controller: widget.controller,
+                    initialCompany: company,
                   ),
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Encuentra dónde abastecerte',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Consulta combustible y disponibilidad informada por cada estación.',
-                      style: TextStyle(color: Colors.white, fontSize: 15),
-                    ),
-                  ],
-                ),
-              ),
-            if (widget.assigned)
-              const Padding(
-                padding: EdgeInsets.only(bottom: 16),
-                child: Text(
-                  'Actualiza la disponibilidad de las estaciones que tienes asignadas.',
-                ),
-              ),
-            TextField(
-              controller: search,
-              textInputAction: TextInputAction.search,
-              onSubmitted: (_) => FocusScope.of(context).unfocus(),
-              onTapOutside: (_) => FocusScope.of(context).unfocus(),
-              decoration: InputDecoration(
-                labelText: 'Buscar por nombre',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: search.text.isEmpty
-                    ? null
-                    : IconButton(
-                        tooltip: 'Limpiar búsqueda',
-                        onPressed: () {
-                          search.clear();
-                          load(reset: true);
-                        },
-                        icon: const Icon(Icons.close),
-                      ),
-              ),
-              onChanged: (_) {
-                debounce?.cancel();
-                setState(() {});
-                debounce = Timer(
-                  const Duration(milliseconds: 350),
-                  () => load(reset: true),
                 );
+                await load();
               },
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
+              icon: const Icon(Icons.add),
+              label: const Text('Nueva estación'),
+            )
+          : null,
+      body: Column(
+        children: [
+          if (widget.mode == 'public')
+            const PageTitle('Explora', 'Una mejor parada'),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
+            child: Row(
               children: [
-                SizedBox(
-                  width: 180,
-                  child: DropdownButtonFormField<String>(
-                    key: ValueKey('city-${city ?? ''}'),
-                    initialValue: city ?? '',
-                    decoration: const InputDecoration(labelText: 'Ciudad'),
-                    items: const [
-                      DropdownMenuItem(value: '', child: Text('Todas')),
-                      DropdownMenuItem(value: 'La Paz', child: Text('La Paz')),
-                      DropdownMenuItem(
-                        value: 'El Alto',
-                        child: Text('El Alto'),
-                      ),
-                    ],
-                    onChanged: (v) {
-                      city = v == '' ? null : v;
-                      load(reset: true);
+                Expanded(
+                  child: TextField(
+                    controller: search,
+                    decoration: const InputDecoration(
+                      hintText: 'Buscar estación o empresa',
+                      prefixIcon: Icon(Icons.search),
+                    ),
+                    onChanged: (_) {
+                      debounce?.cancel();
+                      debounce = Timer(
+                        const Duration(milliseconds: 350),
+                        () => load(),
+                      );
                     },
                   ),
                 ),
-                SizedBox(
-                  width: 210,
-                  child: DropdownButtonFormField<String>(
-                    key: ValueKey('fuel-${fuelId ?? ''}-${fuels.length}'),
-                    initialValue: fuelId ?? '',
-                    isExpanded: true,
-                    decoration: const InputDecoration(labelText: 'Combustible'),
-                    items: [
-                      const DropdownMenuItem(value: '', child: Text('Todos')),
-                      ...fuels.map(
-                        (f) => DropdownMenuItem(
-                          value: f['id'] as String,
-                          child: Text(f['nombre'] as String),
-                        ),
-                      ),
-                    ],
-                    onChanged: (v) {
-                      fuelId = v == '' ? null : v;
-                      load(reset: true);
-                    },
+                const SizedBox(width: 10),
+                IconButton.filledTonal(
+                  tooltip: 'Filtrar estaciones',
+                  onPressed: filters,
+                  icon: Badge(
+                    isLabelVisible:
+                        company != null ||
+                        city != null ||
+                        fuel != null ||
+                        status != 'all',
+                    child: const Icon(Icons.tune_rounded),
                   ),
                 ),
               ],
             ),
-            if (city != null || fuelId != null || search.text.isNotEmpty)
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton(
-                  onPressed: () {
-                    search.clear();
-                    city = null;
-                    fuelId = null;
-                    load(reset: true);
-                  },
-                  child: const Text('Limpiar filtros'),
-                ),
-              ),
-            if (widget.admin)
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                title: const Text('Mostrar inactivas'),
-                value: inactive,
-                onChanged: (v) {
-                  inactive = v;
-                  load(reset: true);
-                },
-              ),
-            const SizedBox(height: 20),
-            if (busy) const LinearProgressIndicator(),
-            if (error != null)
-              ErrorPane(error: error!, retry: () => load())
-            else if (!busy && rows.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(28),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.local_gas_station_outlined,
-                      size: 48,
-                      color: Colors.grey,
-                    ),
-                    SizedBox(height: 12),
-                    Text(
-                      'No se encontraron gasolineras',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Prueba otros filtros o vuelve a actualizar.',
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              )
-            else
-              ...rows.map(
-                (s) => Card(
-                  margin: const EdgeInsets.only(bottom: 14),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(18),
-                    onTap: () => openStation(s),
-                    child: Padding(
-                      padding: const EdgeInsets.all(18),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const Icon(Icons.local_gas_station, color: brand),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  s.name,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 18,
+          ),
+          Expanded(
+            child: loading
+                ? const Center(child: CircularProgressIndicator())
+                : error != null
+                ? ErrorPane(error: error!, retry: () => load())
+                : items.isEmpty
+                ? EmptyPane(
+                    widget.mode == 'favorites'
+                        ? 'Aún no tienes favoritas'
+                        : widget.mode == 'assigned'
+                        ? 'Sin estaciones asignadas'
+                        : 'Sin resultados',
+                    message: widget.mode == 'assigned'
+                        ? 'El administrador debe asignarte una estación.'
+                        : 'Puedes actualizar o cambiar los filtros.',
+                    icon: widget.mode == 'favorites'
+                        ? Icons.favorite_border
+                        : Icons.local_gas_station_outlined,
+                  )
+                : RefreshIndicator(
+                    onRefresh: () => load(),
+                    child: ListView.separated(
+                      controller: scroll,
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                      itemCount: items.length + (more ? 1 : 0),
+                      separatorBuilder: (_, _) => const SizedBox(height: 14),
+                      itemBuilder: (c, i) {
+                        if (i == items.length) {
+                          return OutlinedButton(
+                            onPressed: loadingMore
+                                ? null
+                                : () => load(next: true),
+                            child: Text(
+                              loadingMore ? 'Cargando…' : 'Cargar más',
+                            ),
+                          );
+                        }
+                        final station = items[i],
+                            available = station['disponible'] == true;
+                        return Card(
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(20),
+                            onTap: available || widget.mode == 'admin'
+                                ? () async {
+                                    await openPage(
+                                      context,
+                                      StationDetailScreen(
+                                        controller: widget.controller,
+                                        id: station['id'],
+                                      ),
+                                    );
+                                    await load();
+                                  }
+                                : null,
+                            child: Padding(
+                              padding: const EdgeInsets.all(18),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: accent.withValues(alpha: .08),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        child: const Icon(
+                                          Icons.local_gas_station_outlined,
+                                          color: accent,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              station['nombre'],
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.w800,
+                                                fontSize: 18,
+                                                color: navy,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              available
+                                                  ? '${station['empresa']} · ${station['ciudad']}'
+                                                  : 'No disponible',
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Color(0xFF728096),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      IconButton(
+                                        tooltip: station['favorita'] == true
+                                            ? 'Quitar favorita'
+                                            : 'Guardar favorita',
+                                        onPressed: () => favorite(station),
+                                        icon: Icon(
+                                          station['favorita'] == true
+                                              ? Icons.favorite_rounded
+                                              : Icons.favorite_border,
+                                          color: station['favorita'] == true
+                                              ? accent
+                                              : Colors.blueGrey,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ),
-                              const Icon(Icons.chevron_right),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Text('${s.address} · ${s.city}'),
-                          if (!s.active)
-                            const Padding(
-                              padding: EdgeInsets.only(top: 8),
-                              child: Text(
-                                'Inactiva',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                  if (station['direccion'] != null) ...[
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      station['direccion'],
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: Color(0xFF64748B),
+                                      ),
+                                    ),
+                                  ],
+                                  if (available) ...[
+                                    const SizedBox(height: 14),
+                                    Wrap(
+                                      spacing: 7,
+                                      runSpacing: 7,
+                                      children: rows(station['combustibles'])
+                                          .map((f) => FuelPill(f))
+                                          .toList(),
+                                    ),
+                                  ],
+                                  if (widget.mode == 'admin')
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 10),
+                                      child: Text(
+                                        station['activo'] == true
+                                            ? 'Activa'
+                                            : 'Inactiva',
+                                        style: TextStyle(
+                                          color: station['activo'] == true
+                                              ? const Color(0xFF178167)
+                                              : Colors.red,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
-                          const SizedBox(height: 10),
-                          Wrap(
-                            spacing: 6,
-                            runSpacing: 4,
-                            children: s.fuels
-                                .map((f) => FuelBadge(fuel: f))
-                                .toList(),
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
                   ),
-                ),
-              ),
-            if (!busy && error == null && (hasMore || page > 0))
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: page == 0
-                        ? null
-                        : () {
-                            page--;
-                            load();
-                          },
-                    child: const Text('Anterior'),
-                  ),
-                  Text('Página ${page + 1}'),
-                  TextButton(
-                    onPressed: hasMore
-                        ? () {
-                            page++;
-                            load();
-                          }
-                        : null,
-                    child: const Text('Siguiente'),
-                  ),
-                ],
-              ),
-          ],
-        ),
-      ),
-    ),
-  );
-  Future<void> account(BuildContext c) async {
-    final controller = widget.controller;
-    if (controller.staff == null) {
-      await openPage(c, AuthScreen(controller: controller));
-      if (mounted) load();
-      return;
-    }
-    if (!c.mounted) return;
-    final action = await showModalBottomSheet<String>(
-      context: c,
-      builder: (c) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: Text(controller.staff!.name),
-              subtitle: Text(
-                controller.isAdmin
-                    ? 'Administrador'
-                    : 'Encargado de gasolinera',
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.manage_accounts_outlined),
-              title: Text(
-                controller.isAdmin ? 'Administrar catálogo' : 'Mis gasolineras',
-              ),
-              onTap: () => Navigator.pop(c, 'panel'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Cerrar sesión'),
-              onTap: () => Navigator.pop(c, 'logout'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
-    if (!mounted) return;
-    if (action == 'panel') {
-      await openPage(
-        context,
-        CatalogScreen(
-          controller: controller,
-          admin: controller.isAdmin,
-          assigned: controller.isManager,
-        ),
-      );
-      if (mounted) load();
-    }
-    if (action == 'logout') {
-      try {
-        await controller.logout();
-        if (mounted) {
-          message(context, 'Sesión cerrada');
-          load();
-        }
-      } catch (e) {
-        if (mounted) message(context, friendlyError(e));
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext c) {
-    if (widget.admin || widget.assigned) {
-      return StaffGuard(
+    if (widget.mode != 'public') {
+      content = ProtectedPage(
         controller: widget.controller,
-        role: widget.admin ? UserRole.administrador : UserRole.encargado,
-        child: content(c),
+        adminOnly: widget.mode == 'admin',
+        child: content,
       );
     }
-    return AnimatedBuilder(
-      animation: widget.controller,
-      builder: (_, _) => content(c),
-    );
+    return content;
   }
 }

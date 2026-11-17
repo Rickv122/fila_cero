@@ -39,19 +39,17 @@ jobs:
       - run: flutter analyze
       - run: flutter test
       - run: flutter build ios --simulator --debug
-      - name: Recorrido de las cinco historias en simulador iOS
+      - name: Recorridos de consulta, acceso y gestión en iOS
         shell: bash
         timeout-minutes: 25
         env:
           FILACERO_CAPTURE_DIR: docs/capturas_ios
           TEST_ADMIN_EMAIL: ${{ secrets.FILACERO_TEST_ADMIN_EMAIL }}
           TEST_ADMIN_PASSWORD: ${{ secrets.FILACERO_TEST_ADMIN_PASSWORD }}
-          TEST_MANAGER_EMAIL: ${{ secrets.FILACERO_TEST_MANAGER_EMAIL }}
-          TEST_MANAGER_PASSWORD: ${{ secrets.FILACERO_TEST_MANAGER_PASSWORD }}
         run: |
           python3 - <<'PY'
           import json, os
-          names=['TEST_ADMIN_EMAIL','TEST_ADMIN_PASSWORD','TEST_MANAGER_EMAIL','TEST_MANAGER_PASSWORD']
+          names=['TEST_ADMIN_EMAIL','TEST_ADMIN_PASSWORD']
           values={name:os.environ[name] for name in names}
           assert all(values.values()), 'Faltan accesos de evaluación en Secrets.'
           with open(os.path.join(os.environ['RUNNER_TEMP'],'test-defines.json'),'w') as f:

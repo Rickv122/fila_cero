@@ -1,283 +1,416 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 import '../core/app_controller.dart';
 import '../models/domain.dart';
-import 'availability_screen.dart';
 import 'common.dart';
+import 'auth_screen.dart';
 import 'station_form_screen.dart';
-import 'station_staff_screen.dart';
+import 'availability_screen.dart';
 
 class StationDetailScreen extends StatefulWidget {
   final AppController controller;
-  final String stationId;
+  final String id;
   const StationDetailScreen({
     super.key,
     required this.controller,
-    required this.stationId,
+    required this.id,
   });
   @override
-  State<StationDetailScreen> createState() => _DetailState();
+  State<StationDetailScreen> createState() => _StationDetailScreenState();
 }
 
-class _DetailState extends State<StationDetailScreen> {
-  Station? station;
-  bool busy = true, assigned = false;
+class _StationDetailScreenState extends State<StationDetailScreen> {
+  AppRecord? station;
   Object? error;
-  Timer? timer;
+  bool busy = false;
   @override
   void initState() {
     super.initState();
     load();
-    timer = Timer.periodic(const Duration(minutes: 1), (_) {
-      if (mounted) setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
   }
 
   Future<void> load() async {
-    setState(() {
-      busy = true;
-      error = null;
-    });
     try {
-      final s = await widget.controller.repository.station(widget.stationId);
-      final own = widget.controller.isManager
-          ? (await widget.controller.repository.assignedManagers(
-              widget.stationId,
-            )).contains(widget.controller.staff!.id)
-          : false;
+      final result = row(
+        await widget.controller.query('station', {'id': widget.id}),
+      );
       if (mounted) {
         setState(() {
-          station = s;
-          assigned = own;
+          station = result;
+          error = null;
         });
       }
     } catch (e) {
       if (mounted) setState(() => error = e);
+    }
+  }
+
+  Future<void> favorite() async {
+    if (!widget.controller.signedIn) {
+      if (await openPage<bool>(
+            context,
+            AuthScreen(controller: widget.controller),
+          ) !=
+          true) {
+        return;
+      }
+    }
+    if (busy) return;
+    setState(() => busy = true);
+    try {
+      await widget.controller.command('favorite', {
+        'id': widget.id,
+        'activo': station?['favorita'] != true,
+      });
+      await load();
+    } catch (e) {
+      if (mounted) notice(context, readableError(e));
     } finally {
       if (mounted) setState(() => busy = false);
     }
   }
 
-  Future<void> toggleActive() async {
-    final s = station!;
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (c) => AlertDialog(
-        title: Text(
-          s.active ? 'Desactivar gasolinera' : 'Reactivar gasolinera',
-        ),
-        content: Text(
-          s.active
-              ? '¿Desactivar ${s.name}? Dejará de aparecer en las consultas públicas. Sus datos e historial se conservarán.'
-              : '¿Reactivar ${s.name}? El encargado deberá publicar información vigente.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(c, false),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(c, true),
-            child: const Text('Confirmar'),
-          ),
-        ],
-      ),
-    );
-    if (confirm != true || !mounted) return;
-    setState(() => busy = true);
+  Future<void> changeState() async {
+    final active = station!['activo'] == true;
+    if (!await confirm(
+      context,
+      active ? 'Desactivar estación' : 'Reactivar estación',
+      '${station!['nombre']}\n${active ? 'Dejará de mostrarse en el catálogo y no admitirá publicaciones.' : 'Volverá a estar disponible si su empresa está activa. Las publicaciones anteriores no se renuevan.'}',
+      action: active ? 'Desactivar' : 'Reactivar',
+    )) {
+      return;
+    }
     try {
-      await widget.controller.repository.setActive(s.id, !s.active);
-      if (mounted) {
-        message(
-          context,
-          s.active ? 'Gasolinera desactivada' : 'Gasolinera reactivada',
-        );
-        await load();
-      }
+      await widget.controller.command('station_state', {
+        'id': widget.id,
+        'activo': !active,
+      });
+      await load();
     } catch (e) {
-      if (mounted) {
-        setState(() => busy = false);
-        message(context, friendlyError(e));
-      }
+      if (mounted) notice(context, readableError(e));
     }
   }
 
   @override
-  Widget build(BuildContext c) => AnimatedBuilder(
-    animation: widget.controller,
-    builder: (_, _) => Scaffold(
+  Widget build(BuildContext context) {
+    final s = station;
+    return Scaffold(
       appBar: AppBar(
-        title: const Text('Detalle de gasolinera'),
+        title: const Text('Estación'),
         actions: [
           IconButton(
-            tooltip: 'Actualizar detalle',
-            onPressed: busy ? null : load,
+            tooltip: 'Actualizar',
+            onPressed: load,
             icon: const Icon(Icons.refresh),
           ),
         ],
       ),
-      body: PageBody(
-        child: busy
-            ? const Center(child: CircularProgressIndicator())
-            : error != null
-            ? ErrorPane(error: error!, retry: load)
-            : station == null
-            ? const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Text(
-                    'Esta gasolinera ya no está disponible para consulta.',
+      body: error != null
+          ? ErrorPane(error: error!, retry: load)
+          : s == null
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(
+              padding: const EdgeInsets.all(20),
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: navy,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.local_gas_station_rounded,
+                            color: Colors.white,
+                            size: 36,
+                          ),
+                          const Spacer(),
+                          IconButton(
+                            tooltip: s['favorita'] == true
+                                ? 'Quitar favorita'
+                                : 'Guardar favorita',
+                            onPressed: busy ? null : favorite,
+                            icon: Icon(
+                              s['favorita'] == true
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 18),
+                      Text(
+                        s['nombre'],
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        s['empresa'],
+                        style: const TextStyle(color: Color(0xFFB9CCE7)),
+                      ),
+                      const SizedBox(height: 18),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.place_outlined,
+                            color: Color(0xFFB9CCE7),
+                            size: 18,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              '${s['direccion']}\n${s['ciudad']}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                height: 1.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-              )
-            : SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Icon(Icons.local_gas_station, size: 60, color: brand),
-                    const SizedBox(height: 16),
-                    Text(
-                      station!.name,
-                      style: Theme.of(c).textTheme.headlineSmall,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(station!.address),
-                    Text(station!.city),
-                    if (!station!.active)
-                      const Text(
-                        'Gasolinera inactiva',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
+                const SizedBox(height: 26),
+                Text(
+                  'Combustibles',
+                  style: Theme.of(context).textTheme.titleLarge
+                      ?.copyWith(fontWeight: FontWeight.w800, color: navy),
+                ),
+                const SizedBox(height: 14),
+                ...rows(s['combustibles']).map(
+                  (f) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: FuelCard(fuel: f),
+                  ),
+                ),
+                if (s['puede_publicar'] == true) ...[
+                  const SizedBox(height: 12),
+                  FilledButton.icon(
+                    onPressed: () async {
+                      await openPage(
+                        context,
+                        AvailabilityScreen(
+                          controller: widget.controller,
+                          station: s,
                         ),
+                      );
+                      await load();
+                    },
+                    icon: const Icon(Icons.edit_note),
+                    label: const Text('Actualizar disponibilidad'),
+                  ),
+                ],
+                if (s['puede_publicar'] == true || widget.controller.admin)
+                  TextButton.icon(
+                    onPressed: () => openPage(
+                      context,
+                      HistoryScreen(
+                        controller: widget.controller,
+                        id: widget.id,
                       ),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Disponibilidad por combustible',
-                      style: Theme.of(c).textTheme.titleLarge,
                     ),
-                    const SizedBox(height: 8),
-                    ...station!.fuels.map(
-                      (f) => Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              FuelBadge(fuel: f),
-                              const SizedBox(height: 8),
-                              Text(
-                                f.updatedAt == null
-                                    ? 'Aún no se informó disponibilidad.'
-                                    : 'Última actualización: ${dateText(f.updatedAt!)}',
-                              ),
-                              if (f.author != null)
-                                Text('Informado por ${f.author}'),
-                              if (f.updatedAt != null &&
-                                  f.effectiveStatus() ==
-                                      FuelStatus.sinInformacion)
-                                const Text(
-                                  'Consulta una actualización vigente antes de decidir.',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                            ],
-                          ),
+                    icon: const Icon(Icons.history),
+                    label: const Text('Ver historial'),
+                  ),
+                if (widget.controller.admin) ...[
+                  const Divider(height: 34),
+                  Text(
+                    '${s['codigo']} · ${s['activo'] == true ? 'Activa' : 'Inactiva'}',
+                    style: const TextStyle(color: Colors.blueGrey),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () async {
+                      await openPage(
+                        context,
+                        StationFormScreen(
+                          controller: widget.controller,
+                          station: s,
                         ),
-                      ),
+                      );
+                      await load();
+                    },
+                    icon: const Icon(Icons.edit_outlined),
+                    label: const Text('Editar estación'),
+                  ),
+                  TextButton(
+                    onPressed: changeState,
+                    child: Text(
+                      s['activo'] == true
+                          ? 'Desactivar estación'
+                          : 'Reactivar estación',
                     ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'La disponibilidad corresponde a lo informado por el encargado y tiene una vigencia de dos horas.',
+                  ),
+                ],
+                if ((s['licencia'] as String? ?? '').isNotEmpty)
+                  ExpansionTile(
+                    tilePadding: EdgeInsets.zero,
+                    title: const Text(
+                      'Referencia del catálogo',
+                      style: TextStyle(fontSize: 13),
                     ),
-                    const SizedBox(height: 24),
-                    if (widget.controller.isManager &&
-                        assigned &&
-                        station!.active)
-                      FilledButton.icon(
-                        onPressed: () async {
-                          await openPage(
-                            c,
-                            AvailabilityScreen(
-                              controller: widget.controller,
-                              station: station!,
-                            ),
-                          );
-                          if (mounted) load();
-                        },
-                        icon: const Icon(Icons.edit_note),
-                        label: const Text('Actualizar disponibilidad'),
-                      ),
-                    if (widget.controller.isAdmin) ...[
-                      FilledButton.icon(
-                        onPressed: () async {
-                          await openPage(
-                            c,
-                            StationFormScreen(
-                              controller: widget.controller,
-                              station: station!,
-                            ),
-                          );
-                          if (mounted) load();
-                        },
-                        icon: const Icon(Icons.edit_outlined),
-                        label: const Text('Editar datos generales'),
-                      ),
-                      const SizedBox(height: 10),
-                      OutlinedButton.icon(
-                        onPressed: () async {
-                          await openPage(
-                            c,
-                            AssignmentsScreen(
-                              controller: widget.controller,
-                              station: station!,
-                            ),
-                          );
-                          if (mounted) load();
-                        },
-                        icon: const Icon(Icons.badge_outlined),
-                        label: const Text('Asignar encargados'),
-                      ),
-                      const SizedBox(height: 10),
-                      OutlinedButton.icon(
-                        onPressed: toggleActive,
-                        icon: Icon(
-                          station!.active
-                              ? Icons.visibility_off_outlined
-                              : Icons.visibility_outlined,
-                        ),
-                        label: Text(
-                          station!.active
-                              ? 'Desactivar gasolinera'
-                              : 'Reactivar gasolinera',
+                    children: [
+                      SelectableText(
+                        '${s['licencia']}\n${s['fuente_url']}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.blueGrey,
                         ),
                       ),
                     ],
-                    if (widget.controller.isAdmin ||
-                        (widget.controller.isManager && assigned))
-                      TextButton.icon(
-                        onPressed: () => openPage(
-                          c,
-                          HistoryScreen(
-                            controller: widget.controller,
-                            station: station!,
-                          ),
-                        ),
-                        icon: const Icon(Icons.history),
-                        label: const Text('Ver historial de disponibilidad'),
-                      ),
-                  ],
+                  ),
+              ],
+            ),
+    );
+  }
+}
+
+class FuelCard extends StatelessWidget {
+  final AppRecord fuel;
+  const FuelCard({super.key, required this.fuel});
+  @override
+  Widget build(BuildContext context) {
+    final status = fuel['estado'] as String?;
+    final target = switch (status) {
+      'disponible' => .78,
+      'limitada' => .28,
+      _ => 0.0,
+    };
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Row(
+          children: [
+            Semantics(
+              label:
+                  '${fuel['nombre']}: ${statusLabel(status)}. Nivel cualitativo.',
+              child: TweenAnimationBuilder<double>(
+                duration: MediaQuery.disableAnimationsOf(context)
+                    ? Duration.zero
+                    : const Duration(milliseconds: 430),
+                curve: Curves.easeOutCubic,
+                tween: Tween(begin: 0, end: target),
+                builder: (c, v, _) => CustomPaint(
+                  size: const Size(48, 64),
+                  painter: _TankPainter(
+                    v,
+                    statusColor(status),
+                    status == 'sin_actualizar',
+                  ),
                 ),
               ),
+            ),
+            const SizedBox(width: 18),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    fuel['nombre'],
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: navy,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    statusLabel(status),
+                    style: TextStyle(
+                      color: statusColor(status),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    dateLabel(fuel['registrado_en']),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Colors.blueGrey,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
+}
+
+class _TankPainter extends CustomPainter {
+  final double level;
+  final Color color;
+  final bool unknown;
+  _TankPainter(this.level, this.color, this.unknown);
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(5, 14, size.width - 10, size.height - 19),
+      const Radius.circular(7),
+    );
+    canvas.drawRRect(rect, Paint()..color = color.withValues(alpha: .08));
+    canvas.save();
+    canvas.clipRRect(rect);
+    canvas.drawRect(
+      Rect.fromLTWH(
+        5,
+        size.height - 5 - (size.height - 19) * level,
+        size.width - 10,
+        (size.height - 19) * level,
+      ),
+      Paint()..color = color.withValues(alpha: .8),
+    );
+    canvas.restore();
+    canvas.drawRRect(
+      rect,
+      Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(12, 5, 19, 10),
+        const Radius.circular(2),
+      ),
+      Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2,
+    );
+    final symbol = unknown
+        ? '?'
+        : level == 0
+        ? '−'
+        : '';
+    if (symbol.isNotEmpty) {
+      final text = TextPainter(
+        text: TextSpan(
+          text: symbol,
+          style: TextStyle(
+            color: color,
+            fontSize: 24,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      text.paint(canvas, Offset((size.width - text.width) / 2, 25));
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _TankPainter old) =>
+      level != old.level || color != old.color || unknown != old.unknown;
 }
