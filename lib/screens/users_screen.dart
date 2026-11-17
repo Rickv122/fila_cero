@@ -379,7 +379,7 @@ class UserDetailScreen extends StatefulWidget {
 
 class _UserDetailScreenState extends State<UserDetailScreen> {
   AppRecord? user;
-  List<AppRecord> memberships = [], assignments = [], audit = [];
+  List<AppRecord> memberships = [], assignments = [];
   Object? error;
   bool busy = false;
   @override
@@ -394,14 +394,12 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
         widget.controller.query('user', {'id': widget.id}),
         widget.controller.query('memberships', {'id': widget.id}),
         widget.controller.query('assignments', {'id': widget.id}),
-        widget.controller.query('audit', {'id': widget.id}),
       ]);
       if (mounted) {
         setState(() {
           user = row(result[0]);
           memberships = rows(result[1]);
           assignments = rows(result[2]);
-          audit = rows(result[3]);
           error = null;
         });
       }
@@ -826,30 +824,6 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
-                  _heading('Historial administrativo'),
-                  if (audit.isEmpty)
-                    const Text(
-                      'Sin eventos administrativos.',
-                      style: TextStyle(color: Colors.blueGrey),
-                    ),
-                  ...audit.map(
-                    (a) => ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.history, size: 20),
-                      title: Text(
-                        auditLabel(a['accion']),
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      subtitle: Text(
-                        '${a['actor'] ?? 'Sistema'} · ${dateLabel(a['registrado_en'])}',
-                        style: const TextStyle(fontSize: 11),
-                      ),
-                    ),
-                  ),
                 ],
               ),
       ),
@@ -868,18 +842,3 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
     ),
   );
 }
-
-String auditLabel(String action) => switch (action) {
-  'cuenta_creada' => 'Creación de cuenta',
-  'user_state' => 'Cambio de estado',
-  'user_role' => 'Cambio de rol',
-  'user_save' => 'Edición de datos',
-  'invite_stage' => 'Invitación de personal',
-  'invite_cancel' => 'Invitación cancelada',
-  'invitacion_aceptada' => 'Invitación aceptada',
-  'invitacion_rechazada' => 'Invitación rechazada',
-  'membership_end' => 'Vinculación finalizada',
-  'assignment_add' => 'Estación asignada',
-  'assignment_end' => 'Asignación retirada',
-  _ => action,
-};

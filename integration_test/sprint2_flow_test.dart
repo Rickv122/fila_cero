@@ -152,6 +152,15 @@ void main() {
         'Usuarios cargados',
       );
       await shot('pantalla12-HU-08-usuarios');
+      await tapText(c.name);
+      await waitFor(
+        () => find.text('Vinculaciones empresariales').evaluate().isNotEmpty,
+        'Ficha de usuario cargada',
+      );
+      expect(find.text('Historial administrativo'), findsNothing);
+      await shot('pantalla21-HU-08-ficha-usuario');
+      await t.pageBack();
+      await settle();
       await tapText('Invitar personal');
       await waitFor(
         () => find.text('Función autorizada').evaluate().isNotEmpty,

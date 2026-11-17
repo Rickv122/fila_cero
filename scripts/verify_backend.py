@@ -42,7 +42,7 @@ def check(ok, label):
 
 status, data = request('/rest/v1/rpc/fc_query', {'p_resource': 'catalog', 'p_params': {}})
 check(status == 200 and isinstance(data.get('rows'), list), 'Consulta pública por HTTPS')
-for table in ['perfiles', 'empresas_operadoras', 'estaciones', 'vinculaciones_personal', 'asignaciones_responsables', 'historial_disponibilidad', 'favoritas', 'auditoria_cuentas']:
+for table in ['perfiles', 'empresas_operadoras', 'estaciones', 'vinculaciones_personal', 'asignaciones_responsables', 'historial_disponibilidad', 'favoritas', 'combustibles']:
     status, data = request('/rest/v1/' + table + '?select=*', token=token)
     check(status in (401, 403), 'Acceso directo denegado: ' + table)
 status, data = request('/rest/v1/rpc/fc_query', {'p_resource': 'users', 'p_params': {}})

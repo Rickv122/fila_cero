@@ -27,7 +27,7 @@ Android requiere SDK/JDK compatibles. iOS requiere macOS y Xcode para compilar o
 | HU-09 | Responsable → Mis estaciones → Actualizar disponibilidad → Historial |
 | HU-10 | Catálogo → Filtros → Detalle → Favoritas personales |
 
-Las cinco historias revisadas tienen 50 criterios. Los 55 SP de la planificación son una propuesta de estimación; no representan una votación realizada.
+Las cinco historias revisadas tienen 49 criterios. Los 55 SP de la planificación son una propuesta de estimación; no representan una votación realizada.
 
 No se solicitan latitud ni longitud. No se consumen mapas, geocodificación, ubicación ni notificaciones externas en este sprint. Las comunicaciones remotas corresponden a la base de datos y autenticación de Supabase.
 
@@ -84,7 +84,7 @@ La migración conservó los 35 registros, relaciones y 16 publicaciones anterior
 
 ## Modelo de datos
 
-Once tablas de negocio: `perfiles`, `empresas_operadoras`, `ciudades`, `estaciones`, `combustibles`, `estacion_combustible`, `vinculaciones_personal`, `asignaciones_responsables`, `historial_disponibilidad`, `favoritas` y `auditoria_cuentas`.
+Diez tablas de negocio: `perfiles`, `empresas_operadoras`, `ciudades`, `estaciones`, `combustibles`, `estacion_combustible`, `vinculaciones_personal`, `asignaciones_responsables`, `historial_disponibilidad` y `favoritas`.
 
 Las relaciones usan UUID completos y claves foráneas. Los códigos PER-, EMP- y EST- son referencias legibles. El correo de acceso tiene su fuente en Auth; la contraseña no se almacena en tablas de negocio. No hay un campo de disponibilidad actual que duplique el historial: se calcula a partir del último evento válido.
 
@@ -106,7 +106,7 @@ lib/
     auth_screen.dart            Registro, acceso y recuperación
     account_screen.dart         Perfil, seguridad e invitaciones
     company_screen.dart         Gestión de empresas
-    users_screen.dart           Cuentas, vínculos, asignaciones y auditoría
+    users_screen.dart           Cuentas, vínculos, asignaciones
     catalog_screen.dart         Listas, filtros, paginación y favoritas
     station_form_screen.dart    Alta y edición sin coordenadas
     station_detail_screen.dart  Detalle e indicadores
@@ -146,7 +146,7 @@ Para integración, proporcionar `TEST_ADMIN_EMAIL` y `TEST_ADMIN_PASSWORD` media
 
 ## Preparar otra base
 
-Aplicar las migraciones en orden, desplegar `staff-admin`, exigir confirmación de correo y longitud mínima de ocho caracteres, y autorizar el enlace de retorno. Registrar y verificar una cuenta controlada antes de habilitar al primer administrador mediante un procedimiento administrativo auditado. No promover roles desde Flutter ni ejecutar scripts antiguos de alta masiva.
+Aplicar las migraciones en orden, desplegar `staff-admin`, exigir confirmación de correo y longitud mínima de ocho caracteres, y autorizar el enlace de retorno. Registrar y verificar una cuenta controlada antes de habilitar al primer administrador mediante un procedimiento administrativo controlado. No promover roles desde Flutter ni ejecutar scripts antiguos de alta masiva.
 
 La comprobación adicional de contraseñas filtradas aparece deshabilitada en el asesor de Supabase. No se anuncia como activa. Su disponibilidad y configuración deben revisarse según el plan del proyecto.
 

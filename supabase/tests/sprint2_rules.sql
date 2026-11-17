@@ -114,7 +114,7 @@ perform public.fc_command('invite_cancel',jsonb_build_object('id',m2));
 perform set_config('request.jwt.claim.sub',m2::text,true);
 begin perform public.fc_command('invitation_reply',jsonb_build_object('id',v2,'accept',true)); raise exception 'OPERACION_ACEPTADA'; exception when others then if sqlerrm='OPERACION_ACEPTADA' then raise exception 'Fallo: invitacion cancelada no habilita'; end if; end;
 perform set_config('request.jwt.claim.sub',ad::text,true);
-if not coalesce((jsonb_array_length(public.fc_query('audit',jsonb_build_object('id',m1)))>3),false) then raise exception 'Fallo: auditoria administrativa disponible'; end if;
+begin perform public.fc_query('audit',jsonb_build_object('id',m1)); raise exception 'OPERACION_ACEPTADA'; exception when others then if sqlerrm='OPERACION_ACEPTADA' then raise exception 'Fallo: recurso de auditoria retirado de la aplicacion'; end if; end;
 if not coalesce((jsonb_array_length(public.fc_query('catalog','{"name":"sin_coincidencia_imposible_978"}')->'rows')=0),false) then raise exception 'Fallo: sin coincidencias distinto de error'; end if;
 perform public.fc_command('invite_stage',jsonb_build_object('id',m2,'rol','responsable','empresa_id',real_company));
 perform public.fc_command('user_state',jsonb_build_object('id',m2,'activo',false));
