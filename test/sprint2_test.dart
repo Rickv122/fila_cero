@@ -43,8 +43,9 @@ class MemoryRepository extends SupabaseRepository {
         'has_more': data.length > (page + 1) * 20,
       };
     }
-    if (resource == 'station')
+    if (resource == 'station') {
       return catalogue!.firstWhere((s) => s['id'] == params['id']);
+    }
     if (resource == 'profile') {
       return profileGate?.future ??
           {
