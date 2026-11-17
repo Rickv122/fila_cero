@@ -138,6 +138,10 @@ flutter build apk --debug
 
 El test `supabase/tests/sprint2_rules.sql` reutiliza identidades de evaluación conservadas en el proyecto para probar varias autorizaciones dentro de una transacción. No crea correos, no envía mensajes y revierte sus datos temporales. En una base nueva deben prepararse identidades de evaluación controladas antes de ejecutarlo.
 
+La prueba adicional `integration_test/roles_flow_test.dart` comprueba en Android la consulta del conductor, la aceptación de una invitación de personal, la asignación y su revocación con una sesión vigente. Requiere dos identidades controladas: administrador de prueba y titular. Restituye el rol anterior y cierra la vinculación al finalizar; no publica existencias ficticias. No debe apuntarse a una cuenta que esté usando otra persona durante la prueba.
+
+Las comprobaciones HTTPS se pueden repetir con `python scripts/verify_backend.py --credentials RUTA_PRIVADA.json`; el JSON requiere `email` y `password` de un administrador activo. No crea ni edita registros de negocio.
+
 Para integración, proporcionar `TEST_ADMIN_EMAIL` y `TEST_ADMIN_PASSWORD` mediante un archivo privado externo al repositorio. GitHub los mantiene cifrados en Secrets. Nunca distribuir el binario generado para la integración, porque contiene esas constantes. Después de las pruebas compilar otra vez `lib/main.dart` sin definiciones privadas.
 
 ## Preparar otra base
