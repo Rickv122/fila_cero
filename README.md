@@ -133,7 +133,7 @@ flutter build apk --debug
 
 - 58 comprobaciones de reglas de negocio en la base, con rollback: permisos, baja lógica, vínculos, asignaciones, favoritas, vigencia e historial.
 - 13 comprobaciones HTTPS: consulta pública, bloqueo de lecturas directas, Auth y función administrativa.
-- 12 pruebas de Flutter y navegación Android. La evidencia de la revisión está separada de los documentos y capturas de la versión anterior.
+- 13 pruebas de Flutter y navegación Android. La evidencia de la revisión está separada de los documentos y capturas de la versión anterior.
 - GitHub Actions compila y prueba iOS en macOS. Consultar el resultado del último commit de código en [Actions](https://github.com/Rickv122/fila_cero/actions).
 
 El test `supabase/tests/sprint2_rules.sql` reutiliza identidades de evaluación conservadas en el proyecto para probar varias autorizaciones dentro de una transacción. No crea correos, no envía mensajes y revierte sus datos temporales. En una base nueva deben prepararse identidades de evaluación controladas antes de ejecutarlo.

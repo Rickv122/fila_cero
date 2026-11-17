@@ -65,35 +65,45 @@ class _CatalogScreenState extends State<CatalogScreen> {
     }
   }
 
-  Future<void> load({bool next = false}) async {
+  Future<void> load({bool next = false, bool retain = false}) async {
     final g = ++generation;
-    if (!next) {
+    final lastLoadedPage = page;
+    if (!next && !retain) {
       page = 0;
       setState(() {
         loading = true;
         error = null;
       });
-    } else {
+    } else if (next) {
       setState(() => loadingMore = true);
     }
+    final params = <String, dynamic>{
+      'mode': widget.mode,
+      'name': search.text.trim(),
+      'company': company,
+      'city': city,
+      'fuel': fuel,
+      'status': status,
+    };
     try {
-      final result = row(
-        await widget.controller.query('catalog', {
-          'mode': widget.mode,
-          'name': search.text.trim(),
-          'company': company,
-          'city': city,
-          'fuel': fuel,
-          'status': status,
-          'page': next ? page + 1 : 0,
-        }),
+      final pages = retain
+          ? List.generate(lastLoadedPage + 1, (i) => i)
+          : [next ? page + 1 : 0];
+      final results = await Future.wait(
+        pages.map(
+          (index) async => row(
+            await widget.controller.query('catalog', {
+              ...params,
+              'page': index,
+            }),
+          ),
+        ),
       );
       if (!mounted || g != generation) return;
+      final fetched = results.expand((result) => rows(result['rows'])).toList();
       setState(() {
-        items = next
-            ? [...items, ...rows(result['rows'])]
-            : rows(result['rows']);
-        more = result['has_more'] == true;
+        items = next ? [...items, ...fetched] : fetched;
+        more = results.last['has_more'] == true;
         if (next) page++;
         error = null;
       });
@@ -122,7 +132,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
         'id': station['id'],
         'activo': station['favorita'] != true,
       });
-      await load();
+      await load(retain: true);
     } catch (e) {
       if (mounted) notice(context, readableError(e));
     }
@@ -356,7 +366,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                         : Icons.local_gas_station_outlined,
                   )
                 : RefreshIndicator(
-                    onRefresh: () => load(),
+                    onRefresh: () => load(retain: true),
                     child: ListView.separated(
                       controller: scroll,
                       padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
@@ -387,7 +397,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                         id: station['id'],
                                       ),
                                     );
-                                    await load();
+                                    await load(retain: true);
                                   }
                                 : null,
                             child: Padding(

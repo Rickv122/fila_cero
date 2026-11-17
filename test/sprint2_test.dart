@@ -27,6 +27,7 @@ class MemoryRepository extends SupabaseRepository {
   int calls = 0;
   String role = 'administrador';
   Completer<dynamic>? profileGate;
+  List<AppRecord>? catalogue;
   @override
   Future<dynamic> query(String resource, [AppRecord params = const {}]) async {
     calls++;
@@ -34,7 +35,16 @@ class MemoryRepository extends SupabaseRepository {
     if (resource == 'options') {
       return {'empresas': [], 'ciudades': [], 'combustibles': []};
     }
-    if (resource == 'catalog') return {'rows': [], 'has_more': false};
+    if (resource == 'catalog') {
+      final page = params['page'] as int? ?? 0;
+      final data = catalogue ?? <AppRecord>[];
+      return {
+        'rows': data.skip(page * 20).take(20).toList(),
+        'has_more': data.length > (page + 1) * 20,
+      };
+    }
+    if (resource == 'station')
+      return catalogue!.firstWhere((s) => s['id'] == params['id']);
     if (resource == 'profile') {
       return profileGate?.future ??
           {
@@ -102,6 +112,62 @@ Future<AppController> authenticatedMemory(MemoryRepository repo) async {
 }
 
 void main() {
+  testWidgets('Volver del detalle conserva páginas cargadas y posición', (
+    t,
+  ) async {
+    final repo = MemoryRepository()
+      ..catalogue = List.generate(
+        45,
+        (i) => <String, dynamic>{
+          'id': 'station-$i',
+          'codigo': 'EST-$i',
+          'nombre': 'Estación $i',
+          'direccion': 'Dirección de la prueba',
+          'empresa': 'Operadora de la prueba',
+          'ciudad': 'La Paz',
+          'disponible': true,
+          'activo': true,
+          'favorita': false,
+          'combustibles': <AppRecord>[],
+        },
+      );
+    final c = AppController(repo);
+    await t.pumpWidget(MaterialApp(home: CatalogScreen(controller: c)));
+    await t.pumpAndSettle();
+    await t.scrollUntilVisible(
+      find.text('Cargar más'),
+      500,
+      scrollable: find
+          .descendant(
+            of: find.byType(ListView),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+      maxScrolls: 50,
+    );
+    await t.tap(find.text('Cargar más'));
+    await t.pumpAndSettle();
+    await t.scrollUntilVisible(
+      find.text('Estación 25'),
+      250,
+      scrollable: find
+          .descendant(
+            of: find.byType(ListView),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+      maxScrolls: 50,
+    );
+    await t.ensureVisible(find.text('Estación 25'));
+    await t.tap(find.text('Estación 25'));
+    await t.pumpAndSettle();
+    expect(find.text('Combustibles'), findsOneWidget);
+    await t.pageBack();
+    await t.pumpAndSettle();
+    expect(find.text('Estación 25').hitTestable(), findsOneWidget);
+    await t.pumpWidget(const SizedBox());
+    c.dispose();
+  });
   test('Los enlaces copiados de Gmail se interpretan sin abrir Google', () {
     const direct =
         'https://oejouwwxngyafftzfkux.supabase.co/auth/v1/verify?token=unit-challenge&type=recovery';
