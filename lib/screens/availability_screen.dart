@@ -195,7 +195,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     '${e['combustible']} · ${statusLabel(e['estado'])}',
                   ),
                   subtitle: Text(
-                    '${e['autor']} · ${e['autor_codigo']}\n${dateLabel(e['registrado_en'])}',
+                    '${e['autor']}\n${dateLabel(e['registrado_en'])}',
                   ),
                 ),
               );

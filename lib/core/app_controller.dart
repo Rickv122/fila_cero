@@ -20,7 +20,6 @@ class AppController extends ChangeNotifier with WidgetsBindingObserver {
   bool get signedIn =>
       client.auth.currentSession != null &&
       profile?['activo'] == true &&
-      profile?['confirmado'] == true &&
       sessionError == null;
   bool get admin => signedIn && profile?['rol'] == 'administrador';
   bool get manager => signedIn && profile?['rol'] == 'responsable';
@@ -29,11 +28,6 @@ class AppController extends ChangeNotifier with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _subscription = client.auth.onAuthStateChange.listen((event) {
       if (event.event == AuthChangeEvent.passwordRecovery) recovery = true;
-      final authUser = event.session?.user;
-      if (authUser?.toJson()['invited_at'] != null &&
-          authUser?.userMetadata?['password_configurada'] != true) {
-        recovery = true;
-      }
       if (event.event == AuthChangeEvent.signedOut) {
         _generation++;
         _profileRequest = null;
@@ -93,7 +87,7 @@ class AppController extends ChangeNotifier with WidgetsBindingObserver {
     );
     await refreshProfile();
     if (!signedIn) {
-      throw Exception(sessionError ?? 'Confirma tu correo para continuar.');
+      throw Exception(sessionError ?? 'No se pudo iniciar sesión.');
     }
   }
 

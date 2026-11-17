@@ -123,15 +123,6 @@ class _CompanyScreenState extends State<CompanyScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              e['codigo'],
-                              style: const TextStyle(
-                                color: accent,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
                               e['denominacion'],
                               style: const TextStyle(
                                 fontSize: 18,

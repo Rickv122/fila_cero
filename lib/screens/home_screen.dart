@@ -15,9 +15,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: controller,
     builder: (context, _) {
-      if (controller.recovery) {
-        return PasswordRecoveryScreen(controller: controller);
-      }
       if (!controller.signedIn) return _Welcome(controller: controller);
       return Scaffold(
         appBar: AppBar(
@@ -114,7 +111,7 @@ class HomeScreen extends StatelessWidget {
                   context,
                   Icons.manage_accounts_outlined,
                   'Usuarios',
-                  'Cuentas, vinculaciones y asignaciones.',
+                  'Personal, roles y estaciones.',
                   UsersScreen(controller: controller),
                 ),
               ],
@@ -122,7 +119,7 @@ class HomeScreen extends StatelessWidget {
                 context,
                 Icons.person_outline,
                 'Mi cuenta',
-                'Perfil, seguridad e invitaciones.',
+                'Tu perfil y contraseña.',
                 AccountScreen(controller: controller),
               ),
             ],

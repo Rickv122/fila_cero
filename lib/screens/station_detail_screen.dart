@@ -226,7 +226,7 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
                 if (widget.controller.admin) ...[
                   const Divider(height: 34),
                   Text(
-                    '${s['codigo']} · ${s['activo'] == true ? 'Activa' : 'Inactiva'}',
+                    s['activo'] == true ? 'Activa' : 'Inactiva',
                     style: const TextStyle(color: Colors.blueGrey),
                   ),
                   OutlinedButton.icon(

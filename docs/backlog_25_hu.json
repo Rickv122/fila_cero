@@ -26,7 +26,7 @@
       }
     ],
     "estado": "Histórica con alcance revisado",
-    "observacion": "Alcance anterior retirado para este sprint; el conductor no publica reportes."
+    "observacion": "Registro histórico del Sprint 1. El incremento actual usa listas y BD; las funciones vigentes se describen en HU-06 a HU-10."
   },
   {
     "id": "HU-02",
@@ -55,7 +55,7 @@
       }
     ],
     "estado": "Histórica con alcance revisado",
-    "observacion": "Consulta pública absorbida por HU-09."
+    "observacion": "Registro histórico del Sprint 1. El incremento actual usa listas y BD; las funciones vigentes se describen en HU-06 a HU-10."
   },
   {
     "id": "HU-03",
@@ -84,7 +84,7 @@
       }
     ],
     "estado": "Histórica con alcance revisado",
-    "observacion": "Mapa retirado del incremento activo; su integración se replanifica para Sprint 3."
+    "observacion": "Registro histórico del Sprint 1. El incremento actual usa listas y BD; las funciones vigentes se describen en HU-06 a HU-10."
   },
   {
     "id": "HU-04",
@@ -113,7 +113,7 @@
       }
     ],
     "estado": "Histórica con alcance revisado",
-    "observacion": "Detalle reutilizado y conectado a datos compartidos en HU-09."
+    "observacion": "Registro histórico del Sprint 1. El incremento actual usa listas y BD; las funciones vigentes se describen en HU-06 a HU-10."
   },
   {
     "id": "HU-05",
@@ -142,87 +142,110 @@
       }
     ],
     "estado": "Histórica con alcance revisado",
-    "observacion": "Catálogo ampliado y conectado a base de datos en HU-06."
+    "observacion": "Registro histórico del Sprint 1. El incremento actual usa listas y BD; las funciones vigentes se describen en HU-06 a HU-10."
   },
   {
     "id": "HU-06",
-    "title": "Gestionar el catálogo de gasolineras",
-    "story": "Como administrador, quiero registrar y corregir los datos generales de las gasolineras y sus encargados asignados, para mantener organizado el catálogo que consultan los conductores.",
+    "title": "Gestionar empresas y estaciones",
+    "story": "Como administrador, quiero registrar y mantener las empresas operadoras y sus estaciones, para disponer de un catálogo organizado y actualizado.",
     "epic": "Sprint 2",
     "priority": "Must",
-    "points": 8,
+    "points": 13,
     "sprint": 2,
     "owner": "Cristopher Roy Flores Gomez",
     "criteria": [
-      "El registro válido crea una gasolinera activa con nombre, dirección, ciudad, ubicación y al menos un combustible activo. La edición corrige esa misma gasolinera sin duplicarla.",
-      "Se rechazan nombre o dirección vacíos, ciudad distinta de La Paz o El Alto y falta de combustibles.\nLatitud entre -90 y 90; longitud entre -180 y 180. Un fallo no deja datos incompletos.",
-      "Solo el administrador gestiona el catálogo y asigna encargados autorizados. El encargado ve únicamente sus asignaciones; ni administrador ni conductor publican disponibilidad desde esta operación."
+      "El administrador registra una empresa con denominación obligatoria; el sistema rechaza duplicados y conserva su identidad al editar.",
+      "Registra una estación con nombre, empresa activa, ciudad, dirección y al menos un combustible. El formulario no solicita coordenadas ni muestra códigos internos.",
+      "Consulta y filtra empresas y estaciones activas e inactivas; editar actualiza el registro sin duplicarlo ni perder sus relaciones.",
+      "Desactivar pide confirmación, aplica baja lógica y conserva datos e historial. Cancelar no cambia el registro.",
+      "Una empresa o estación inactiva queda fuera de la consulta pública y no admite publicaciones. Reactivar no reactiva hijos dados de baja ni renueva estados antiguos.",
+      "Solo el administrador gestiona el catálogo. El servidor valida relaciones y campos y rechaza guardados inválidos sin cambios parciales."
     ],
-    "estado": "Implementada con pruebas técnicas; aceptación docente pendiente"
+    "estado": "Implementado con pruebas técnicas; pendiente aceptación académica",
+    "observacion": "Alta directa del personal y registro sin confirmación de correo. Estimación propuesta, no votación registrada."
   },
   {
     "id": "HU-07",
-    "title": "Autenticación y acceso según el rol",
-    "story": "Como administrador o encargado de gasolinera, quiero iniciar sesión con mi cuenta, para acceder únicamente a las funciones y gasolineras que me corresponden.",
+    "title": "Registrarse y acceder según el rol",
+    "story": "Como usuario de FilaCero, quiero registrarme como conductor o acceder con una cuenta autorizada, para utilizar las funciones y datos personales que me corresponden.",
     "epic": "Sprint 2",
     "priority": "Must",
-    "points": 8,
+    "points": 13,
     "sprint": 2,
     "owner": "Naira Araziel Quisbert Perales",
     "criteria": [
-      "Un administrador con credenciales válidas accede al catálogo y a las asignaciones. Un encargado con cuenta activa accede al panel de las gasolineras que tenga asignadas.",
-      "Las credenciales incorrectas o una cuenta inactiva impiden las operaciones protegidas. La persona no puede cambiar su rol ni asignarse otra gasolinera para obtener permisos.",
-      "El cierre de sesión bloquea las funciones protegidas. El conductor puede seguir consultando sin cuenta, sin acceder a acciones de administración o publicación."
+      "La bienvenida ofrece Consultar estaciones, Crear cuenta e Iniciar sesión. La consulta pública no exige una cuenta.",
+      "El registro solicita nombre, correo, contraseña y confirmación de contraseña. Rechaza campos vacíos, correo mal formado y claves de menos de ocho caracteres.",
+      "Un registro válido crea exclusivamente un conductor y abre su sesión con sus funciones personales. No exige confirmar el correo ni aceptar invitaciones.",
+      "El acceso con credenciales válidas dirige al inicio correspondiente: administración, estaciones asignadas o funciones del conductor. Credenciales incorrectas muestran un error.",
+      "La sesión persiste al reabrir la aplicación. Cerrar sesión retira datos y pantallas privadas; la consulta pública sigue disponible.",
+      "Mi cuenta permite editar nombre y contacto y cambiar la contraseña comprobando la actual. La persona no puede cambiar su propio rol ni asignarse estaciones.",
+      "Una cuenta inactiva pierde las siguientes operaciones protegidas aunque conserve un token. El servidor comprueba permisos actuales y no confía en roles enviados por el cliente."
     ],
-    "estado": "Implementada con pruebas técnicas; aceptación docente pendiente"
+    "estado": "Implementado con pruebas técnicas; pendiente aceptación académica",
+    "observacion": "Alta directa del personal y registro sin confirmación de correo. Estimación propuesta, no votación registrada."
   },
   {
     "id": "HU-08",
-    "title": "Actualizar disponibilidad de combustible",
-    "story": "Como encargado de gasolinera, quiero actualizar la disponibilidad de los combustibles de mi estación, para informar a los conductores antes de que se desplacen.",
+    "title": "Registrar personal y gestionar sus estaciones",
+    "story": "Como administrador, quiero registrar al personal y administrar sus cuentas y estaciones autorizadas, para controlar quién puede gestionar la información de cada establecimiento.",
+    "epic": "Sprint 2",
+    "priority": "Must",
+    "points": 13,
+    "sprint": 2,
+    "owner": "Lucas Ivan Castro Alvarado",
+    "criteria": [
+      "Usuarios permite buscar por nombre o correo y filtrar por rol y estado Activo o Inactivo. Solo el administrador accede a esta gestión.",
+      "Registrar personal reúne nombre, correo, teléfono opcional, contraseña inicial y rol en un solo formulario. Para un responsable exige empresa activa y permite seleccionar sus estaciones de esa empresa.",
+      "Al guardar datos válidos se crea la cuenta en el sistema de autenticación, se registra el perfil y se conceden las asignaciones. El responsable puede entrar con su correo y contraseña, sin invitaciones ni confirmación de correo.",
+      "Si el correo ya tiene una cuenta, el alta informa el conflicto. La edición utiliza la misma identidad y no restablece su contraseña de forma implícita.",
+      "Editar acceso y estaciones conserva la identidad, limita a una empresa activa por responsable y admite agregar o retirar estaciones. El servidor rechaza selecciones cruzadas o repetidas. El cambio de rol pide confirmación y retira permisos incompatibles.",
+      "Desactivar o reactivar una cuenta pide confirmación. La baja es lógica y conserva historial; no se permite desactivar la cuenta propia ni dejar el sistema sin administrador.",
+      "Restablecer contraseña solicita una nueva clave y su confirmación y solo permite la operación administrativa autorizada. Un responsable sin estaciones muestra Sin asignar y no puede publicar.",
+      "Un fallo del alta no se presenta como éxito: se informa el error, se conserva la identidad sin permisos de personal y se admite recuperación administrativa. Los reintentos de la misma operación no duplican la cuenta."
+    ],
+    "estado": "Implementado con pruebas técnicas; pendiente aceptación académica",
+    "observacion": "Alta directa del personal y registro sin confirmación de correo. Estimación propuesta, no votación registrada."
+  },
+  {
+    "id": "HU-09",
+    "title": "Publicar disponibilidad con historial",
+    "story": "Como responsable de estación, quiero actualizar la disponibilidad de sus combustibles, para ofrecer a los conductores información reciente y trazable.",
     "epic": "Sprint 2",
     "priority": "Must",
     "points": 8,
     "sprint": 2,
-    "owner": "Lucas Ivan Castro Alvarado",
-    "criteria": [
-      "Un encargado con asignación activa elige Hay, Poco o No hay por combustible de su gasolinera. Un guardado válido actualiza el estado y muestra la fecha y quién lo informó.",
-      "Un conductor, visitante, administrador o encargado de otra gasolinera no puede publicar ni modificar esa disponibilidad. Se rechazan selecciones inválidas y se conserva el dato anterior si falla el guardado.",
-      "Al guardar se conserva el historial del cambio. La siguiente consulta muestra el estado actualizado; al vencer la vigencia configurada, muestra Sin información vigente."
-    ],
-    "estado": "Implementada con pruebas técnicas; aceptación docente pendiente"
-  },
-  {
-    "id": "HU-09",
-    "title": "Consultar y buscar gasolineras",
-    "story": "Como conductor, quiero buscar gasolineras por nombre, ciudad o combustible y consultar su disponibilidad, para elegir dónde abastecerme antes de salir.",
-    "epic": "Sprint 2",
-    "priority": "Must",
-    "points": 5,
-    "sprint": 2,
     "owner": "Ricardo Wilfredo Limachi Medina",
     "criteria": [
-      "Sin crear cuenta, el conductor consulta solo gasolineras activas con sus datos, combustibles y disponibilidad informada por el encargado. Se muestra cuándo se actualizó; sin dato vigente, se indica esa condición.",
-      "Las consultas combinan nombre sin distinguir mayúsculas, ciudad y combustible. Al limpiar los filtros se restablece la lista; sin coincidencias se muestra un mensaje.",
-      "La lista presenta veinte resultados por página en orden estable. Al actualizar recupera los cambios guardados; la consulta no ofrece reportar, confirmar, votar ni publicar información."
+      "Mis estaciones muestra únicamente estaciones activas de la empresa y asignaciones vigentes del responsable. Sin asignaciones muestra un estado vacío claro.",
+      "El responsable selecciona Disponible, Disponibilidad limitada o Agotado por combustible habilitado. El guardado exige al menos un estado y rechaza productos ajenos o repetidos.",
+      "Una publicación válida guarda autor, fecha del servidor y eventos de combustible de forma atómica y actualiza el detalle al regresar.",
+      "Visitantes, conductores, administradores y responsables sin asignación no pueden publicar, incluso con llamadas directas. Retirar un permiso bloquea el siguiente guardado de una sesión abierta.",
+      "Una publicación vencida a las dos horas o inexistente se muestra Sin actualizar. Reactivar un registro no vuelve reciente una publicación anterior.",
+      "El historial conserva combustible, estado, autor y fecha. Reintentar la misma operación no duplica registros y cambiar su contenido exige una nueva operación."
     ],
-    "estado": "Implementada con pruebas técnicas; aceptación docente pendiente"
+    "estado": "Implementado con pruebas técnicas; pendiente aceptación académica",
+    "observacion": "Alta directa del personal y registro sin confirmación de correo. Estimación propuesta, no votación registrada."
   },
   {
     "id": "HU-10",
-    "title": "Desactivar y reactivar gasolineras",
-    "story": "Como administrador, quiero desactivar o reactivar una gasolinera, para controlar su visibilidad conservando sus datos e historial.",
+    "title": "Consultar estaciones y gestionar favoritas",
+    "story": "Como conductor, quiero buscar estaciones, consultar sus combustibles y guardar mis favoritas, para revisar rápidamente las opciones que me interesan.",
     "epic": "Sprint 2",
     "priority": "Must",
-    "points": 3,
+    "points": 8,
     "sprint": 2,
     "owner": "Andrick Fernando Valenzuela Alvarez",
     "criteria": [
-      "La desactivación muestra el nombre y pide confirmación. Al cancelar no cambia ningún dato; al confirmar, la gasolinera queda inactiva y se conservan sus datos, asignaciones e historial.",
-      "La gasolinera inactiva no aparece en consultas públicas ni permite publicar disponibilidad. El administrador puede listar inactivas y reactivar una que cumpla las validaciones.",
-      "Solo el administrador cambia este estado. La reactivación conserva la misma gasolinera; una disponibilidad antigua no vuelve a presentarse como vigente por reactivar el registro."
+      "La consulta pública muestra estaciones y empresas activas mediante listas y detalle; no integra mapas, ubicación ni notificaciones.",
+      "Nombre o empresa, ciudad y combustible filtran la lista. Limpiar filtros restablece los resultados y se distinguen carga, lista vacía y error con reintento.",
+      "El detalle muestra nombre, dirección, productos y disponibilidad con fecha. Volver conserva filtros, páginas y posición.",
+      "Una persona autenticada guarda y quita favoritas propias con persistencia y baja lógica. Un visitante que intenta guardar puede registrarse o acceder y continuar con la estación elegida.",
+      "Las favoritas son privadas por cuenta. Ningún usuario, incluido el administrador, consulta las favoritas ajenas. Repetir un guardado no duplica la relación.",
+      "Una estación favorita inactiva conserva una referencia No disponible sin presentar existencias vigentes. Refrescar obtiene cambios del responsable y vencimientos."
     ],
-    "estado": "Implementada con pruebas técnicas; aceptación docente pendiente"
+    "estado": "Implementado con pruebas técnicas; pendiente aceptación académica",
+    "observacion": "Alta directa del personal y registro sin confirmación de correo. Estimación propuesta, no votación registrada."
   },
   {
     "id": "HU-11",
@@ -252,16 +275,16 @@
   },
   {
     "id": "HU-13",
-    "title": "Gasolineras favoritas",
-    "story": "Como conductor, quiero guardar gasolineras favoritas, para consultar rápidamente las estaciones que me interesan.",
+    "title": "Guardar filtros de consulta",
+    "story": "Como conductor, quiero conservar mis filtros habituales de ciudad, empresa y combustible, para repetir una consulta sin configurarla de nuevo.",
     "epic": "Evolución del producto",
     "priority": "Por acordar",
     "points": null,
     "sprint": 3,
     "owner": "Lucas Ivan Castro Alvarado",
     "criteria": [],
-    "estado": "Propuesta para refinar",
-    "observacion": "Fuera del Sprint 2. Requiere criterios, estimación y acuerdo del equipo y la docente."
+    "estado": "Propuesto para refinamiento",
+    "observacion": "Las favoritas ya se implementaron en HU-10. Esta propuesta se refiere a combinaciones de filtros."
   },
   {
     "id": "HU-14",
@@ -330,16 +353,16 @@
   },
   {
     "id": "HU-19",
-    "title": "Administrar cuentas del personal",
-    "story": "Como administrador, quiero habilitar y deshabilitar cuentas del personal, para mantener controlado el acceso de quienes trabajan con las gasolineras.",
+    "title": "Consultar búsquedas recientes",
+    "story": "Como conductor, quiero consultar mis búsquedas recientes, para volver rápidamente a estaciones que revisé.",
     "epic": "Evolución del producto",
     "priority": "Por acordar",
     "points": null,
     "sprint": null,
     "owner": "Por asignar",
     "criteria": [],
-    "estado": "Propuesta para refinar",
-    "observacion": "Fuera del Sprint 2. Requiere criterios, estimación y acuerdo del equipo y la docente."
+    "estado": "Propuesto para refinamiento",
+    "observacion": "La gestión de personal ya pertenece a HU-08; esta propuesta requiere validación, criterios y estimación."
   },
   {
     "id": "HU-20",

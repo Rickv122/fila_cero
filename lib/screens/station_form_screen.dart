@@ -116,14 +116,6 @@ class _StationFormScreenState extends State<StationFormScreen> {
               child: ListView(
                 padding: const EdgeInsets.all(20),
                 children: [
-                  if (widget.station != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 18),
-                      child: Text(
-                        widget.station!['codigo'],
-                        style: const TextStyle(color: Colors.blueGrey),
-                      ),
-                    ),
                   _text(name, 'Nombre de la estación'),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(

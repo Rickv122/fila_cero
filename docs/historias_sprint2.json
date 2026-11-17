@@ -9,35 +9,27 @@
     "criteria": [
       [
         "06-01",
-        "Dado un administrador, cuando registra una empresa, guarda su denominación y código único. Los datos legales o de contacto solo se completan cuando están verificados; el sistema rechaza duplicados y campos obligatorios vacíos."
+        "El administrador registra una empresa con denominación obligatoria; el sistema rechaza duplicados y conserva su identidad al editar."
       ],
       [
         "06-02",
-        "Dada una empresa activa, cuando registra una estación, exige nombre, ciudad, dirección y al menos un combustible habilitado. Asigna un código único y conserva una referencia a la fuente del catálogo. No solicita coordenadas."
+        "Registra una estación con nombre, empresa activa, ciudad, dirección y al menos un combustible. El formulario no solicita coordenadas ni muestra códigos internos."
       ],
       [
         "06-03",
-        "Dado un registro existente, cuando edita sus datos, conserva su identidad y relaciones. Un traslado de empresa con asignaciones o historial se bloquea y explica que requiere un procedimiento de transferencia fuera de esta versión."
+        "Consulta y filtra empresas y estaciones activas e inactivas; editar actualiza el registro sin duplicarlo ni perder sus relaciones."
       ],
       [
         "06-04",
-        "Dado un administrador en una ficha, cuando elige Desactivar, identifica el registro y pide confirmación. Cancelar conserva el estado; confirmar aplica baja lógica y conserva datos, relaciones e historial."
+        "Desactivar pide confirmación, aplica baja lógica y conserva datos e historial. Cancelar no cambia el registro."
       ],
       [
         "06-05",
-        "Dada una empresa o estación inactiva, la consulta pública la excluye y el servidor impide publicar disponibilidad. Los registros subordinados conservan su estado propio; una baja de empresa no borra sus estaciones ni cuentas."
+        "Una empresa o estación inactiva queda fuera de la consulta pública y no admite publicaciones. Reactivar no reactiva hijos dados de baja ni renueva estados antiguos."
       ],
       [
         "06-06",
-        "Dado el filtro Activos, Inactivos o Todos, el administrador localiza los registros y puede reactivar los válidos. Reactivar una empresa no reactiva estaciones dadas de baja individualmente ni renueva publicaciones anteriores."
-      ],
-      [
-        "06-07",
-        "Dado un guardado con varias relaciones, cuando falla una validación o la conexión, no deja datos parciales ni repite el alta al reintentar. El formulario conserva los datos necesarios para corregir el problema."
-      ],
-      [
-        "06-08",
-        "Dado un usuario sin permiso administrativo, el servidor rechaza altas, ediciones y cambios de estado, aunque intente acceder directamente a la operación. Los productos del catálogo documentados no se presentan como existencias actuales."
+        "Solo el administrador gestiona el catálogo. El servidor valida relaciones y campos y rechaza guardados inválidos sin cambios parciales."
       ]
     ]
   },
@@ -51,105 +43,73 @@
     "criteria": [
       [
         "07-01",
-        "Dada la bienvenida, Consultar estaciones abre el catálogo público; Crear cuenta abre el registro de conductor; Iniciar sesión abre el acceso común. El acceso público no crea una cuenta ni una sesión anónima autenticada."
+        "La bienvenida ofrece Consultar estaciones, Crear cuenta e Iniciar sesión. La consulta pública no exige una cuenta."
       ],
       [
         "07-02",
-        "Dado el registro público válido, se crea exclusivamente un perfil de conductor asociado a su identidad. No existe selector público de roles; el servidor ignora o rechaza intentos de obtener permisos administrativos o de responsable."
+        "El registro solicita nombre, correo, contraseña y confirmación de contraseña. Rechaza campos vacíos, correo mal formado y claves de menos de ocho caracteres."
       ],
       [
         "07-03",
-        "Dados nombre, correo, contraseña y confirmación, se rechazan campos incompletos, correo mal formado, contraseña menor a ocho caracteres y confirmación distinta. La política se aplica también en el servidor; las contraseñas no se guardan en tablas de negocio."
+        "Un registro válido crea exclusivamente un conductor y abre su sesión con sus funciones personales. No exige confirmar el correo ni aceptar invitaciones."
       ],
       [
         "07-04",
-        "Dado un registro nuevo, se completa la confirmación de correo antes de habilitar sus funciones autenticadas. La pantalla informa la verificación pendiente y permite reenviar con los límites del servicio. El flujo de correo debe estar configurado y probado."
+        "El acceso con credenciales válidas dirige al inicio correspondiente: administración, estaciones asignadas o funciones del conductor. Credenciales incorrectas muestran un error."
       ],
       [
         "07-05",
-        "Dadas credenciales válidas de una cuenta activa y confirmada, el usuario llega a sus funciones. El conductor dispone de favoritas; el responsable, de sus estaciones; el administrador, del panel de gestión. Credenciales inválidas no conceden acceso."
+        "La sesión persiste al reabrir la aplicación. Cerrar sesión retira datos y pantallas privadas; la consulta pública sigue disponible."
       ],
       [
         "07-06",
-        "Dada una cuenta desactivada, no se habilitan funciones protegidas. Si ya tenía sesión, sus siguientes operaciones protegidas son rechazadas por el servidor y la interfaz retira el acceso al actualizar el perfil o recuperar el foco."
+        "Mi cuenta permite editar nombre y contacto y cambiar la contraseña comprobando la actual. La persona no puede cambiar su propio rol ni asignarse estaciones."
       ],
       [
         "07-07",
-        "Dado un usuario autenticado, puede consultar y corregir su nombre y contacto permitidos desde Mi cuenta. No puede editar su rol, estado administrativo, empresa ni asignaciones para aumentar permisos."
-      ],
-      [
-        "07-08",
-        "Dado un cambio de correo o contraseña, se verifica la identidad según el flujo de autenticación. El correo pendiente no reemplaza un correo confirmado antes de completar la verificación. Las sesiones se gestionan conforme a la política de seguridad documentada."
-      ],
-      [
-        "07-09",
-        "Dado Olvidé mi contraseña, un correo controlado recibe el enlace de recuperación; el enlace válido permite establecer una contraseña y volver al acceso. Enlaces inválidos o vencidos ofrecen reintento sin exponer datos de otras cuentas."
-      ],
-      [
-        "07-10",
-        "Dado Cerrar sesión, se cierra el acceso autenticado, se limpian datos privados de la interfaz y no se recuperan mediante Atrás. Un fallo al crear el perfil no deja una cuenta con permisos parciales; el reintento se resuelve sin duplicación."
+        "Una cuenta inactiva pierde las siguientes operaciones protegidas aunque conserve un token. El servidor comprueba permisos actuales y no confía en roles enviados por el cliente."
       ]
     ]
   },
   {
     "id": "HU-08",
-    "title": "Gestionar cuentas de usuario y asignaciones",
+    "title": "Registrar personal y gestionar sus estaciones",
     "owner": "Lucas Ivan Castro Alvarado",
     "sp": 13,
-    "story": "Como administrador, quiero gestionar las cuentas, las vinculaciones empresariales y las asignaciones del personal, para controlar quién puede acceder y actualizar cada estación.",
-    "route": "Panel administrativo → Usuarios → Todos, Activos, Inactivos o Pendientes → Ficha → Editar, Invitar, Desactivar, Reactivar o Gestionar asignaciones.",
+    "story": "Como administrador, quiero registrar al personal y administrar sus cuentas y estaciones autorizadas, para controlar quién puede gestionar la información de cada establecimiento.",
+    "route": "Panel administrativo → Usuarios → Registrar personal o Ficha → Editar acceso y estaciones, Desactivar, Reactivar o Restablecer contraseña.",
     "criteria": [
       [
         "08-01",
-        "Dado Usuarios, el administrador busca por nombre o correo y filtra por rol y estado. Cada fila identifica nombre, correo, rol y estado; la ficha muestra los datos autorizados y las vinculaciones del personal. Los demás usuarios no acceden a este listado."
+        "Usuarios permite buscar por nombre o correo y filtrar por rol y estado Activo o Inactivo. Solo el administrador accede a esta gestión."
       ],
       [
         "08-02",
-        "Dado Nuevo usuario de personal, el administrador registra nombre y correo y elige responsable o administrador. Para responsables selecciona una empresa activa. Crea el acceso mediante una operación segura; la ficha distingue invitación pendiente de cuenta activa confirmada."
+        "Registrar personal reúne nombre, correo, teléfono opcional, contraseña inicial y rol en un solo formulario. Para un responsable exige empresa activa y permite seleccionar sus estaciones de esa empresa."
       ],
       [
         "08-03",
-        "Dado un correo nuevo, se envía la invitación de acceso. Si ya es conductor, reutiliza su identidad y acepta o rechaza el vínculo en Mi cuenta → Invitaciones de personal. Conserva sus favoritas; rechazar no bloquea su acceso de conductor ni duplica cuentas."
+        "Al guardar datos válidos se crea la cuenta en el sistema de autenticación, se registra el perfil y se conceden las asignaciones. El responsable puede entrar con su correo y contraseña, sin invitaciones ni confirmación de correo."
       ],
       [
         "08-04",
-        "Dada una invitación pendiente, el administrador puede consultar su estado, reenviar o cancelar la habilitación. Un enlace cancelado o vencido no habilita permisos. El administrador no ve la contraseña del usuario."
+        "Si el correo ya tiene una cuenta, el alta informa el conflicto. La edición utiliza la misma identidad y no restablece su contraseña de forma implícita."
       ],
       [
         "08-05",
-        "Dada una cuenta existente, se corrigen datos permitidos y se solicitan cambios de correo o recuperación con verificación. Cambiar rol requiere confirmación y autorización; cierra asignaciones incompatibles y no crea ni restablece permisos automáticamente."
+        "Editar acceso y estaciones conserva la identidad, limita a una empresa activa por responsable y admite agregar o retirar estaciones. El servidor rechaza selecciones cruzadas o repetidas. El cambio de rol pide confirmación y retira permisos incompatibles."
       ],
       [
         "08-06",
-        "Dada una persona, el administrador registra una vinculación autorizada con una empresa y su vigencia. Puede haber varias vinculaciones aprobadas; pertenecer a una empresa no habilita todas sus estaciones ni implica una relación laboral real fuera del entorno de evaluación."
+        "Desactivar o reactivar una cuenta pide confirmación. La baja es lógica y conserva historial; no se permite desactivar la cuenta propia ni dejar el sistema sin administrador."
       ],
       [
         "08-07",
-        "Dada una vinculación activa, la selección muestra estaciones activas de esa empresa. El guardado comprueba también en el servidor empresa, persona, rol, vinculación y estación; rechaza asignaciones cruzadas, duplicadas o no vigentes."
+        "Restablecer contraseña solicita una nueva clave y su confirmación y solo permite la operación administrativa autorizada. Un responsable sin estaciones muestra Sin asignar y no puede publicar."
       ],
       [
         "08-08",
-        "Dada una cuenta activa, Desactivar muestra nombre, correo y consecuencia antes de confirmar. Cancelar no cambia datos; confirmar cambia su estado y bloquea las siguientes operaciones protegidas. No se borra la identidad ni el historial."
-      ],
-      [
-        "08-09",
-        "Dada una cuenta inactiva, el administrador la encuentra mediante el filtro y puede reactivarla con confirmación. La reactivación no confirma correos pendientes, no acepta invitaciones por el usuario ni reconstruye asignaciones retiradas."
-      ],
-      [
-        "08-10",
-        "Dada una asignación, el administrador puede retirarla desde la ficha. La cuenta mantiene sus demás funciones autorizadas. Terminar una vinculación empresarial cierra sus asignaciones vigentes sin borrar registros ni afectar vínculos con otras empresas."
-      ],
-      [
-        "08-11",
-        "Dado un administrador que intenta desactivarse o quitarse su propio rol administrativo, la operación se rechaza. Ninguna combinación concurrente de cambios puede dejar al sistema sin un administrador activo. El alta inicial del primer administrador es un procedimiento controlado."
-      ],
-      [
-        "08-12",
-        "Dada una alta con identidad, perfil, vinculación y asignaciones, si una fase falla se informa qué falta y se recupera con una operación idempotente. Nunca se presenta como completada una cuenta parcialmente habilitada; se compensan o mantienen pendientes las fases incompletas."
-      ],
-      [
-        "08-13",
-        "Dada una cuenta de conductor, responsable o administrador, solo operaciones autorizadas cambian su estado o rol. Gestionar cuentas no permite consultar favoritas ajenas. Quitar una asignación, desactivar una cuenta y desactivar una estación mantienen consecuencias diferentes."
+        "Un fallo del alta no se presenta como éxito: se informa el error, se conserva la identidad sin permisos de personal y se admite recuperación administrativa. Los reintentos de la misma operación no duplican la cuenta."
       ]
     ]
   },
@@ -163,39 +123,27 @@
     "criteria": [
       [
         "09-01",
-        "Dado Mis estaciones, se muestran únicamente estaciones con empresa, vinculación y asignación activas para ese responsable. Si no hay asignaciones, se informa esa situación sin ofrecer estaciones de otras empresas."
+        "Mis estaciones muestra únicamente estaciones activas de la empresa y asignaciones vigentes del responsable. Sin asignaciones muestra un estado vacío claro."
       ],
       [
         "09-02",
-        "Dado un combustible habilitado, el responsable selecciona Disponible, Disponibilidad limitada o Agotado. Un guardado vacío, un combustible ajeno o un estado inválido se rechazan. Sin actualizar es un estado calculado y no una selección manual."
+        "El responsable selecciona Disponible, Disponibilidad limitada o Agotado por combustible habilitado. El guardado exige al menos un estado y rechaza productos ajenos o repetidos."
       ],
       [
         "09-03",
-        "Dado un guardado válido, el servidor registra identidad, fecha y eventos por combustible de forma atómica. El estado mostrado procede de la publicación más reciente válida; no se aceptan autor ni fecha falsificados desde la interfaz."
+        "Una publicación válida guarda autor, fecha del servidor y eventos de combustible de forma atómica y actualiza el detalle al regresar."
       ],
       [
         "09-04",
-        "Dado un visitante, conductor, administrador o responsable sin esa asignación, cualquier intento de publicar es rechazado por el servidor. Mantener el catálogo no concede permiso para informar disponibilidad."
+        "Visitantes, conductores, administradores y responsables sin asignación no pueden publicar, incluso con llamadas directas. Retirar un permiso bloquea el siguiente guardado de una sesión abierta."
       ],
       [
         "09-05",
-        "Dada la última publicación, se considera vigente durante la ventana configurada, propuesta inicialmente de dos horas. Al alcanzar el límite se muestra Sin actualizar; Agotado sigue siendo distinto de ausencia o vencimiento de información."
+        "Una publicación vencida a las dos horas o inexistente se muestra Sin actualizar. Reactivar un registro no vuelve reciente una publicación anterior."
       ],
       [
         "09-06",
-        "Dada una baja y reactivación de empresa, estación o combustible habilitado, ninguna publicación anterior a esa reactivación se convierte por ello en reciente. Hace falta una publicación posterior válida."
-      ],
-      [
-        "09-07",
-        "Dado un permiso o cuenta desactivados mientras el usuario tiene sesión, el siguiente guardado falla sin cambios parciales. Se presenta la causa y se permite volver al catálogo o actualizar el perfil."
-      ],
-      [
-        "09-08",
-        "Dado Historial, el personal autorizado consulta publicaciones ordenadas por fecha con combustible, estado y autor. No puede editar eventos ni borrar el pasado; cambiar el nombre actual de una persona no cambia la identidad autora del evento."
-      ],
-      [
-        "09-09",
-        "Dado el indicador visual, el nivel del icono representa una categoría cualitativa informada. No muestra porcentajes, litros, autonomía ni tiempos de espera calculados sin datos. Un combustible agotado no comparte la misma apariencia que uno sin actualizar."
+        "El historial conserva combustible, estado, autor y fecha. Reintentar la misma operación no duplica registros y cambiar su contenido exige una nueva operación."
       ]
     ]
   },
@@ -209,39 +157,27 @@
     "criteria": [
       [
         "10-01",
-        "Dado un visitante o una cuenta de cualquier rol, el catálogo público muestra solo estaciones y empresas activas. La consulta no expone correos del personal, vinculaciones internas ni controles administrativos."
+        "La consulta pública muestra estaciones y empresas activas mediante listas y detalle; no integra mapas, ubicación ni notificaciones."
       ],
       [
         "10-02",
-        "Dados filtros de nombre, empresa, ciudad y combustible, la consulta combina sus condiciones, ordena de forma estable y muestra veinte resultados por página. Limpiar filtros restablece la lista; sin coincidencias muestra un resultado vacío verificable."
+        "Nombre o empresa, ciudad y combustible filtran la lista. Limpiar filtros restablece los resultados y se distinguen carga, lista vacía y error con reintento."
       ],
       [
         "10-03",
-        "Dado el detalle, se muestran nombre, dirección y estado por combustible con la fecha pertinente. Volver conserva posición y filtros. Los datos técnicos y las explicaciones repetidas no ocupan las tarjetas del catálogo."
+        "El detalle muestra nombre, dirección, productos y disponibilidad con fecha. Volver conserva filtros, páginas y posición."
       ],
       [
         "10-04",
-        "Dado un visitante que intenta guardar, se ofrece registro o acceso y después se recupera la estación elegida. Iniciar sesión da acceso a funciones personales; no es obligatorio para consultar."
+        "Una persona autenticada guarda y quita favoritas propias con persistencia y baja lógica. Un visitante que intenta guardar puede registrarse o acceder y continuar con la estación elegida."
       ],
       [
         "10-05",
-        "Dada una cuenta activa, puede agregar, listar y quitar sus favoritas. No se duplican; quitar aplica baja lógica y volver a agregar reactiva la misma relación. El resultado se conserva entre sesiones e instalaciones."
+        "Las favoritas son privadas por cuenta. Ningún usuario, incluido el administrador, consulta las favoritas ajenas. Repetir un guardado no duplica la relación."
       ],
       [
         "10-06",
-        "Dadas dos cuentas, ninguna accede a las favoritas de la otra, incluso mediante una llamada directa. Las favoritas son personales también para responsables y administradores; el rol administrativo no concede lectura ajena."
-      ],
-      [
-        "10-07",
-        "Dada una estación guardada que después se desactiva, Mis favoritas conserva una referencia mínima marcada No disponible. No muestra disponibilidad vigente ni abre el detalle público de una estación inactiva; no se pierde la relación guardada."
-      ],
-      [
-        "10-08",
-        "Dada una actualización del responsable o un vencimiento, al refrescar se obtiene el estado correspondiente. La fecha y la categoría permiten distinguir información antigua de combustible agotado, sin presentar datos de otra sesión como propios."
-      ],
-      [
-        "10-09",
-        "Dada una interrupción de conexión, se muestra un error con reintento y se distingue de una lista sin resultados. No se simulan guardados exitosos ni se presenta una disponibilidad como recién verificada cuando no se pudo recuperar."
+        "Una estación favorita inactiva conserva una referencia No disponible sin presentar existencias vigentes. Refrescar obtiene cambios del responsable y vencimientos."
       ]
     ]
   }

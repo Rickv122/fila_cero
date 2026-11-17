@@ -1,37 +1,21 @@
--- Registros académicos para comprobar las cinco historias; no representan
--- abastecimiento verificado. No se crean cuentas ni contraseñas mediante SQL.
-insert into public.perfiles(id,nombre,rol,activo)
-select id,case email when 'admin@filacero.test' then 'Administrador'
-  when 'encargado.sopocachi@filacero.test' then 'Encargado Sopocachi'
-  when 'encargado.elalto@filacero.test' then 'Encargado El Alto'
-  else 'Personal inactivo' end,
-  case when email='admin@filacero.test' then 'administrador' else 'encargado' end,
-  email<>'inactivo@filacero.test'
-from auth.users where email in ('admin@filacero.test','encargado.sopocachi@filacero.test','encargado.elalto@filacero.test','inactivo@filacero.test')
-on conflict(id) do nothing;
-
-insert into public.surtidores(nombre,direccion,ciudad,latitud,longitud,creado_por)
-select v.nombre,v.direccion,v.ciudad,v.latitud,v.longitud,p.id
-from (values
-  ('Surtidor Sopocachi','Av. Arce y calle Rosendo Gutiérrez','La Paz',-16.5120,-68.1310),
-  ('Surtidor Miraflores','Av. Saavedra y calle Díaz Romero','La Paz',-16.5000,-68.1180),
-  ('Surtidor Obrajes','Av. Hernando Siles y calle 17','La Paz',-16.5260,-68.1010),
-  ('Surtidor El Alto Central','Av. 6 de Marzo','El Alto',-16.5100,-68.1640)
-) as v(nombre,direccion,ciudad,latitud,longitud)
-cross join public.perfiles p join auth.users u on u.id=p.id
-where u.email='admin@filacero.test'
-and not exists(select 1 from public.surtidores s where s.nombre=v.nombre);
-
-insert into public.surtidor_combustible(surtidor_id,combustible_id)
-select s.id,c.id from public.surtidores s cross join public.combustibles c
-where s.nombre in ('Surtidor Sopocachi','Surtidor Miraflores','Surtidor Obrajes','Surtidor El Alto Central')
-and c.nombre in ('Gasolina Especial','Diésel','GNV')
-on conflict(surtidor_id,combustible_id) do nothing;
-
-insert into public.asignaciones_encargado(perfil_id,surtidor_id,asignado_por)
-select p.id,s.id,a.id from public.perfiles p join auth.users u on u.id=p.id
-cross join public.surtidores s cross join public.perfiles a join auth.users ua on ua.id=a.id
-where ua.email='admin@filacero.test' and
-  ((u.email='encargado.sopocachi@filacero.test' and s.nombre in ('Surtidor Sopocachi','Surtidor Miraflores'))
-  or (u.email='encargado.elalto@filacero.test' and s.nombre='Surtidor El Alto Central'))
-on conflict(perfil_id,surtidor_id) do nothing;
+-- Catálogo académico basado en el directorio ANH. No declara existencias reales.
+-- Crear identidades únicamente mediante Supabase Auth y el formulario administrativo.
+-- Ejecutar después de las migraciones. Esta carga no reactiva registros existentes.
+do $seed$
+declare item jsonb; emp uuid; city uuid; est uuid; fuel text; prod uuid;
+begin
+ for item in select value from jsonb_array_elements($catalog$[{"ciudad": "La Paz", "nombre": "Calacoto", "empresa": "Automóvil Club Boliviano", "direccion": "Calle 12 esq. Gral. Inofuentes Nº 7823", "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40", "combustibles": ["Gasolina Especial", "Gasolina Especial (+)", "Gasolina Premium", "Super Etanol 92"], "licencia": null}, {"ciudad": "La Paz", "nombre": "Centro", "empresa": "GAS CENTRO S.R.L.", "direccion": "LA PAZ-CALLE INDABURO NO. 1396 ZONA: CENTRAL", "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40", "combustibles": ["Gasolina Especial", "Gasolina Especial (+)"], "licencia": "ANH00415-CLES01-LIC08/2025"}, {"ciudad": "El Alto", "nombre": "Ciudad Satélite", "empresa": "TEXAS S.R.L.", "direccion": "EL ALTO - AV. CIVICA SATELITE NO. 101 ZONA: TEJADA RECTANGULAR", "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40", "combustibles": ["Diésel Oil", "Gasolina Especial", "Gasolina Especial (+)"], "licencia": "ANH00267-CLES01-LIC09/2026"}, {"ciudad": "La Paz", "nombre": "Miraflores", "empresa": "SIEMPRE A FULL MIRAFLORES S.R.L. SAF S.R.L.", "direccion": "AV. BUSCH ESQ. CALLE NICARAGUA ZONA MIRAFLORES", "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40", "combustibles": ["Diésel Oil", "Gasolina Especial", "Gasolina Especial (+)"], "licencia": "ANH00214-CLES01-LIC09/2026"}, {"ciudad": "La Paz", "nombre": "Obrajes", "empresa": "BASSAM LIMITADA", "direccion": "Av. Hernando Siles Nº 4554", "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40", "combustibles": ["Diésel Oil", "Gasolina Especial", "Gasolina Especial (+)"], "licencia": null}, {"ciudad": "La Paz", "nombre": "Obrajes 17", "empresa": "CARBURANTES DEL SUR S.R.L.", "direccion": "CALLE 17 DE OBRAJES ESQUINA AVENIDA 14 DE SEPTIEMBRE Nº 40 - ZONA OBRAJES", "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40", "combustibles": ["Gasolina Especial", "Gasolina Especial (+)", "Gasolina Premium", "Super Etanol 92"], "licencia": "ANH00074-CLES01-LIC08/2025"}, {"ciudad": "La Paz", "nombre": "San Jorge", "empresa": "Automóvil Club Boliviano", "direccion": "Av. 6 de Agosto Nº 2993", "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40", "combustibles": ["Gasolina Especial", "Gasolina Especial (+)", "Gasolina Premium"], "licencia": null}, {"ciudad": "La Paz", "nombre": "San Sebastián", "empresa": "ESTACION DE SERVICIOS VOLCAN S.R.L.", "direccion": "AV. MONTES ESQ. PANDO NO. 101 ZONA SAN SEBASTIAN", "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40", "combustibles": ["Diésel Oil", "Gasolina Especial", "Gasolina Especial (+)", "Gasolina Premium"], "licencia": "ANH00580-CLES01-LIC09/2026"}, {"ciudad": "El Alto", "nombre": "Senkata", "empresa": "ESTACION DE SERVICIO \"C. REDENTOR\" S.R.L.", "direccion": "Av. 6 de Marzo Nº 110", "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40", "combustibles": ["Diésel Oil", "Gasolina Especial", "Gasolina Especial (+)"], "licencia": null}, {"ciudad": "La Paz", "nombre": "Sopocachi", "empresa": "EMPRESA COMERCIALIZADORA DE HIDROCARBUROS TUPAC KATARI S.R.L.", "direccion": "CALLE SANCHEZ LIMA N° 100 ZONA SOPOCACHI", "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40", "combustibles": ["Diésel Oil", "Gasolina Especial", "Gasolina Especial (+)"], "licencia": "ANH00292-CLES01-LIC09/2026"}]$catalog$::jsonb) loop
+  insert into public.empresas_operadoras(denominacion,fuente_url) values(item->>'empresa',coalesce(item->>'fuente_url','')) on conflict do nothing;
+  select id into emp from public.empresas_operadoras where lower(trim(denominacion))=lower(trim(item->>'empresa'));
+  insert into public.ciudades(nombre,departamento) values(item->>'ciudad','La Paz') on conflict(departamento,nombre) do nothing;
+  select id into city from public.ciudades where nombre=item->>'ciudad' and departamento='La Paz';
+  insert into public.estaciones(empresa_id,ciudad_id,nombre,direccion,licencia,fuente_url)
+  values(emp,city,item->>'nombre',item->>'direccion',coalesce(item->>'licencia',''),coalesce(item->>'fuente_url','')) on conflict(empresa_id,nombre,direccion) do nothing;
+  select id into est from public.estaciones where empresa_id=emp and nombre=item->>'nombre' and direccion=item->>'direccion';
+  for fuel in select jsonb_array_elements_text(item->'combustibles') loop
+   insert into public.combustibles(nombre) values(fuel) on conflict(nombre) do nothing;
+   select id into prod from public.combustibles where nombre=fuel;
+   insert into public.estacion_combustible(estacion_id,combustible_id) values(est,prod) on conflict(estacion_id,combustible_id) do nothing;
+  end loop;
+ end loop;
+end $seed$;

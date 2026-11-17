@@ -29,6 +29,7 @@ class FilaCeroApp extends StatefulWidget {
 
 class _FilaCeroAppState extends State<FilaCeroApp> {
   final navigator = GlobalKey<NavigatorState>();
+  final messenger = GlobalKey<ScaffoldMessengerState>();
   String? previousUser;
   @override
   void initState() {
@@ -39,6 +40,9 @@ class _FilaCeroAppState extends State<FilaCeroApp> {
 
   void accountChanged() {
     final current = widget.controller.profile?['id'] as String?;
+    if (current != previousUser) {
+      messenger.currentState?.clearSnackBars();
+    }
     if (previousUser != null && current != previousUser) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) navigator.currentState?.popUntil((route) => route.isFirst);
@@ -56,6 +60,7 @@ class _FilaCeroAppState extends State<FilaCeroApp> {
   @override
   Widget build(BuildContext c) => MaterialApp(
     navigatorKey: navigator,
+    scaffoldMessengerKey: messenger,
     title: 'FilaCero',
     debugShowCheckedModeBanner: false,
     theme: ThemeData(

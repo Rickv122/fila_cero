@@ -4,6 +4,8 @@ import '../core/app_controller.dart';
 import '../models/domain.dart';
 import 'common.dart';
 
+String userState(AppRecord u) => u['activo'] == true ? 'Activo' : 'Inactivo';
+
 class UsersScreen extends StatefulWidget {
   final AppController controller;
   const UsersScreen({super.key, required this.controller});
@@ -53,10 +55,10 @@ class _UsersScreenState extends State<UsersScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           await openPage(c, StaffFormScreen(controller: widget.controller));
-          load();
+          if (mounted) load();
         },
         icon: const Icon(Icons.person_add_alt),
-        label: const Text('Invitar personal'),
+        label: const Text('Registrar personal'),
       ),
       body: Column(
         children: [
@@ -89,13 +91,9 @@ class _UsersScreenState extends State<UsersScreen> {
                             value: 'inactive',
                             child: Text('Inactivos'),
                           ),
-                          DropdownMenuItem(
-                            value: 'pending',
-                            child: Text('Pendientes'),
-                          ),
                         ],
                         onChanged: (v) {
-                          setState(() => status = v!);
+                          status = v!;
                           load();
                         },
                       ),
@@ -112,17 +110,17 @@ class _UsersScreenState extends State<UsersScreen> {
                             child: Text('Todos'),
                           ),
                           ...['administrador', 'responsable', 'conductor'].map(
-                            (s) => DropdownMenuItem(
-                              value: s,
+                            (r) => DropdownMenuItem(
+                              value: r,
                               child: Text(
-                                roleLabel(s),
+                                roleLabel(r),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ),
                         ],
                         onChanged: (v) {
-                          setState(() => role = v);
+                          role = v;
                           load();
                         },
                       ),
@@ -154,8 +152,7 @@ class _UsersScreenState extends State<UsersScreen> {
                       child: ListTile(
                         contentPadding: const EdgeInsets.all(16),
                         leading: const CircleAvatar(
-                          backgroundColor: Color(0xFFE8EFFE),
-                          child: Icon(Icons.person_outline, color: accent),
+                          child: Icon(Icons.person_outline),
                         ),
                         title: Text(
                           u['nombre'],
@@ -174,7 +171,7 @@ class _UsersScreenState extends State<UsersScreen> {
                               id: u['id'],
                             ),
                           );
-                          load();
+                          if (mounted) load();
                         },
                       ),
                     );
@@ -189,14 +186,6 @@ class _UsersScreenState extends State<UsersScreen> {
   );
 }
 
-String userState(AppRecord u) => u['activo'] != true
-    ? 'Inactivo'
-    : u['confirmado'] != true
-    ? 'Correo pendiente'
-    : u['rol_invitado'] != null
-    ? 'Invitación pendiente'
-    : 'Activo';
-
 class StaffFormScreen extends StatefulWidget {
   final AppController controller;
   final AppRecord? existing;
@@ -206,62 +195,134 @@ class StaffFormScreen extends StatefulWidget {
 }
 
 class _StaffFormScreenState extends State<StaffFormScreen> {
-  final form = GlobalKey<FormState>(),
-      name = TextEditingController(),
-      email = TextEditingController();
-  String role = 'responsable';
-  String? company;
+  final form = GlobalKey<FormState>();
+  final name = TextEditingController(),
+      email = TextEditingController(),
+      contact = TextEditingController(),
+      password = TextEditingController();
+  final operation = newId();
+  final selected = <String>{};
   List<AppRecord>? companies;
-  Object? loadError;
-  bool busy = false;
-  String? error;
+  List<AppRecord> stations = [];
+  String role = 'responsable';
+  String? company, error;
+  bool busy = false, loadingStations = false, hidden = true;
   @override
   void initState() {
     super.initState();
-    name.text = widget.existing?['nombre'] ?? '';
-    email.text = widget.existing?['email'] ?? '';
+    final u = widget.existing;
+    name.text = u?['nombre'] ?? '';
+    email.text = u?['email'] ?? '';
+    contact.text = u?['contacto'] ?? '';
+    role = u?['rol'] ?? 'responsable';
     load();
   }
 
   @override
   void dispose() {
-    name.dispose();
-    email.dispose();
+    for (final t in [name, email, contact, password]) {
+      t.dispose();
+    }
     super.dispose();
   }
 
   Future<void> load() async {
     try {
-      final o = row(await widget.controller.query('options'));
-      if (mounted) {
-        setState(
-          () =>
-              companies = rows(o['empresas'])
-                  .where((e) => e['activo'] == true)
-                  .toList(),
+      final opts = row(await widget.controller.query('options'));
+      final active = rows(opts['empresas'])
+          .where((e) => e['activo'] == true)
+          .toList();
+      if (widget.existing != null) {
+        final links = rows(
+          await widget.controller.query('memberships', {
+            'id': widget.existing!['id'],
+          }),
+        ).where((m) => m['activo'] == true).toList();
+        if (links.isNotEmpty &&
+            active.any((e) => e['id'] == links.first['empresa_id'])) {
+          company = links.first['empresa_id'];
+        }
+        final assigns = rows(
+          await widget.controller.query('assignments', {
+            'id': widget.existing!['id'],
+          }),
+        );
+        selected.addAll(
+          assigns
+              .where((a) => a['activo'] == true)
+              .map((a) => a['estacion_id'] as String),
         );
       }
+      if (mounted) setState(() => companies = active);
+      if (company != null) await loadStations();
     } catch (e) {
-      if (mounted) setState(() => loadError = e);
+      if (mounted) setState(() => error = readableError(e));
+    }
+  }
+
+  Future<void> loadStations() async {
+    setState(() => loadingStations = true);
+    final requested = company;
+    try {
+      final list = <AppRecord>[];
+      var page = 0, more = true;
+      while (more) {
+        final value = row(
+          await widget.controller.query('catalog', {
+            'mode': 'admin',
+            'status': 'active',
+            'company': requested,
+            'page': page++,
+          }),
+        );
+        list.addAll(rows(value['rows']));
+        more = value['has_more'] == true;
+      }
+      if (mounted && company == requested) {
+        setState(() {
+          stations = list;
+          selected.removeWhere((id) => !list.any((s) => s['id'] == id));
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => error = readableError(e));
+    } finally {
+      if (mounted && company == requested) {
+        setState(() => loadingStations = false);
+      }
     }
   }
 
   Future<void> save() async {
-    if (!form.currentState!.validate()) return;
+    if (!form.currentState!.validate() || loadingStations) return;
+    if (widget.existing != null && role != widget.existing!['rol']) {
+      if (!await confirm(
+        context,
+        'Cambiar rol',
+        '${name.text} pasará a ${roleLabel(role)}. Sus permisos se actualizarán con este formulario.',
+      )) {
+        return;
+      }
+    }
     setState(() {
       busy = true;
       error = null;
     });
     try {
       final result = await widget.controller.repository.staff({
-        'action': 'invite',
+        'action': 'save',
+        'id': widget.existing?['id'],
+        'operation': operation,
         'nombre': name.text.trim(),
         'email': email.text.trim(),
+        'contacto': contact.text.trim(),
+        'password': password.text,
         'rol': role,
-        'empresa_id': company,
+        'empresa_id': role == 'responsable' ? company : null,
+        'station_ids': role == 'responsable' ? selected.toList() : <String>[],
       });
       if (mounted) {
-        notice(context, result['message'] ?? 'Invitación preparada');
+        notice(context, result['message']);
         Navigator.pop(context, true);
       }
     } catch (e) {
@@ -276,11 +337,17 @@ class _StaffFormScreenState extends State<StaffFormScreen> {
     controller: widget.controller,
     adminOnly: true,
     child: Scaffold(
-      appBar: AppBar(title: const Text('Invitar personal')),
-      body: loadError != null
-          ? ErrorPane(error: loadError!, retry: load)
-          : companies == null
-          ? const Center(child: CircularProgressIndicator())
+      appBar: AppBar(
+        title: Text(
+          widget.existing == null
+              ? 'Registrar personal'
+              : 'Editar acceso y estaciones',
+        ),
+      ),
+      body: companies == null
+          ? (error != null
+                ? ErrorPane(error: Exception(error), retry: load)
+                : const Center(child: CircularProgressIndicator()))
           : Form(
               key: form,
               child: ListView(
@@ -300,28 +367,59 @@ class _StaffFormScreenState extends State<StaffFormScreen> {
                     validator: emailError,
                     keyboardType: TextInputType.emailAddress,
                     decoration: const InputDecoration(
-                      labelText: 'Correo de la persona',
+                      labelText: 'Correo electrónico',
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: contact,
+                    decoration: const InputDecoration(
+                      labelText: 'Teléfono (opcional)',
+                    ),
+                    keyboardType: TextInputType.phone,
+                  ),
+                  if (widget.existing == null) ...[
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: password,
+                      obscureText: hidden,
+                      validator: passwordError,
+                      decoration: InputDecoration(
+                        labelText: 'Contraseña inicial',
+                        suffixIcon: IconButton(
+                          tooltip: hidden
+                              ? 'Mostrar contraseña'
+                              : 'Ocultar contraseña',
+                          onPressed: () => setState(() => hidden = !hidden),
+                          icon: Icon(
+                            hidden
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
                     initialValue: role,
                     isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Función autorizada',
-                    ),
-                    items: ['responsable', 'administrador']
-                        .map(
-                          (r) => DropdownMenuItem(
-                            value: r,
-                            child: Text(roleLabel(r)),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: busy ? null : (s) => setState(() => role = s!),
+                    decoration: const InputDecoration(labelText: 'Rol'),
+                    items:
+                        (widget.existing == null
+                                ? ['responsable', 'administrador']
+                                : ['responsable', 'administrador', 'conductor'])
+                            .map(
+                              (r) => DropdownMenuItem(
+                                value: r,
+                                child: Text(roleLabel(r)),
+                              ),
+                            )
+                            .toList(),
+                    onChanged: busy ? null : (v) => setState(() => role = v!),
                   ),
-                  const SizedBox(height: 16),
-                  if (role == 'responsable')
+                  if (role == 'responsable') ...[
+                    const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
                       initialValue: company,
                       isExpanded: true,
@@ -342,21 +440,74 @@ class _StaffFormScreenState extends State<StaffFormScreen> {
                           .toList(),
                       onChanged: busy
                           ? null
-                          : (v) => setState(() => company = v),
+                          : (v) {
+                              setState(() {
+                                company = v;
+                                selected.clear();
+                                stations = [];
+                                error = null;
+                              });
+                              loadStations();
+                            },
                     ),
-                  const SizedBox(height: 22),
-                  const Text(
-                    'La persona deberá confirmar su acceso y aceptar la invitación. Después podrás asignarle estaciones.',
-                    style: TextStyle(color: Colors.blueGrey, fontSize: 13),
-                  ),
+                    const SizedBox(height: 22),
+                    Text(
+                      'Estaciones asignadas',
+                      style: Theme.of(c).textTheme.titleMedium
+                          ?.copyWith(color: navy, fontWeight: FontWeight.w700),
+                    ),
+                    if (loadingStations)
+                      const Padding(
+                        padding: EdgeInsets.all(15),
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                    if (company != null && !loadingStations && stations.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        child: Text(
+                          'Esta empresa no tiene estaciones activas.',
+                        ),
+                      ),
+                    ...stations.map(
+                      (s) => CheckboxListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(s['nombre']),
+                        subtitle: Text(s['direccion']),
+                        value: selected.contains(s['id']),
+                        onChanged: busy
+                            ? null
+                            : (v) => setState(() {
+                                if (v == true) {
+                                  selected.add(s['id']);
+                                } else {
+                                  selected.remove(s['id']);
+                                }
+                              }),
+                      ),
+                    ),
+                    if (selected.isEmpty && !loadingStations)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 8),
+                        child: Text(
+                          'Sin asignar',
+                          style: TextStyle(color: Colors.blueGrey),
+                        ),
+                      ),
+                  ],
                   const SizedBox(height: 22),
                   if (error != null) ...[
                     Text(error!, style: const TextStyle(color: Colors.red)),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 14),
                   ],
                   FilledButton(
-                    onPressed: busy ? null : save,
-                    child: Text(busy ? 'Preparando…' : 'Enviar invitación'),
+                    onPressed: busy || loadingStations ? null : save,
+                    child: Text(
+                      busy
+                          ? 'Guardando…'
+                          : widget.existing == null
+                          ? 'Registrar cuenta'
+                          : 'Guardar cambios',
+                    ),
                   ),
                 ],
               ),
@@ -390,16 +541,16 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
 
   Future<void> load() async {
     try {
-      final result = await Future.wait([
+      final values = await Future.wait([
         widget.controller.query('user', {'id': widget.id}),
         widget.controller.query('memberships', {'id': widget.id}),
         widget.controller.query('assignments', {'id': widget.id}),
       ]);
       if (mounted) {
         setState(() {
-          user = row(result[0]);
-          memberships = rows(result[1]);
-          assignments = rows(result[2]);
+          user = row(values[0]);
+          memberships = rows(values[1]);
+          assignments = rows(values[2]);
           error = null;
         });
       }
@@ -408,13 +559,23 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
     }
   }
 
-  Future<void> run(String action, AppRecord data) async {
-    if (busy) return;
+  Future<void> state() async {
+    final active = user!['activo'] == true;
+    if (!await confirm(
+      context,
+      active ? 'Desactivar cuenta' : 'Reactivar cuenta',
+      '${user!['nombre']}\n${active ? 'Se bloqueará su acceso a las funciones protegidas.' : 'Volverá a utilizar sus permisos vigentes.'}',
+      action: active ? 'Desactivar' : 'Reactivar',
+    )) {
+      return;
+    }
     setState(() => busy = true);
     try {
-      await widget.controller.command(action, data);
+      await widget.controller.command('user_state', {
+        'id': widget.id,
+        'activo': !active,
+      });
       await load();
-      await widget.controller.refreshProfile();
     } catch (e) {
       if (mounted) notice(context, readableError(e));
     } finally {
@@ -422,40 +583,38 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
     }
   }
 
-  Future<void> state() async {
-    final active = user!['activo'] == true;
-    if (await confirm(
-      context,
-      active ? 'Desactivar cuenta' : 'Reactivar cuenta',
-      '${user!['nombre']}\n${user!['email']}\n\n${active ? 'Se bloquearán sus siguientes operaciones protegidas. Se conservan sus datos e historial.' : 'No confirma el correo ni recupera asignaciones retiradas.'}',
-      action: active ? 'Desactivar' : 'Reactivar',
-    )) {
-      await run('user_state', {'id': widget.id, 'activo': !active});
-    }
-  }
-
-  Future<void> edit() async {
-    final name = TextEditingController(text: user!['nombre']),
-        contact = TextEditingController(text: user!['contacto']);
+  Future<void> resetPassword() async {
+    final password = TextEditingController(), repeat = TextEditingController();
     final form = GlobalKey<FormState>();
     final ok = await showDialog<bool>(
       context: context,
       builder: (d) => AlertDialog(
-        title: const Text('Editar datos'),
+        title: const Text('Restablecer contraseña'),
         content: Form(
           key: form,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextFormField(
-                controller: name,
-                validator: requiredText,
-                decoration: const InputDecoration(labelText: 'Nombre'),
-              ),
+              Text(user!['nombre']),
               const SizedBox(height: 16),
               TextFormField(
-                controller: contact,
-                decoration: const InputDecoration(labelText: 'Contacto'),
+                controller: password,
+                obscureText: true,
+                validator: passwordError,
+                decoration: const InputDecoration(
+                  labelText: 'Nueva contraseña',
+                ),
+              ),
+              const SizedBox(height: 14),
+              TextFormField(
+                controller: repeat,
+                obscureText: true,
+                validator: (s) => s != password.text
+                    ? 'Las contraseñas no coinciden'
+                    : passwordError(s),
+                decoration: const InputDecoration(
+                  labelText: 'Repite la contraseña',
+                ),
               ),
             ],
           ),
@@ -469,73 +628,20 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
             onPressed: () {
               if (form.currentState!.validate()) Navigator.pop(d, true);
             },
-            child: const Text('Guardar'),
+            child: const Text('Actualizar'),
           ),
         ],
       ),
     );
-    if (ok == true) {
-      await run('user_save', {
-        'id': widget.id,
-        'nombre': name.text,
-        'contacto': contact.text,
-      });
-    }
-  }
-
-  Future<void> changeRole() async {
-    String role = user!['rol'];
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (d) => AlertDialog(
-        title: const Text('Cambiar rol'),
-        content: DropdownButtonFormField<String>(
-          initialValue: role,
-          isExpanded: true,
-          items: ['administrador', 'responsable', 'conductor']
-              .map((r) => DropdownMenuItem(value: r, child: Text(roleLabel(r))))
-              .toList(),
-          onChanged: (s) => role = s!,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(d, false),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(d, true),
-            child: const Text('Continuar'),
-          ),
-        ],
-      ),
-    );
-    if (ok != true || role == user!['rol'] || !mounted) return;
-    if (await confirm(
-      context,
-      'Confirmar cambio de rol',
-      '${user!['nombre']} pasará a ${roleLabel(role)}. Se cerrarán sus asignaciones vigentes; no se recuperan automáticamente.',
-    )) {
-      await run('user_role', {'id': widget.id, 'rol': role});
-    }
-  }
-
-  Future<void> staffAction(String action) async {
-    if (!await confirm(
-      context,
-      action == 'recover' ? 'Enviar recuperación' : 'Reenviar invitación',
-      'Se enviará un correo a ${user!['email']}.',
-      action: 'Enviar',
-    )) {
-      return;
-    }
+    if (ok != true) return;
     setState(() => busy = true);
     try {
-      final result = await widget.controller.repository.staff({
-        'action': action,
+      await widget.controller.repository.staff({
+        'action': 'password',
         'id': widget.id,
+        'password': password.text,
       });
-      if (mounted) notice(context, result['message'] ?? 'Solicitud procesada');
-      await load();
+      if (mounted) notice(context, 'Contraseña actualizada.');
     } catch (e) {
       if (mounted) notice(context, readableError(e));
     } finally {
@@ -543,72 +649,13 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
     }
   }
 
-  Future<void> assign(AppRecord member) async {
-    try {
-      final stations = <AppRecord>[];
-      var page = 0;
-      var hasMore = true;
-      while (hasMore) {
-        final result = row(
-          await widget.controller.query('catalog', {
-            'mode': 'admin',
-            'status': 'active',
-            'company': member['empresa_id'],
-            'page': page,
-          }),
-        );
-        stations.addAll(rows(result['rows']));
-        hasMore = result['has_more'] == true;
-        page++;
-      }
-      if (!mounted) return;
-      String? chosen;
-      final ok = await showDialog<bool>(
-        context: context,
-        builder: (d) => AlertDialog(
-          title: const Text('Asignar estación'),
-          content: stations.isEmpty
-              ? const Text('No hay estaciones activas en esta empresa.')
-              : DropdownButtonFormField<String>(
-                  isExpanded: true,
-                  decoration: const InputDecoration(labelText: 'Estación'),
-                  items: stations
-                      .map(
-                        (s) => DropdownMenuItem(
-                          value: s['id'] as String,
-                          child: Text(s['nombre']),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (v) => chosen = v,
-                ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(d, false),
-              child: const Text('Cancelar'),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(d, true),
-              child: const Text('Asignar'),
-            ),
-          ],
-        ),
-      );
-      if (ok == true && chosen != null) {
-        await run('assignment_add', {
-          'id': newId(),
-          'vinculacion_id': member['id'],
-          'estacion_id': chosen,
-        });
-      }
-    } catch (e) {
-      if (mounted) notice(context, readableError(e));
-    }
-  }
-
   @override
   Widget build(BuildContext c) {
     final u = user;
+    final activeAssignments = assignments
+        .where((a) => a['activo'] == true)
+        .toList();
+    final own = widget.controller.profile?['id'] == widget.id;
     return ProtectedPage(
       controller: widget.controller,
       adminOnly: true,
@@ -630,7 +677,11 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
             : ListView(
                 padding: const EdgeInsets.all(20),
                 children: [
-                  PageTitle(u['codigo'], u['nombre'], subtitle: u['email']),
+                  PageTitle(
+                    roleLabel(u['rol']),
+                    u['nombre'],
+                    subtitle: u['email'],
+                  ),
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(18),
@@ -638,207 +689,114 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            roleLabel(u['rol']),
+                            userState(u),
                             style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
                               color: navy,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Text(userState(u)),
-                          if ((u['contacto'] as String).isNotEmpty)
+                          if ((u['contacto'] ?? '').toString().isNotEmpty)
                             Text(u['contacto']),
                           const SizedBox(height: 14),
-                          Wrap(
-                            spacing: 8,
-                            children: [
-                              OutlinedButton(
-                                onPressed: busy ? null : edit,
-                                child: const Text('Editar datos'),
-                              ),
-                              TextButton(
-                                onPressed: busy ? null : changeRole,
-                                child: const Text('Cambiar rol'),
-                              ),
-                              TextButton(
-                                onPressed: busy ? null : state,
-                                child: Text(
-                                  u['activo'] == true
-                                      ? 'Desactivar cuenta'
-                                      : 'Reactivar cuenta',
-                                ),
-                              ),
-                            ],
-                          ),
-                          TextButton.icon(
-                            onPressed: busy
-                                ? null
-                                : () => staffAction('recover'),
-                            icon: const Icon(Icons.mail_outline),
-                            label: const Text(
-                              'Recuperar acceso / revisar correo',
-                            ),
-                          ),
-                          if (u['rol_invitado'] != null ||
-                              u['confirmado'] != true) ...[
-                            TextButton(
-                              onPressed: busy
-                                  ? null
-                                  : () => staffAction('resend'),
-                              child: const Text('Reenviar invitación'),
-                            ),
-                            TextButton(
+                          if (!own) ...[
+                            FilledButton.icon(
                               onPressed: busy
                                   ? null
                                   : () async {
-                                      if (await confirm(
+                                      await openPage(
                                         c,
-                                        'Cancelar invitación',
-                                        'No se concederán los permisos pendientes.',
-                                      )) {
-                                        await run('invite_cancel', {
-                                          'id': widget.id,
-                                        });
-                                      }
+                                        StaffFormScreen(
+                                          controller: widget.controller,
+                                          existing: u,
+                                        ),
+                                      );
+                                      await load();
                                     },
-                              child: const Text(
-                                'Cancelar habilitación pendiente',
+                              icon: const Icon(Icons.edit_outlined),
+                              label: const Text('Editar acceso y estaciones'),
+                            ),
+                            TextButton(
+                              onPressed: busy ? null : state,
+                              child: Text(
+                                u['activo'] == true
+                                    ? 'Desactivar cuenta'
+                                    : 'Reactivar cuenta',
                               ),
                             ),
-                          ],
+                            TextButton.icon(
+                              onPressed: busy ? null : resetPassword,
+                              icon: const Icon(Icons.lock_reset),
+                              label: const Text('Restablecer contraseña'),
+                            ),
+                          ] else
+                            const Text(
+                              'Edita tu perfil y contraseña desde Mi cuenta.',
+                            ),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
-                  _heading('Vinculaciones empresariales'),
-                  ...memberships.map(
-                    (m) => Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                m['empresa'],
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  color: navy,
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                m['activo'] != true
-                                    ? 'Finalizada'
-                                    : m['aceptada_en'] == null
-                                    ? 'Pendiente de aceptación'
-                                    : 'Aceptada',
-                              ),
-                              if (m['activo'] == true)
-                                Wrap(
-                                  spacing: 8,
-                                  children: [
-                                    if (m['aceptada_en'] != null)
-                                      TextButton(
-                                        onPressed: busy
-                                            ? null
-                                            : () => assign(m),
-                                        child: const Text('Asignar estación'),
-                                      ),
-                                    TextButton(
-                                      onPressed: busy
-                                          ? null
-                                          : () async {
-                                              if (await confirm(
-                                                c,
-                                                'Finalizar vinculación',
-                                                'Se retirarán las asignaciones de esta empresa.',
-                                              )) {
-                                                await run('membership_end', {
-                                                  'id': m['id'],
-                                                });
-                                              }
-                                            },
-                                      child: const Text('Finalizar vínculo'),
-                                    ),
-                                  ],
-                                ),
-                            ],
+                  if (u['rol'] == 'responsable') ...[
+                    const SizedBox(height: 24),
+                    Text(
+                      'Empresa',
+                      style: Theme.of(c).textTheme.titleLarge
+                          ?.copyWith(color: navy, fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 12),
+                    ...memberships
+                        .where((m) => m['activo'] == true)
+                        .map((m) => Text(m['empresa'])),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Estaciones asignadas',
+                      style: Theme.of(c).textTheme.titleLarge
+                          ?.copyWith(color: navy, fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 12),
+                    if (activeAssignments.isEmpty)
+                      const Text(
+                        'Sin asignar',
+                        style: TextStyle(color: Colors.blueGrey),
+                      ),
+                    ...activeAssignments.map(
+                      (a) => Card(
+                        child: ListTile(
+                          leading: const Icon(Icons.local_gas_station_outlined),
+                          title: Text(a['estacion']),
+                          subtitle: Text(a['empresa']),
+                          trailing: IconButton(
+                            tooltip: 'Retirar asignación',
+                            onPressed: busy
+                                ? null
+                                : () async {
+                                    if (await confirm(
+                                      c,
+                                      'Retirar asignación',
+                                      a['estacion'],
+                                    )) {
+                                      try {
+                                        await widget.controller.command(
+                                          'assignment_end',
+                                          {'id': a['id']},
+                                        );
+                                        await load();
+                                      } catch (e) {
+                                        if (c.mounted) {
+                                          notice(c, readableError(e));
+                                        }
+                                      }
+                                    }
+                                  },
+                            icon: const Icon(Icons.link_off),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: busy
-                        ? null
-                        : () async {
-                            await openPage(
-                              c,
-                              StaffFormScreen(
-                                controller: widget.controller,
-                                existing: u,
-                              ),
-                            );
-                            await load();
-                          },
-                    icon: const Icon(Icons.add_business_outlined),
-                    label: const Text('Invitar a empresa o función'),
-                  ),
-                  const SizedBox(height: 24),
-                  _heading('Asignaciones'),
-                  if (assignments.isEmpty)
-                    const Text(
-                      'Sin asignaciones.',
-                      style: TextStyle(color: Colors.blueGrey),
-                    ),
-                  ...assignments.map(
-                    (a) => Card(
-                      child: ListTile(
-                        title: Text(a['estacion']),
-                        subtitle: Text(
-                          '${a['empresa']} · ${a['activo'] == true ? 'Vigente' : 'Retirada'}',
-                        ),
-                        trailing: a['activo'] == true
-                            ? IconButton(
-                                tooltip: 'Retirar asignación',
-                                onPressed: busy
-                                    ? null
-                                    : () async {
-                                        if (await confirm(
-                                          c,
-                                          'Retirar asignación',
-                                          a['estacion'],
-                                        )) {
-                                          await run('assignment_end', {
-                                            'id': a['id'],
-                                          });
-                                        }
-                                      },
-                                icon: const Icon(Icons.link_off),
-                              )
-                            : null,
-                      ),
-                    ),
-                  ),
+                  ],
                 ],
               ),
       ),
     );
   }
-
-  Widget _heading(String s) => Padding(
-    padding: const EdgeInsets.only(bottom: 14),
-    child: Text(
-      s,
-      style: const TextStyle(
-        color: navy,
-        fontSize: 19,
-        fontWeight: FontWeight.w700,
-      ),
-    ),
-  );
 }

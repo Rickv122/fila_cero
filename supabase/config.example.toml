@@ -1,0 +1,11 @@
+project_id = "FilaCero_Proyecto"
+
+[auth]
+minimum_password_length = 8
+
+[auth.email]
+enable_confirmations = false
+
+[functions.staff-admin]
+# The function validates the access token with Auth and checks the live administrator profile.
+verify_jwt = false

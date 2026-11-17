@@ -169,24 +169,6 @@ void main() {
     await t.pumpWidget(const SizedBox());
     c.dispose();
   });
-  test('Los enlaces copiados de Gmail se interpretan sin abrir Google', () {
-    const direct =
-        'https://oejouwwxngyafftzfkux.supabase.co/auth/v1/verify?token=unit-challenge&type=recovery';
-    final wrapped = Uri.https('www.google.com', '/url', {
-      'q': direct,
-    }).toString();
-    expect(verificationLink(wrapped), {
-      'token': 'unit-challenge',
-      'type': 'recovery',
-    });
-    expect(verificationLink(direct)['type'], 'recovery');
-    expect(
-      () => verificationLink(
-        'https://example.com/auth/v1/verify?token=unit&type=recovery',
-      ),
-      throwsFormatException,
-    );
-  });
   test('Dos lecturas simultáneas esperan el mismo perfil', () async {
     final repo = MemoryRepository();
     final c = await authenticatedMemory(repo);

@@ -22,28 +22,6 @@ String? emailError(String? s) =>
     : 'Escribe un correo válido';
 String? passwordError(String? s) =>
     (s?.length ?? 0) < 8 ? 'Usa al menos 8 caracteres' : null;
-Map<String, String> verificationLink(String text) {
-  var uri = Uri.tryParse(text.trim());
-  if (uri?.scheme == 'https' &&
-      ['www.google.com', 'google.com'].contains(uri?.host) &&
-      uri?.path == '/url') {
-    uri = Uri.tryParse(
-      uri?.queryParameters['q'] ?? uri?.queryParameters['url'] ?? '',
-    );
-  }
-  if (uri?.scheme != 'https' ||
-      uri?.host != 'oejouwwxngyafftzfkux.supabase.co' ||
-      uri?.path != '/auth/v1/verify' ||
-      uri?.queryParameters['token'] == null) {
-    throw const FormatException('El enlace no corresponde a FilaCero.');
-  }
-  final type = uri!.queryParameters['type'];
-  if (!['signup', 'email', 'invite', 'recovery'].contains(type)) {
-    throw const FormatException('Tipo de enlace no admitido aquí.');
-  }
-  return {'token': uri.queryParameters['token']!, 'type': type!};
-}
-
 String roleLabel(String? s) => switch (s) {
   'administrador' => 'Administrador',
   'responsable' => 'Responsable de estación',

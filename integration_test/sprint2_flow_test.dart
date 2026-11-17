@@ -147,33 +147,36 @@ void main() {
       await tapText('Usuarios');
       await waitFor(
         () =>
-            find.text('Invitar personal').evaluate().isNotEmpty &&
+            find.text('Registrar personal').evaluate().isNotEmpty &&
             find.byType(CircularProgressIndicator).evaluate().isEmpty,
         'Usuarios cargados',
       );
       await shot('pantalla12-HU-08-usuarios');
       await tapText(c.name);
       await waitFor(
-        () => find.text('Vinculaciones empresariales').evaluate().isNotEmpty,
+        () => find
+            .text('Edita tu perfil y contraseña desde Mi cuenta.')
+            .evaluate()
+            .isNotEmpty,
         'Ficha de usuario cargada',
       );
       expect(find.text('Historial administrativo'), findsNothing);
       await shot('pantalla21-HU-08-ficha-usuario');
       await t.pageBack();
       await settle();
-      await tapText('Invitar personal');
+      await tapText('Registrar personal');
       await waitFor(
-        () => find.text('Función autorizada').evaluate().isNotEmpty,
+        () => find.text('Rol').evaluate().isNotEmpty,
         'Formulario de personal',
       );
-      await shot('pantalla13-HU-08-invitacion');
+      await shot('pantalla13-HU-08-registro-personal');
       await t.pageBack();
       await settle();
       await t.pageBack();
       await settle();
       await tapText('Mi cuenta');
       await waitFor(
-        () => find.text('Invitaciones de personal').evaluate().isNotEmpty,
+        () => find.text('Cambiar contraseña').evaluate().isNotEmpty,
         'Mi cuenta cargada',
       );
       await shot('pantalla14-HU-07-mi-cuenta');
