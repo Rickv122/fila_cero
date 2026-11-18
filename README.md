@@ -2,6 +2,20 @@
 
 Aplicación Flutter para Android e iOS. Permite consultar estaciones de La Paz y El Alto, guardar favoritas y gestionar empresas, estaciones, cuentas y permisos. El responsable asignado publica disponibilidad por combustible.
 
+## Descargar y probar en Android
+
+[**Descargar FilaCero Sprint 2 APK**](https://github.com/Rickv122/fila_cero/releases/download/v2.0.0-sprint2/FilaCero_Sprint2.apk) · [Publicación](https://github.com/Rickv122/fila_cero/releases/tag/v2.0.0-sprint2) · [Credenciales y guía de prueba](docs/ACCESOS_PRUEBA.md)
+
+Android 8.0 o posterior, con Internet. Versión **2.0.0+2**; **52,1 MiB**. Las tres cuentas siguientes son públicas y exclusivas de la evaluación académica; sus permisos solo corresponden a la aplicación.
+
+| Rol | Correo | Contraseña |
+| --- | --- | --- |
+| Administrador | marcela.salvatierra@filacero.test | `AdminAula26` |
+| Responsable | mateo.quispe@filacero.test | `Encargado26` |
+| Conductor | valentina.rojas@filacero.test | `Conductor26` |
+
+El responsable Mateo tiene asignada **San Jorge**. También se puede crear una cuenta conductora desde **Crear cuenta**: nombre, correo válido y disponible, contraseña de al menos ocho caracteres y repetición coincidente. El registro abre sesión sin confirmación por correo; `.com` no es obligatorio. Las cuentas personales del grupo no se publican.
+
 ## Ejecutar en Windows
 
 ```powershell
@@ -56,7 +70,7 @@ El catálogo incluye diez estaciones y nueve empresas con nombres y direcciones 
 
 Miraflores queda sin publicaciones para mostrar **Sin actualizar**. Mario Salazar queda sin estaciones para mostrar **Sin estaciones asignadas**. Las demás estaciones tienen combinaciones Disponible, Disponibilidad limitada y Agotado. La información vence a las dos horas; para una nueva exposición deben publicarse estados recientes desde las cuentas autorizadas. No se renuevan fechas automáticamente.
 
-Las credenciales se entregan al grupo en un archivo privado local. No se incluyen contraseñas administrativas ni claves secretas en el repositorio, documentos públicos ni APK.
+Las credenciales personales del grupo se conservan en un archivo privado local. Únicamente se publican las tres cuentas académicas de [ACCESOS_PRUEBA.md](docs/ACCESOS_PRUEBA.md). Las claves secretas del servidor y las contraseñas personales no se incluyen en el repositorio ni en el APK.
 
 ## Verificación
 
