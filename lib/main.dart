@@ -1,40 +1,107 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'core/app_store.dart';
-import 'core/app_strings.dart';
-import 'screens/sprint_screens.dart';
+import 'core/app_controller.dart';
+import 'core/supabase_config.dart';
+import 'data/supabase_repository.dart';
+import 'screens/common.dart';
+import 'screens/home_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final store = AppStore(await SharedPreferences.getInstance());
-  await store.load();
-  runApp(FilaCeroApp(store: store));
+  await Supabase.initialize(
+    url: SupabaseConfig.url,
+    publishableKey: SupabaseConfig.publishableKey,
+  );
+  final controller = AppController(
+    SupabaseRepository(Supabase.instance.client),
+  );
+  await controller.initialize();
+  runApp(FilaCeroApp(controller: controller));
 }
 
-class FilaCeroApp extends StatelessWidget {
-  final AppStore store;
-  final bool mapEnabled;
-  const FilaCeroApp({super.key, required this.store, this.mapEnabled = true});
+class FilaCeroApp extends StatefulWidget {
+  final AppController controller;
+  const FilaCeroApp({super.key, required this.controller});
   @override
-  Widget build(BuildContext context) => MaterialApp(
-    title: S.appName,
+  State<FilaCeroApp> createState() => _FilaCeroAppState();
+}
+
+class _FilaCeroAppState extends State<FilaCeroApp> {
+  final navigator = GlobalKey<NavigatorState>();
+  final messenger = GlobalKey<ScaffoldMessengerState>();
+  String? previousUser;
+  @override
+  void initState() {
+    super.initState();
+    previousUser = widget.controller.profile?['id'];
+    widget.controller.addListener(accountChanged);
+  }
+
+  void accountChanged() {
+    final current = widget.controller.profile?['id'] as String?;
+    if (current != previousUser) {
+      messenger.currentState?.clearSnackBars();
+    }
+    if (previousUser != null && current != previousUser) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) navigator.currentState?.popUntil((route) => route.isFirst);
+      });
+    }
+    previousUser = current;
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(accountChanged);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext c) => MaterialApp(
+    navigatorKey: navigator,
+    scaffoldMessengerKey: messenger,
+    title: 'FilaCero',
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
       useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFF4511E)),
-      inputDecorationTheme: const InputDecorationTheme(
-        border: OutlineInputBorder(),
+      scaffoldBackgroundColor: const Color(0xFFF3F6FB),
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: accent,
+        primary: accent,
+        secondary: navy,
+        surface: Colors.white,
+      ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Color(0xFFF3F6FB),
+        foregroundColor: navy,
+        centerTitle: false,
+        elevation: 0,
+      ),
+      cardTheme: CardThemeData(
+        elevation: 0,
+        margin: EdgeInsets.zero,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.all(16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.blueGrey.shade100),
+        ),
       ),
       filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(minimumSize: const Size(48, 52)),
+        style: FilledButton.styleFrom(
+          minimumSize: const Size(48, 52),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
       ),
+      dividerTheme: DividerThemeData(color: Colors.blueGrey.shade50),
     ),
-    home: AnimatedBuilder(
-      animation: store,
-      builder: (_, _) => store.hasAccess
-          ? HomeScreen(store: store, mapEnabled: mapEnabled)
-          : WelcomeScreen(store: store),
-    ),
+    home: HomeScreen(controller: widget.controller),
   );
 }

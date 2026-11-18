@@ -1,0 +1,19 @@
+{
+  "android_integration": "passed",
+  "user_stories": [
+    "HU-06",
+    "HU-07",
+    "HU-08",
+    "HU-09",
+    "HU-10"
+  ],
+  "screenshots": 13,
+  "physical_deletes": 0,
+  "backend_http_cases": 46,
+  "local_tests": 15,
+  "server_expiration_check": true,
+  "ios_integration": "passed",
+  "ios_captures": 13,
+  "ios_run": "https://github.com/Rickv122/fila_cero/actions/runs/43978863216",
+  "physical_devices_tested": false
+}

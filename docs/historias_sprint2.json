@@ -1,0 +1,184 @@
+[
+  {
+    "id": "HU-06",
+    "title": "Gestionar empresas y estaciones",
+    "owner": "Cristopher Roy Flores Gomez",
+    "sp": 13,
+    "story": "Como administrador, quiero registrar y mantener las empresas operadoras y sus estaciones, para disponer de un catálogo organizado y actualizado.",
+    "route": "Panel administrativo → Empresas → Ficha de empresa → Estaciones → Formulario o ficha de estación.",
+    "criteria": [
+      [
+        "06-01",
+        "El administrador registra una empresa con denominación obligatoria; el sistema rechaza duplicados y conserva su identidad al editar."
+      ],
+      [
+        "06-02",
+        "Registra una estación con nombre, empresa activa, ciudad, dirección y al menos un combustible. El formulario no solicita coordenadas ni muestra códigos internos."
+      ],
+      [
+        "06-03",
+        "Consulta y filtra empresas y estaciones activas e inactivas; editar actualiza el registro sin duplicarlo ni perder sus relaciones."
+      ],
+      [
+        "06-04",
+        "Desactivar pide confirmación, aplica baja lógica y conserva datos e historial. Cancelar no cambia el registro."
+      ],
+      [
+        "06-05",
+        "Una empresa o estación inactiva queda fuera de la consulta pública y no admite publicaciones. Reactivar no reactiva hijos dados de baja ni renueva estados antiguos."
+      ],
+      [
+        "06-06",
+        "Solo el administrador gestiona el catálogo. El servidor valida relaciones y campos y rechaza guardados inválidos sin cambios parciales."
+      ]
+    ]
+  },
+  {
+    "id": "HU-07",
+    "title": "Registrarse y acceder según el rol",
+    "owner": "Naira Araziel Quisbert Perales",
+    "sp": 13,
+    "story": "Como usuario de FilaCero, quiero registrarme como conductor o acceder con una cuenta autorizada, para utilizar las funciones y datos personales que me corresponden.",
+    "route": "Bienvenida → Consultar estaciones, Iniciar sesión o Crear cuenta → Inicio correspondiente al rol → Mi cuenta.",
+    "criteria": [
+      [
+        "07-01",
+        "La bienvenida ofrece Consultar estaciones, Crear cuenta e Iniciar sesión. La consulta pública no exige una cuenta."
+      ],
+      [
+        "07-02",
+        "El registro solicita nombre, correo, contraseña y confirmación de contraseña. Rechaza campos vacíos, correo mal formado y claves de menos de ocho caracteres."
+      ],
+      [
+        "07-03",
+        "Un registro válido crea exclusivamente un conductor y abre su sesión con sus funciones personales. No exige confirmar el correo ni aceptar invitaciones."
+      ],
+      [
+        "07-04",
+        "El acceso con credenciales válidas dirige al inicio correspondiente: administración, estaciones asignadas o funciones del conductor. Credenciales incorrectas muestran un error."
+      ],
+      [
+        "07-05",
+        "La sesión persiste al reabrir la aplicación. Cerrar sesión retira datos y pantallas privadas; la consulta pública sigue disponible."
+      ],
+      [
+        "07-06",
+        "Mi cuenta permite editar nombre y contacto y cambiar la contraseña comprobando la actual. La persona no puede cambiar su propio rol ni asignarse estaciones."
+      ],
+      [
+        "07-07",
+        "Una cuenta inactiva pierde las siguientes operaciones protegidas aunque conserve un token. El servidor comprueba permisos actuales y no confía en roles enviados por el cliente."
+      ]
+    ]
+  },
+  {
+    "id": "HU-08",
+    "title": "Registrar personal y gestionar sus estaciones",
+    "owner": "Lucas Ivan Castro Alvarado",
+    "sp": 13,
+    "story": "Como administrador, quiero registrar al personal y administrar sus cuentas y estaciones autorizadas, para controlar quién puede gestionar la información de cada establecimiento.",
+    "route": "Panel administrativo → Usuarios → Registrar personal o Ficha → Editar acceso y estaciones, Desactivar, Reactivar o Restablecer contraseña.",
+    "criteria": [
+      [
+        "08-01",
+        "Usuarios permite buscar por nombre o correo y filtrar por rol y estado Activo o Inactivo. Solo el administrador accede a esta gestión."
+      ],
+      [
+        "08-02",
+        "Registrar personal reúne nombre, correo, teléfono opcional, contraseña inicial y rol en un solo formulario. Para un responsable exige empresa activa y permite seleccionar sus estaciones de esa empresa."
+      ],
+      [
+        "08-03",
+        "Al guardar datos válidos se crea la cuenta en el sistema de autenticación, se registra el perfil y se conceden las asignaciones. El responsable puede entrar con su correo y contraseña, sin invitaciones ni confirmación de correo."
+      ],
+      [
+        "08-04",
+        "Si el correo ya tiene una cuenta, el alta informa el conflicto. La edición utiliza la misma identidad y no restablece su contraseña de forma implícita."
+      ],
+      [
+        "08-05",
+        "Editar acceso y estaciones conserva la identidad, limita a una empresa activa por responsable y admite agregar o retirar estaciones. El servidor rechaza selecciones cruzadas o repetidas. El cambio de rol pide confirmación y retira permisos incompatibles."
+      ],
+      [
+        "08-06",
+        "Desactivar o reactivar una cuenta pide confirmación. La baja es lógica y conserva historial; no se permite desactivar la cuenta propia ni dejar el sistema sin administrador."
+      ],
+      [
+        "08-07",
+        "Restablecer contraseña solicita una nueva clave y su confirmación y solo permite la operación administrativa autorizada. Un responsable sin estaciones muestra Sin asignar y no puede publicar."
+      ],
+      [
+        "08-08",
+        "Un fallo del alta no se presenta como éxito: se informa el error, se conserva la identidad sin permisos de personal y se admite recuperación administrativa. Los reintentos de la misma operación no duplican la cuenta."
+      ]
+    ]
+  },
+  {
+    "id": "HU-09",
+    "title": "Publicar disponibilidad con historial",
+    "owner": "Ricardo Wilfredo Limachi Medina",
+    "sp": 8,
+    "story": "Como responsable de estación, quiero actualizar la disponibilidad de sus combustibles, para ofrecer a los conductores información reciente y trazable.",
+    "route": "Mi cuenta → Mis estaciones → Detalle autorizado → Actualizar disponibilidad → Guardar → Historial.",
+    "criteria": [
+      [
+        "09-01",
+        "Mis estaciones muestra únicamente estaciones activas de la empresa y asignaciones vigentes del responsable. Sin asignaciones muestra un estado vacío claro."
+      ],
+      [
+        "09-02",
+        "El responsable selecciona Disponible, Disponibilidad limitada o Agotado por combustible habilitado. El guardado exige al menos un estado y rechaza productos ajenos o repetidos."
+      ],
+      [
+        "09-03",
+        "Una publicación válida guarda autor, fecha del servidor y eventos de combustible de forma atómica y actualiza el detalle al regresar."
+      ],
+      [
+        "09-04",
+        "Visitantes, conductores, administradores y responsables sin asignación no pueden publicar, incluso con llamadas directas. Retirar un permiso bloquea el siguiente guardado de una sesión abierta."
+      ],
+      [
+        "09-05",
+        "Una publicación vencida a las dos horas o inexistente se muestra Sin actualizar. Reactivar un registro no vuelve reciente una publicación anterior."
+      ],
+      [
+        "09-06",
+        "El historial conserva combustible, estado, autor y fecha. Reintentar la misma operación no duplica registros y cambiar su contenido exige una nueva operación."
+      ]
+    ]
+  },
+  {
+    "id": "HU-10",
+    "title": "Consultar estaciones y gestionar favoritas",
+    "owner": "Andrick Fernando Valenzuela Alvarez",
+    "sp": 8,
+    "story": "Como conductor, quiero buscar estaciones, consultar sus combustibles y guardar mis favoritas, para revisar rápidamente las opciones que me interesan.",
+    "route": "Bienvenida → Consultar estaciones → Buscar o filtrar → Detalle → Guardar favorita; Mi cuenta → Mis favoritas.",
+    "criteria": [
+      [
+        "10-01",
+        "La consulta pública muestra estaciones y empresas activas mediante listas y detalle; no integra mapas, ubicación ni notificaciones."
+      ],
+      [
+        "10-02",
+        "Nombre o empresa, ciudad y combustible filtran la lista. Limpiar filtros restablece los resultados y se distinguen carga, lista vacía y error con reintento."
+      ],
+      [
+        "10-03",
+        "El detalle muestra nombre, dirección, productos y disponibilidad con fecha. Volver conserva filtros, páginas y posición."
+      ],
+      [
+        "10-04",
+        "Una persona autenticada guarda y quita favoritas propias con persistencia y baja lógica. Un visitante que intenta guardar puede registrarse o acceder y continuar con la estación elegida."
+      ],
+      [
+        "10-05",
+        "Las favoritas son privadas por cuenta. Ningún usuario, incluido el administrador, consulta las favoritas ajenas. Repetir un guardado no duplica la relación."
+      ],
+      [
+        "10-06",
+        "Una estación favorita inactiva conserva una referencia No disponible sin presentar existencias vigentes. Refrescar obtiene cambios del responsable y vencimientos."
+      ]
+    ]
+  }
+]

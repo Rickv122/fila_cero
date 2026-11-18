@@ -46,3 +46,13 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Credenciales de administración y configuración privada
+.env
+.env.*
+!.env.example
+config/local.json
+config/credenciales*.json
+docs/credenciales_privadas*
+supabase/.temp/
+android/.kotlin/

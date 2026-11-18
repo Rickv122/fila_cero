@@ -1,0 +1,16 @@
+{
+  "version": "2.0.0+2",
+  "archivo": "FilaCero_Sprint2.apk",
+  "bytes": 54591325,
+  "sha256": "3cad8d5e808c0bb73194621f0f4a522c7437e6c106bbd8342d5d1e5bc750d380",
+  "min_android": "8.0",
+  "min_sdk": 26,
+  "arquitecturas": [
+    "arm64-v8a",
+    "armeabi-v7a",
+    "x86_64"
+  ],
+  "descarga": "https://github.com/Rickv122/fila_cero/releases/download/v2.0.0-sprint2/FilaCero_Sprint2.apk",
+  "publicacion": "https://github.com/Rickv122/fila_cero/releases/tag/v2.0.0-sprint2",
+  "firma": "release con clave de depuración para distribución académica"
+}

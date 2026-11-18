@@ -1,0 +1,193 @@
+{
+  "executed_at_utc": "2026-11-16T21:50:34.542439+00:00",
+  "project": "oejouwwxngyafftzfkux",
+  "results": [
+    {
+      "case": "Consulta pública sin cuenta",
+      "passed": true
+    },
+    {
+      "case": "Autenticación real administrador",
+      "passed": true
+    },
+    {
+      "case": "Autenticación real encargado sopocachi",
+      "passed": true
+    },
+    {
+      "case": "Autenticación real encargado elalto",
+      "passed": true
+    },
+    {
+      "case": "Autenticación real inactivo",
+      "passed": true
+    },
+    {
+      "case": "Autenticación real sin_perfil",
+      "passed": true
+    },
+    {
+      "case": "Contraseña incorrecta rechazada",
+      "passed": true
+    },
+    {
+      "case": "Perfiles privados para visitante",
+      "passed": true
+    },
+    {
+      "case": "Encargado solo lee su propio perfil",
+      "passed": true
+    },
+    {
+      "case": "No puede elevar su rol editando perfil",
+      "passed": true
+    },
+    {
+      "case": "Preparación de intento con metadatos de usuario",
+      "passed": true
+    },
+    {
+      "case": "Publicación denegada None",
+      "passed": true
+    },
+    {
+      "case": "Publicación denegada administrador",
+      "passed": true
+    },
+    {
+      "case": "Publicación denegada elalto",
+      "passed": true
+    },
+    {
+      "case": "Publicación denegada inactivo",
+      "passed": true
+    },
+    {
+      "case": "Publicación denegada sin_perfil",
+      "passed": true
+    },
+    {
+      "case": "Encargado asignado publica disponibilidad",
+      "passed": true
+    },
+    {
+      "case": "Otra sesión recupera actualización y autor",
+      "passed": true
+    },
+    {
+      "case": "Catálogo protegido None",
+      "passed": true
+    },
+    {
+      "case": "Catálogo protegido sopocachi",
+      "passed": true
+    },
+    {
+      "case": "Catálogo protegido inactivo",
+      "passed": true
+    },
+    {
+      "case": "Catálogo protegido sin_perfil",
+      "passed": true
+    },
+    {
+      "case": "Validación de formulario en servidor p_nombre",
+      "passed": true
+    },
+    {
+      "case": "Validación de formulario en servidor p_direccion",
+      "passed": true
+    },
+    {
+      "case": "Validación de formulario en servidor p_latitud",
+      "passed": true
+    },
+    {
+      "case": "Validación de formulario en servidor p_longitud",
+      "passed": true
+    },
+    {
+      "case": "Validación de formulario en servidor p_ciudad",
+      "passed": true
+    },
+    {
+      "case": "Validación de formulario en servidor p_combustibles",
+      "passed": true
+    },
+    {
+      "case": "Validación de formulario en servidor p_combustibles",
+      "passed": true
+    },
+    {
+      "case": "CREATE remoto",
+      "passed": true
+    },
+    {
+      "case": "UPDATE conserva identificador",
+      "passed": true
+    },
+    {
+      "case": "Filtros combinados y búsqueda sin distinguir mayúsculas",
+      "passed": true
+    },
+    {
+      "case": "Consulta sin coincidencias",
+      "passed": true
+    },
+    {
+      "case": "Asignación controlada de encargado",
+      "passed": true
+    },
+    {
+      "case": "Disponibilidad con historial",
+      "passed": true
+    },
+    {
+      "case": "Autor y hora registrados por servidor",
+      "passed": true
+    },
+    {
+      "case": "Transacción revierte estado e historial ante fallo",
+      "passed": true
+    },
+    {
+      "case": "Escritura directa denegada surtidores PATCH",
+      "passed": true
+    },
+    {
+      "case": "Escritura directa denegada surtidores DELETE",
+      "passed": true
+    },
+    {
+      "case": "Escritura directa denegada historial_disponibilidad PATCH",
+      "passed": true
+    },
+    {
+      "case": "Baja lógica",
+      "passed": true
+    },
+    {
+      "case": "Inactiva oculta en consulta pública",
+      "passed": true
+    },
+    {
+      "case": "Encargado no publica en gasolinera inactiva",
+      "passed": true
+    },
+    {
+      "case": "Baja conserva fila, identidad e historial",
+      "passed": true
+    },
+    {
+      "case": "Reactivación no renueva disponibilidad antigua",
+      "passed": true
+    },
+    {
+      "case": "Paginación estable de veinte resultados",
+      "passed": true
+    }
+  ],
+  "passed": 46,
+  "total": 46,
+  "physical_deletes": 0
+}
