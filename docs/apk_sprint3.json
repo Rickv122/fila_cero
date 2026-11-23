@@ -1,0 +1,10 @@
+{
+  "version": "3.0.0+3",
+  "archivo": "FilaCero_Sprint3.apk",
+  "bytes": 57756803,
+  "sha256": "19160f34879938432078419a3e65a2bb1323678ff37498b6a329eae031e460bc",
+  "android_minimo": "8.0 / API 26",
+  "rama": "sprint-3",
+  "release": "https://github.com/Rickv122/fila_cero/releases/tag/v3.0.0-sprint3",
+  "descarga": "https://github.com/Rickv122/fila_cero/releases/download/v3.0.0-sprint3/FilaCero_Sprint3.apk"
+}

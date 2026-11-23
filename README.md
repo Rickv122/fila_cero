@@ -4,6 +4,12 @@ Aplicación Flutter para consultar estaciones de La Paz y El Alto, comparar opci
 
 Esta entrega se enfoca en **Android**. El Sprint 2 se conserva en la rama `sprint-2`. El trabajo de iOS queda pendiente por decisión del equipo.
 
+## Descargar Android
+
+[Descargar FilaCero Sprint 3 APK](https://github.com/Rickv122/fila_cero/releases/download/v3.0.0-sprint3/FilaCero_Sprint3.apk) · [Publicación y archivos de verificación](https://github.com/Rickv122/fila_cero/releases/tag/v3.0.0-sprint3)
+
+Versión **3.0.0+3**, Android 8.0 o posterior. Tamaño y SHA-256 en [apk_sprint3.json](docs/apk_sprint3.json). Las cuentas de evaluación aparecen más abajo.
+
 ## Historias de usuario
 
 | HU | Función | Responsable |
