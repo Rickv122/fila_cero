@@ -2,6 +2,12 @@
 
 Fecha: 23 de noviembre de 2026. Entorno: Android 15 API 35, Flutter 3.47.9, proyecto Supabase FilaCero.
 
+## Regresión de revocación al desactivar una cuenta
+
+Durante la revisión por criterios se detectó que una cuenta desactivada podía recibir un rechazo al revocar su dispositivo antes de cerrar sesión. La migración `sprint3_revocacion_cuenta_inactiva` permite revocar únicamente el dispositivo propio con identidad autenticada, aunque la cuenta esté inactiva. Las demás operaciones siguen requiriendo cuenta activa.
+
+Las cinco comprobaciones de `supabase/tests/sprint3_revocation.sql` pasaron con ROLLBACK: revocación propia, protección de dispositivos ajenos, bloqueo de preferencias, bloqueo de registro de dispositivos y rechazo de una solicitud sin identidad. También volvió a pasar `sprint3_invariants.sql`. El cambio se aplica en el servidor y conserva la compatibilidad con el APK 3.0.0; el recorrido manual con el usuario continúa por criterios.
+
 | Comprobación | Resultado |
 | --- | --- |
 | `flutter analyze` | Sin incidencias. |

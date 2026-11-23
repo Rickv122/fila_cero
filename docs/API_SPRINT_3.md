@@ -74,6 +74,8 @@ El conductor elige combustible, guarda una favorita y activa sus avisos con perm
 
 Antes de enviar se revisan cuenta, sesión, dispositivo, preferencia, favorita, suscripción, actividad del catálogo y disponibilidad vigente. Quitar favorita desactiva la suscripción. Cerrar sesión revoca primero el vínculo del dispositivo; las cuentas no comparten sus avisos.
 
+La revocación de un dispositivo propio requiere identidad autenticada y se permite también con la cuenta inactiva, para completar el cierre de sesión. Esta excepción no permite gestionar dispositivos de otras personas ni registrar dispositivos, consultar preferencias o realizar otras operaciones protegidas con una cuenta inactiva.
+
 ## Base de datos añadida
 
 | Tabla | Propósito |
