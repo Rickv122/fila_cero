@@ -6,6 +6,7 @@ import 'common.dart';
 import 'auth_screen.dart';
 import 'station_form_screen.dart';
 import 'availability_screen.dart';
+import 'route_screen.dart';
 
 class StationDetailScreen extends StatefulWidget {
   final AppController controller;
@@ -182,6 +183,17 @@ class _StationDetailScreenState extends State<StationDetailScreen> {
                   ),
                 ),
                 const SizedBox(height: 26),
+                OutlinedButton.icon(
+                  onPressed: () async {
+                    if (!widget.controller.signedIn) {
+                      final result = await openPage<bool>(context, AuthScreen(controller: widget.controller));
+                      if (result != true || !context.mounted) return;
+                    }
+                    if (context.mounted) await openPage(context, RouteScreen(controller: widget.controller, id: widget.id));
+                  },
+                  icon: const Icon(Icons.directions_outlined), label: const Text('Cómo llegar'),
+                ),
+                const SizedBox(height: 18),
                 Text(
                   'Combustibles',
                   style: Theme.of(context).textTheme.titleLarge

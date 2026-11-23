@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/app_controller.dart';
@@ -6,6 +7,7 @@ import 'core/supabase_config.dart';
 import 'data/supabase_repository.dart';
 import 'screens/common.dart';
 import 'screens/home_screen.dart';
+import 'screens/station_detail_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,6 +38,23 @@ class _FilaCeroAppState extends State<FilaCeroApp> {
     super.initState();
     previousUser = widget.controller.profile?['id'];
     widget.controller.addListener(accountChanged);
+    widget.controller.push.onMessage = (message, opened) {
+      final id = message.data['estacion_id'];
+      if (id == null || !mounted) return;
+      void showStation() => navigator.currentState?.push(MaterialPageRoute<void>(
+        builder: (_) => StationDetailScreen(controller: widget.controller, id: id),
+      ));
+      if (opened) {
+        showStation();
+      } else {
+        messenger.currentState?.showSnackBar(SnackBar(
+          content: Text('${message.notification?.title ?? 'Disponibilidad actualizada'}\n${message.notification?.body ?? ''}'),
+          action: SnackBarAction(label: 'Ver', onPressed: showStation),
+          duration: const Duration(seconds: 8),
+        ));
+      }
+    };
+    WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(widget.controller.push.initialize()));
   }
 
   void accountChanged() {
@@ -53,6 +72,7 @@ class _FilaCeroAppState extends State<FilaCeroApp> {
 
   @override
   void dispose() {
+    widget.controller.push.onMessage = null;
     widget.controller.removeListener(accountChanged);
     super.dispose();
   }

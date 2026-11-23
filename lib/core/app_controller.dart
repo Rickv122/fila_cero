@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/domain.dart';
 import '../data/supabase_repository.dart';
+import 'push_service.dart';
 
 class AppController extends ChangeNotifier with WidgetsBindingObserver {
   final SupabaseRepository repository;
@@ -16,6 +17,7 @@ class AppController extends ChangeNotifier with WidgetsBindingObserver {
   StreamSubscription<AuthState>? _subscription;
   static const callback = 'filacero://auth-callback';
   AppController(this.repository);
+  late final push = PushService(client, () => signedIn ? (profile?['id'] as String?) : null);
   SupabaseClient get client => repository.client;
   bool get signedIn =>
       client.auth.currentSession != null &&
@@ -89,9 +91,11 @@ class AppController extends ChangeNotifier with WidgetsBindingObserver {
     if (!signedIn) {
       throw Exception(sessionError ?? 'No se pudo iniciar sesión.');
     }
+    unawaited(push.resume());
   }
 
   Future<void> logout() async {
+    await push.detach();
     await client.auth.signOut();
     _generation++;
     profile = null;
@@ -106,6 +110,7 @@ class AppController extends ChangeNotifier with WidgetsBindingObserver {
       repository.command(action, data);
   @override
   void dispose() {
+    push.dispose();
     WidgetsBinding.instance.removeObserver(this);
     _subscription?.cancel();
     super.dispose();

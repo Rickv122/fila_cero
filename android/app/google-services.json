@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "597013810711",
+    "project_id": "filacero-b94e6",
+    "storage_bucket": "filacero-b94e6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:597013810711:android:9bb3cf3581670c7e571652",
+        "android_client_info": {
+          "package_name": "com.example.filacero"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXK-47SqevhQwEsDDperXFPR-8j_ONzSw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

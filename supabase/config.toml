@@ -406,6 +406,14 @@ port = 54327
 # Configure one of the supported backends: `postgres`, `bigquery`.
 backend = "postgres"
 
+# POST geographic requests check the live account; bounded map tiles are public.
+[functions.geo]
+verify_jwt = false
+
+# This worker accepts only the private webhook credential, never a client key.
+[functions.notify-worker]
+verify_jwt = false
+
 # Experimental features may be deprecated any time
 [experimental]
 # Configures S3 bucket URL, eg. <bucket_name>.s3-<region>.amazonaws.com

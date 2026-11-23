@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import '../core/app_controller.dart';
 import '../models/domain.dart';
 import 'common.dart';
+import '../data/travel_repository.dart';
+import '../models/travel.dart';
+import 'location_picker_screen.dart';
 
 class StationFormScreen extends StatefulWidget {
   final AppController controller;
@@ -28,6 +31,8 @@ class _StationFormScreenState extends State<StationFormScreen> {
   String? company, city;
   Set<String> fuels = {};
   AppRecord? options;
+  AppRecord? location;
+  bool locationChanged = false;
   Object? loadError;
   String? error;
   bool busy = false;
@@ -57,9 +62,11 @@ class _StationFormScreenState extends State<StationFormScreen> {
   Future<void> load() async {
     try {
       final o = row(await widget.controller.query('options'));
+      final loc = widget.station == null ? null : await TravelRepository(widget.controller.client).query('location', {'id': id});
       if (mounted) {
         setState(() {
           options = o;
+          location = loc == null ? null : row(loc);
           loadError = null;
         });
       }
@@ -79,7 +86,7 @@ class _StationFormScreenState extends State<StationFormScreen> {
       error = null;
     });
     try {
-      await widget.controller.command('station_save', {
+      await TravelRepository(widget.controller.client).command('station_save_location', {
         'id': id,
         'empresa_id': company,
         'ciudad_id': city,
@@ -88,6 +95,7 @@ class _StationFormScreenState extends State<StationFormScreen> {
         'licencia': license.text.trim(),
         'fuente_url': source.text.trim(),
         'combustibles': fuels.toList(),
+        if (locationChanged) ...{'latitud': location!['latitud'], 'longitud': location!['longitud']},
       });
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
@@ -155,6 +163,22 @@ class _StationFormScreenState extends State<StationFormScreen> {
                   ),
                   const SizedBox(height: 16),
                   _text(address, 'Dirección'),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: busy ? null : () async {
+                      final cities = rows(options!['ciudades']).where((v) => v['id'] == city);
+                      final selected = await openPage<AppRecord>(c, LocationPickerScreen(
+                        controller: widget.controller, station: true,
+                        initial: location == null ? null : recordPoint(location!),
+                        address: address.text, city: cities.isEmpty ? '' : cities.first['nombre'],
+                      ));
+                      if (selected != null && mounted) {
+                        setState(() { location = selected; locationChanged = true; address.text = selected['direccion']; });
+                      }
+                    },
+                    icon: const Icon(Icons.pin_drop_outlined),
+                    label: Text(location?['latitud'] == null ? 'Ubicar en el mapa' : 'Revisar ubicación en el mapa'),
+                  ),
                   const SizedBox(height: 24),
                   const Text(
                     'Combustibles habilitados',

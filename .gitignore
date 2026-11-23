@@ -56,3 +56,8 @@ config/credenciales*.json
 docs/credenciales_privadas*
 supabase/.temp/
 android/.kotlin/
+
+# Firebase server credentials must never be shipped with the client.
+**/*firebase-adminsdk*.json
+**/*service_account*.json
+**/*_private.json

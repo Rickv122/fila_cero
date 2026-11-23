@@ -7,6 +7,9 @@ import 'catalog_screen.dart';
 import 'account_screen.dart';
 import 'company_screen.dart';
 import 'users_screen.dart';
+import 'preferences_screen.dart';
+import 'recommendations_screen.dart';
+import 'notifications_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final AppController controller;
@@ -70,6 +73,12 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
+              _tile(context, Icons.near_me_outlined, 'Recomendaciones',
+                'Compara disponibilidad y tiempo de llegada.', RecommendationsScreen(controller: controller)),
+              _tile(context, Icons.tune, 'Mis preferencias',
+                'Tu combustible y distancia de recorrido.', PreferencesScreen(controller: controller)),
+              _tile(context, Icons.notifications_outlined, 'Mis avisos',
+                'Disponibilidad en tus favoritas.', NotificationsScreen(controller: controller)),
               _tile(
                 context,
                 Icons.explore_outlined,

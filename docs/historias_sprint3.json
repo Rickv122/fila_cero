@@ -1,0 +1,66 @@
+[
+  {
+    "id": "HU-11", "title": "Configurar preferencias de abastecimiento", "owner": "Cristopher Roy Flores Gomez", "points": 5, "priority": "Must", "status": "Planificada",
+    "actor": "conductor", "want": "guardar el combustible que utilizo y la distancia máxima que estoy dispuesto a recorrer", "benefit": "recibir recomendaciones y avisos acordes a mis necesidades", "integration": "Preferencias que alimentan las recomendaciones y los avisos",
+    "criteria": [
+      "Dado un conductor con sesión iniciada, cuando configura sus preferencias, entonces puede elegir un combustible activo del catálogo y una distancia máxima de recorrido de 5, 10 o 20 km.",
+      "Dadas unas preferencias válidas, cuando las guarda y vuelve a entrar a su cuenta, entonces recupera la misma selección.",
+      "Dadas unas preferencias guardadas, cuando cambia el combustible o la distancia y confirma, entonces las siguientes recomendaciones utilizan la nueva configuración y los avisos utilizan el nuevo combustible.",
+      "Dadas dos cuentas diferentes, cuando cada conductor consulta sus preferencias, entonces encuentra únicamente su propia configuración.",
+      "Dado un combustible seleccionado que fue desactivado, cuando el conductor solicita recomendaciones o configura avisos, entonces se le solicita elegir otro combustible activo.",
+      "Dado un formulario incompleto o un fallo al guardar, cuando intenta confirmar, entonces recibe el mensaje correspondiente, conserva lo escrito y no se reemplazan las preferencias anteriores."
+    ]
+  },
+  {
+    "id": "HU-12", "title": "Comparar estaciones según disponibilidad y tiempo de llegada", "owner": "Naira Araziel Quisbert Perales", "points": 13, "priority": "Must", "status": "Planificada",
+    "actor": "conductor", "want": "comparar estaciones que tengan el combustible que utilizo según su disponibilidad y tiempo estimado de llegada", "benefit": "elegir una opción conveniente", "integration": "Geoapify Route Matrix",
+    "criteria": [
+      "Dado un conductor que solicita recomendaciones, cuando autoriza su ubicación, entonces esta se utiliza como origen. Si rechaza el permiso o no puede obtenerse la ubicación, puede seleccionar un origen manualmente en el mapa.",
+      "Dadas sus preferencias y un origen, cuando solicita opciones, entonces se consideran únicamente estaciones y empresas activas, con ubicación confirmada y el combustible elegido en estado Disponible o Disponibilidad limitada, con información vigente.",
+      "Dadas las distancias calculadas por carretera, cuando se presentan las opciones, entonces se excluyen las que superan la distancia máxima configurada.",
+      "Dadas varias opciones válidas, cuando se ordenan, entonces aparecen primero las que tienen combustible Disponible y después las de Disponibilidad limitada; dentro de cada grupo se ordenan por menor tiempo estimado y, en caso de empate, por menor distancia.",
+      "Dada una estación recomendada, cuando aparece en los resultados, entonces muestra nombre, combustible, estado, última actualización, distancia por carretera y tiempo estimado; puede identificarse también en el mapa.",
+      "Dada una estación para la que no pudo calcularse un recorrido, cuando se procesan los resultados, entonces no se presenta con una distancia o tiempo inventados. Si no quedan opciones válidas, se informa y se permite cambiar el origen o ampliar la distancia.",
+      "Dados los resultados abiertos, cuando el conductor actualiza, entonces se vuelven a comprobar disponibilidad y vigencia. Si falla la consulta, se muestra un error con reintento y no se presentan resultados anteriores como recién calculados."
+    ]
+  },
+  {
+    "id": "HU-13", "title": "Consultar cómo llegar a una estación", "owner": "Lucas Ivan Castro Alvarado", "points": 8, "priority": "Must", "status": "Planificada",
+    "actor": "conductor", "want": "consultar el recorrido hacia la estación que elegí", "benefit": "conocer por dónde ir y cuánto podría tardar", "integration": "Geoapify Routing",
+    "criteria": [
+      "Dada una estación con ubicación confirmada y un origen definido, cuando toca Cómo llegar, entonces ve el recorrido por calles, el punto de partida, el destino, la distancia y el tiempo estimado.",
+      "Dado un conductor sin origen definido, cuando solicita una ruta, entonces puede utilizar su ubicación autorizada o elegir un punto manualmente.",
+      "Dada una ruta abierta, cuando cambia el origen o el destino y vuelve a calcular, entonces el nuevo recorrido reemplaza al anterior y corresponde a los puntos seleccionados.",
+      "Dada una estación cuya disponibilidad cambió o venció, cuando abre su ruta, entonces se muestra el estado actualizado del combustible junto al destino.",
+      "Dada una respuesta sin recorrido, un fallo de conexión o un tiempo de espera agotado, cuando intenta calcular, entonces recibe un mensaje con opción de reintentar y no se dibuja una ruta ficticia.",
+      "Dada una ruta abierta desde las recomendaciones, cuando vuelve atrás, entonces conserva el origen, los filtros y la selección anterior."
+    ]
+  },
+  {
+    "id": "HU-14", "title": "Recibir avisos de disponibilidad en estaciones favoritas", "owner": "Ricardo Wilfredo Limachi Medina", "points": 13, "priority": "Must", "status": "Planificada",
+    "actor": "conductor", "want": "activar avisos de mi combustible en mis estaciones favoritas", "benefit": "enterarme cuando su responsable informe que está disponible sin revisar continuamente la aplicación", "integration": "Firebase Cloud Messaging",
+    "criteria": [
+      "Dado un conductor con combustible configurado y una estación favorita activa, cuando activa los avisos para esa estación, entonces queda registrada su elección.",
+      "Dado un teléfono sin permiso para notificaciones, cuando intenta activar los avisos, entonces se solicita autorización. Si la rechaza, se informa que debe habilitar el permiso y no se muestra una activación exitosa.",
+      "Dada una suscripción activa, cuando el responsable autorizado publica el combustible elegido como Disponible y su estado efectivo anterior era diferente, entonces se genera un aviso para ese conductor.",
+      "Dada una publicación ya procesada, cuando se reintenta su envío, entonces no se genera otro aviso para la misma publicación y cuenta. Activar avisos tampoco envía publicaciones anteriores.",
+      "Dado un dispositivo compatible, conectado y con permisos, cuando recibe el aviso con la app abierta o en segundo plano, entonces identifica estación y combustible; al tocarlo abre el detalle y consulta la información actual.",
+      "Dado un conductor que desactiva los avisos, retira la favorita o cambia de combustible, cuando se producen nuevas publicaciones, entonces se respeta su configuración actual. Las cuentas inactivas no reciben nuevos avisos.",
+      "Dado un teléfono vinculado a una cuenta, cuando se cierra sesión y entra otra persona, entonces no sigue recibiendo avisos dirigidos a la cuenta anterior.",
+      "Dada una publicación guardada correctamente, cuando falla el envío de la notificación, entonces la disponibilidad permanece guardada y el aviso puede reintentarse sin duplicarse."
+    ]
+  },
+  {
+    "id": "HU-15", "title": "Ubicar estaciones mediante búsqueda y selección en el mapa", "owner": "Andrick Fernando Valenzuela Alvarez", "points": 8, "priority": "Must", "status": "Planificada",
+    "actor": "administrador", "want": "buscar la dirección de una estación y confirmar su ubicación en el mapa", "benefit": "registrarla con precisión sin copiar coordenadas manualmente", "integration": "Geoapify Geocoding y Reverse Geocoding",
+    "criteria": [
+      "Dado un administrador en la ubicación de una estación, cuando busca una dirección indicando su ciudad, entonces recibe coincidencias y puede seleccionar una para visualizarla en el mapa.",
+      "Dado un punto seleccionado, cuando mueve el marcador o elige otro lugar, entonces se actualiza la ubicación propuesta y se solicita una dirección sugerida para ese punto.",
+      "Dada una ubicación propuesta, cuando revisa los datos, entonces puede corregir la dirección descriptiva antes de guardar.",
+      "Dada una ubicación válida y confirmada, cuando guarda, entonces se almacenan internamente las coordenadas junto con la dirección y quedan disponibles para mapas, recomendaciones y rutas.",
+      "Dada una estación existente, cuando cambia únicamente su ubicación, entonces se conserva la misma estación con su empresa, combustibles, asignaciones e historial.",
+      "Dada una búsqueda sin coincidencias o un fallo del servicio, cuando ocurre el problema, entonces se informa y se conserva el formulario sin reemplazar la ubicación guardada por valores incorrectos. Cancelar conserva los datos anteriores.",
+      "Dada una persona sin permisos administrativos, cuando intenta modificar la ubicación desde la interfaz o mediante una solicitud directa, entonces la operación es rechazada."
+    ]
+  }
+]

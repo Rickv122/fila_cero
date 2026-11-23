@@ -1,0 +1,110 @@
+{
+  "fecha": "2026-11-23",
+  "plataforma": "Android 15 / API 35",
+  "flutter": "3.47.9",
+  "resultado_recorrido": "aprobado",
+  "etapas_verificadas": [
+    "Preferencias cargadas",
+    "Preferencias guardadas y retorno",
+    "Recomendaciones listas",
+    "Selector de origen manual",
+    "Selección de origen preparada",
+    "Origen manual seleccionado",
+    "Route Matrix respondió con estación elegible",
+    "Routing dibujado con distancia y tiempo",
+    "Favoritas para avisos cargadas",
+    "Este teléfono registrado en FCM",
+    "Aviso desactivado",
+    "Aviso activado con registro FCM real",
+    "Aviso recibido en primer plano desde publicación responsable",
+    "Aviso abre detalle actualizado",
+    "Buscador del catálogo",
+    "Catálogo administrativo",
+    "Detalle administrativo",
+    "Ubicación actual cargada",
+    "Geocoding devuelve coincidencias",
+    "Ubicación guardada sin duplicar estación"
+  ],
+  "pruebas_flutter": {
+    "aprobadas": 15
+  },
+  "pruebas_contratos_http_y_modelos": {
+    "aprobadas": 8
+  },
+  "casos_http_reales": [
+    {
+      "test": "Búsqueda incompleta",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "test": "Coordenada inválida",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "test": "Estación inexistente",
+      "expected": 422,
+      "actual": 422,
+      "passed": true
+    },
+    {
+      "test": "Preferencias sin acceso directo",
+      "expected": 403,
+      "actual": 403,
+      "passed": true
+    },
+    {
+      "test": "Cola reservada al servidor",
+      "expected": 403,
+      "actual": 403,
+      "passed": true
+    },
+    {
+      "test": "Proceso de avisos rechaza clave cliente",
+      "expected": 401,
+      "actual": 401,
+      "passed": true
+    }
+  ],
+  "bd": "Reglas transaccionales verificadas con ROLLBACK; tres migraciones Sprint 3 aplicadas.",
+  "avisos": "Envío real desde publicación del responsable, FCM y recepción en primer plano; apertura del detalle actualizada.",
+  "pendiente_manual": "Recepción y apertura desde la notificación del sistema con la app en segundo plano en el teléfono de exposición.",
+  "ios": "Pendiente por decisión del equipo.",
+  "capturas": [
+    {
+      "archivo": "pantalla1-HU-11-preferencias.png",
+      "sha256": "779419a080d234551ea4dbcbd3fa07b60a5ef349c5aa6e4deca19c3bcf5b876b"
+    },
+    {
+      "archivo": "pantalla2-HU-12-recomendaciones.png",
+      "sha256": "ff728815b34a6354f66b3dfdb0bd90ad2a3103fd77e49bb8fda8895e5fdba2d2"
+    },
+    {
+      "archivo": "pantalla3-HU-13-ruta.png",
+      "sha256": "68a45a3011c1131e192cf687faf798ea6cd3ff28fedfb3353a57273409e54c40"
+    },
+    {
+      "archivo": "pantalla4-HU-14-avisos.png",
+      "sha256": "9c8bb0ef246f566b0e6f20f9393d84997ff3f633d827c743a831ed8fc59b5fc1"
+    },
+    {
+      "archivo": "pantalla5-HU-14-aviso-recibido.png",
+      "sha256": "0992d23b13517d4f1650ad346d28646641aa69cdfc38f332e51ff17ca353a15b"
+    },
+    {
+      "archivo": "pantalla6-HU-15-busqueda.png",
+      "sha256": "0ea1e6c5ae7f175797241547ac0b4178d0feb5654b13ae35ab64e8ce06b48c1d"
+    },
+    {
+      "archivo": "pantalla7-HU-15-punto.png",
+      "sha256": "bc18ea51dc8f5ebe1dac93012c3db6ab71c31f6fa559a913bbc3a9acc4475054"
+    },
+    {
+      "archivo": "pantalla8-HU-15-estacion-guardada.png",
+      "sha256": "cc311ae19b166c59138fe1f40fa1ec95e3299a9936d54069e501dde16ca1bf26"
+    }
+  ]
+}

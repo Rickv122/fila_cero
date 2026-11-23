@@ -1,0 +1,25 @@
+{
+  "fuente": "Geoapify Geocoding / OpenStreetMap",
+  "consultado_el": "2026-11-23",
+  "revision": "Coincidencias de nombre y calle revisadas frente al catálogo; no se usaron centroides de ciudad como ubicaciones de estaciones.",
+  "ubicaciones": [
+    {
+      "estacion": "San Jorge",
+      "latitud": -16.5151085,
+      "longitud": -68.1198664,
+      "coincidencia": "Estación de Servicio Automóvil Club Boliviano, Avenida 6 de Agosto"
+    },
+    {
+      "estacion": "calacoto",
+      "latitud": -16.5389879,
+      "longitud": -68.0874292,
+      "coincidencia": "Estación de Servicio Calacoto, Calle 12-República de Portugal"
+    },
+    {
+      "estacion": "Obrajes 17",
+      "latitud": -16.5293667,
+      "longitud": -68.1003995,
+      "coincidencia": "Estación de Servicio CarSur, Avenida 14 de Septiembre 40"
+    }
+  ]
+}
