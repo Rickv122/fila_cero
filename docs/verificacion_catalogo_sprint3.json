@@ -1,0 +1,361 @@
+{
+  "verificado_en": "2026-11-23T23:33:29.920709+00:00",
+  "estaciones": 20,
+  "activas": 20,
+  "ubicadas": 20,
+  "con_responsable": 20,
+  "registros_originales_conservados": 12,
+  "historial_previo_conservado": 150,
+  "historial_previo_total": 150,
+  "estados_vigentes": 89,
+  "nuevas_publicaciones": 95,
+  "combustibles": [
+    {
+      "nombre": "Diésel Oil",
+      "total": 20,
+      "disponible": 6,
+      "limitada": 13,
+      "agotado": 1,
+      "vigente": 20,
+      "publicacion_mas_antigua": "2026-11-23 23:29:09.64711+00",
+      "publicacion_mas_reciente": "2026-11-23 23:31:06.601468+00"
+    },
+    {
+      "nombre": "Gasolina Especial",
+      "total": 19,
+      "disponible": 16,
+      "limitada": 3,
+      "agotado": 0,
+      "vigente": 19,
+      "publicacion_mas_antigua": "2026-11-23 23:29:08.696117+00",
+      "publicacion_mas_reciente": "2026-11-23 23:29:33.816944+00"
+    },
+    {
+      "nombre": "Gasolina Especial (+)",
+      "total": 18,
+      "disponible": 15,
+      "limitada": 3,
+      "agotado": 0,
+      "vigente": 18,
+      "publicacion_mas_antigua": "2026-11-23 23:29:08.696128+00",
+      "publicacion_mas_reciente": "2026-11-23 23:29:33.816955+00"
+    },
+    {
+      "nombre": "Gasolina Premium",
+      "total": 16,
+      "disponible": 13,
+      "limitada": 2,
+      "agotado": 1,
+      "vigente": 16,
+      "publicacion_mas_antigua": "2026-11-23 23:29:08.695808+00",
+      "publicacion_mas_reciente": "2026-11-23 23:29:33.816865+00"
+    },
+    {
+      "nombre": "Super Etanol 92",
+      "total": 16,
+      "disponible": 14,
+      "limitada": 2,
+      "agotado": 0,
+      "vigente": 16,
+      "publicacion_mas_antigua": "2026-11-23 23:29:08.696206+00",
+      "publicacion_mas_reciente": "2026-11-23 23:29:33.816962+00"
+    }
+  ],
+  "recomendaciones": {
+    "verificado_en": "2026-11-23T23:29:44.315186+00:00",
+    "combustible_guardado": "Super Etanol 92",
+    "distancia_guardada_km": 20,
+    "candidatas": 16,
+    "origenes": [
+      {
+        "origen": "Miraflores · Plaza Triangular",
+        "coordenadas": {
+          "lat": -16.50395,
+          "lon": -68.1212
+        },
+        "opciones": 16,
+        "primeras": [
+          {
+            "nombre": "Miraflores",
+            "estado": "disponible",
+            "distancia_m": 429,
+            "tiempo_s": 73
+          },
+          {
+            "nombre": "Motoreco",
+            "estado": "disponible",
+            "distancia_m": 1732,
+            "tiempo_s": 185
+          },
+          {
+            "nombre": "Centro",
+            "estado": "disponible",
+            "distancia_m": 1791,
+            "tiempo_s": 194
+          },
+          {
+            "nombre": "Servifull Miraflores",
+            "estado": "disponible",
+            "distancia_m": 1611,
+            "tiempo_s": 202
+          },
+          {
+            "nombre": "Sopocachi",
+            "estado": "disponible",
+            "distancia_m": 1869,
+            "tiempo_s": 205
+          }
+        ]
+      },
+      {
+        "origen": "Miraflores norte · entorno Pasoskanki",
+        "coordenadas": {
+          "lat": -16.4985,
+          "lon": -68.1188
+        },
+        "opciones": 16,
+        "primeras": [
+          {
+            "nombre": "Miraflores",
+            "estado": "disponible",
+            "distancia_m": 905,
+            "tiempo_s": 137
+          },
+          {
+            "nombre": "Kantuta",
+            "estado": "disponible",
+            "distancia_m": 1228,
+            "tiempo_s": 168
+          },
+          {
+            "nombre": "Servifull Miraflores",
+            "estado": "disponible",
+            "distancia_m": 1600,
+            "tiempo_s": 178
+          },
+          {
+            "nombre": "Motoreco",
+            "estado": "disponible",
+            "distancia_m": 1771,
+            "tiempo_s": 181
+          },
+          {
+            "nombre": "Centro",
+            "estado": "disponible",
+            "distancia_m": 1830,
+            "tiempo_s": 191
+          }
+        ]
+      },
+      {
+        "origen": "Sopocachi · punto simulado del emulador",
+        "coordenadas": {
+          "lat": -16.50891,
+          "lon": -68.12645
+        },
+        "opciones": 16,
+        "primeras": [
+          {
+            "nombre": "Sopocachi",
+            "estado": "disponible",
+            "distancia_m": 743,
+            "tiempo_s": 88
+          },
+          {
+            "nombre": "San Jorge",
+            "estado": "disponible",
+            "distancia_m": 1003,
+            "tiempo_s": 101
+          },
+          {
+            "nombre": "San Pedro",
+            "estado": "disponible",
+            "distancia_m": 1188,
+            "tiempo_s": 130
+          },
+          {
+            "nombre": "Miraflores",
+            "estado": "disponible",
+            "distancia_m": 1648,
+            "tiempo_s": 215
+          },
+          {
+            "nombre": "Centro",
+            "estado": "disponible",
+            "distancia_m": 2440,
+            "tiempo_s": 258
+          }
+        ]
+      }
+    ],
+    "rutas": [
+      {
+        "origen": "Miraflores · Plaza Triangular",
+        "destino": "Miraflores",
+        "distancia_m": 429,
+        "tiempo_s": 73.034,
+        "puntos": 18
+      },
+      {
+        "origen": "Miraflores norte · entorno Pasoskanki",
+        "destino": "Miraflores",
+        "distancia_m": 905,
+        "tiempo_s": 136.573,
+        "puntos": 30
+      }
+    ],
+    "preferencias_conservadas": true,
+    "resultado": "APROBADO"
+  },
+  "rutas": {
+    "verificado_en": "2026-11-23T23:33:13.344009+00:00",
+    "origen": {
+      "nombre": "Plaza Triangular, Miraflores",
+      "lat": -16.50395,
+      "lon": -68.1212
+    },
+    "rutas": [
+      {
+        "id": "214be0f8-c92b-4123-a3b9-f7c76bef08ee",
+        "estacion": "Calacoto",
+        "distancia_m": 7879,
+        "tiempo_s": 818.394,
+        "puntos": 291
+      },
+      {
+        "id": "7f0542ac-881c-496f-8aee-2672e4a3f94d",
+        "estacion": "Obrajes 17",
+        "distancia_m": 4625,
+        "tiempo_s": 466.298,
+        "puntos": 171
+      },
+      {
+        "id": "e315662c-caa0-426b-9791-ff16f2c738c7",
+        "estacion": "San Jorge",
+        "distancia_m": 1908,
+        "tiempo_s": 206.586,
+        "puntos": 44
+      },
+      {
+        "id": "56216da8-f2b0-44a1-bd7e-b2b1bdca3e8c",
+        "estacion": "Obrajes",
+        "distancia_m": 2791,
+        "tiempo_s": 294.517,
+        "puntos": 140
+      },
+      {
+        "id": "3e57c9d2-ef85-4fa5-9de6-1c5f697b92b0",
+        "estacion": "Senkata",
+        "distancia_m": 23863,
+        "tiempo_s": 1606.34,
+        "puntos": 548
+      },
+      {
+        "id": "56deaf50-a6ac-485b-a6ea-2677f7788ec0",
+        "estacion": "Centro",
+        "distancia_m": 1791,
+        "tiempo_s": 194.496,
+        "puntos": 106
+      },
+      {
+        "id": "f2f24626-b1fa-4208-9aa2-203a6028a795",
+        "estacion": "Ciudad Satélite",
+        "distancia_m": 8166,
+        "tiempo_s": 911.176,
+        "puntos": 378
+      },
+      {
+        "id": "2a54a69a-0c10-4c28-8d6f-0e3490e70171",
+        "estacion": "Miraflores",
+        "distancia_m": 429,
+        "tiempo_s": 73.034,
+        "puntos": 18
+      },
+      {
+        "id": "94988b49-9f52-4409-a156-8dda388a3d34",
+        "estacion": "San Sebastián",
+        "distancia_m": 3095,
+        "tiempo_s": 318.658,
+        "puntos": 142
+      },
+      {
+        "id": "438cda96-5183-4704-9d29-9bc166cb4247",
+        "estacion": "Sopocachi",
+        "distancia_m": 1869,
+        "tiempo_s": 204.617,
+        "puntos": 56
+      },
+      {
+        "id": "06d1fc44-a77d-4d6d-bd3d-f6abd274d126",
+        "estacion": "Villa Adela",
+        "distancia_m": 20064,
+        "tiempo_s": 1208.511,
+        "puntos": 522
+      },
+      {
+        "id": "300cb645-a911-4692-97b5-2fb9b9e72b32",
+        "estacion": "Villa Bolívar",
+        "distancia_m": 19380,
+        "tiempo_s": 1238.101,
+        "puntos": 490
+      },
+      {
+        "id": "63a10640-e120-5bd4-b5ef-f3e44f43075a",
+        "estacion": "Servifull Miraflores",
+        "distancia_m": 1611,
+        "tiempo_s": 202.284,
+        "puntos": 68
+      },
+      {
+        "id": "4ba9b4d3-4905-5073-9336-8bbd169c5310",
+        "estacion": "Angelita Miraflores",
+        "distancia_m": 1407,
+        "tiempo_s": 187.774,
+        "puntos": 65
+      },
+      {
+        "id": "8f18eef4-f762-5b6e-961c-7bf5e13c95d5",
+        "estacion": "Motoreco",
+        "distancia_m": 1732,
+        "tiempo_s": 184.597,
+        "puntos": 106
+      },
+      {
+        "id": "18104af8-bfe8-55ee-bd79-2b27cd0017ad",
+        "estacion": "Kantuta",
+        "distancia_m": 1999,
+        "tiempo_s": 282.137,
+        "puntos": 101
+      },
+      {
+        "id": "b47b72d0-bd0d-5b84-959b-03cf218053ee",
+        "estacion": "Soinco",
+        "distancia_m": 3218,
+        "tiempo_s": 357.63,
+        "puntos": 140
+      },
+      {
+        "id": "6df94fee-8f9d-5b5a-9534-bd4fab108c7a",
+        "estacion": "La Costanera",
+        "distancia_m": 3654,
+        "tiempo_s": 385.003,
+        "puntos": 162
+      },
+      {
+        "id": "8ce49be7-7e10-574c-bf31-fb3c502a54b2",
+        "estacion": "San Pedro",
+        "distancia_m": 2106,
+        "tiempo_s": 246.039,
+        "puntos": 64
+      },
+      {
+        "id": "18256701-a3c9-5cc5-8828-525a2ee42d87",
+        "estacion": "Cristo Autogas",
+        "distancia_m": 4267,
+        "tiempo_s": 427.157,
+        "puntos": 178
+      }
+    ],
+    "resultado": "APROBADO"
+  }
+}

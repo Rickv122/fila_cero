@@ -57,7 +57,7 @@ El registro público crea conductores, sin confirmación por correo. El administ
 4. Guardar San Jorge en favoritas y activar **Mis avisos** con permiso del teléfono. Desde Mateo publicar primero Limitada o Agotado y después Disponible. El aviso permite abrir el detalle actualizado. Repetir Disponible no crea otro evento mientras el estado anterior siga vigente.
 5. **Administrador → Estaciones → San Jorge → Editar estación → Revisar ubicación en el mapa:** buscar una dirección, revisar el punto y la dirección, confirmar y guardar. Se conserva la identidad de la estación y sus relaciones.
 
-Los nombres y direcciones del catálogo proceden de referencias públicas. La disponibilidad y las personas de evaluación son escenarios académicos; no acreditan abastecimiento real. Las ubicaciones incorporadas se documentan en [ubicaciones_sprint3.json](docs/ubicaciones_sprint3.json).
+El catálogo de exposición reúne **20 estaciones activas con ubicación**, incluidas Miraflores, Servifull Miraflores, Angelita Miraflores, Motoreco y Kantuta. Dieciocho ubicaciones proceden de puntos cartográficos públicos y dos son simuladas para las pruebas. La oferta configurada de combustibles, su disponibilidad y las personas de evaluación son escenarios académicos; no acreditan abastecimiento real. El [catálogo actualizado](docs/catalogo_sprint3.json), las [ubicaciones](docs/ubicaciones_sprint3.json) y la [preparación de pruebas](docs/PRUEBAS_CATALOGO_SPRINT_3.md) distinguen las fuentes y los datos simulados.
 
 ## Integraciones y arquitectura
 

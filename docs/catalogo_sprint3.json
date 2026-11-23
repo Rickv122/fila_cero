@@ -1,0 +1,568 @@
+{
+  "actualizado_el": "2026-11-23T23:33:29.920709+00:00",
+  "alcance": "Preparación académica autorizada de las HU-11 a HU-15. Los estados y la oferta configurada no acreditan abastecimiento ni distribución real.",
+  "total_estaciones": 20,
+  "ubicaciones_cartograficas": 18,
+  "ubicaciones_simuladas": 2,
+  "vigencia_disponibilidad_horas": 2,
+  "estaciones": [
+    {
+      "id": "214be0f8-c92b-4123-a3b9-f7c76bef08ee",
+      "nombre": "Calacoto",
+      "ciudad": "La Paz",
+      "empresa": "Automóvil Club Boliviano",
+      "direccion": "Calle 12 esq. Gral. Inofuentes Nº 7823",
+      "latitud": -16.5389879,
+      "longitud": -68.0874292,
+      "tipo_ubicacion": "punto_cartografico",
+      "fuente_ubicacion": "https://www.openstreetmap.org/way/1318438213",
+      "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40",
+      "licencia": "ANH00305-CLES02-LIC09/2026",
+      "activo": true,
+      "origen_registro": "registro_anterior_conservado",
+      "combustibles": [
+        "Gasolina Premium",
+        "Gasolina Especial",
+        "Gasolina Especial (+)",
+        "Super Etanol 92",
+        "Diésel Oil"
+      ],
+      "disponibilidad_de_prueba": {
+        "Gasolina Premium": "disponible",
+        "Gasolina Especial": "disponible",
+        "Gasolina Especial (+)": "disponible",
+        "Super Etanol 92": "disponible",
+        "Diésel Oil": "disponible"
+      }
+    },
+    {
+      "id": "7f0542ac-881c-496f-8aee-2672e4a3f94d",
+      "nombre": "Obrajes 17",
+      "ciudad": "La Paz",
+      "empresa": "CARBURANTES DEL SUR S.R.L.",
+      "direccion": "Calle 17 de Obrajes esq. Av. 14 de Septiembre Nº 40",
+      "latitud": -16.5293667,
+      "longitud": -68.1003995,
+      "tipo_ubicacion": "punto_cartografico",
+      "fuente_ubicacion": "https://www.openstreetmap.org/way/822370828",
+      "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40",
+      "licencia": "ANH00074-CLES01-LIC08/2025",
+      "activo": true,
+      "origen_registro": "registro_anterior_conservado",
+      "combustibles": [
+        "Gasolina Premium",
+        "Gasolina Especial",
+        "Gasolina Especial (+)",
+        "Super Etanol 92",
+        "Diésel Oil"
+      ],
+      "disponibilidad_de_prueba": {
+        "Gasolina Premium": "disponible",
+        "Gasolina Especial": "disponible",
+        "Gasolina Especial (+)": "disponible",
+        "Super Etanol 92": "disponible",
+        "Diésel Oil": "limitada"
+      }
+    },
+    {
+      "id": "e315662c-caa0-426b-9791-ff16f2c738c7",
+      "nombre": "San Jorge",
+      "ciudad": "La Paz",
+      "empresa": "Automóvil Club Boliviano",
+      "direccion": "Av. 6 de Agosto Nº 2993",
+      "latitud": -16.5151085,
+      "longitud": -68.1198664,
+      "tipo_ubicacion": "punto_cartografico",
+      "fuente_ubicacion": "https://www.openstreetmap.org/way/860825880",
+      "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40",
+      "licencia": "ANH00305-CLES01-LIC09/2026",
+      "activo": true,
+      "origen_registro": "registro_anterior_conservado",
+      "combustibles": [
+        "Gasolina Premium",
+        "Gasolina Especial",
+        "Gasolina Especial (+)",
+        "Super Etanol 92",
+        "Diésel Oil"
+      ],
+      "disponibilidad_de_prueba": {
+        "Gasolina Premium": "disponible",
+        "Gasolina Especial": "disponible",
+        "Gasolina Especial (+)": "disponible",
+        "Super Etanol 92": "disponible",
+        "Diésel Oil": "limitada"
+      }
+    },
+    {
+      "id": "56216da8-f2b0-44a1-bd7e-b2b1bdca3e8c",
+      "nombre": "Obrajes",
+      "ciudad": "La Paz",
+      "empresa": "BASSAM LIMITADA",
+      "direccion": "Av. del Libertador, Obrajes",
+      "latitud": -16.5218626,
+      "longitud": -68.1151351,
+      "tipo_ubicacion": "punto_cartografico",
+      "fuente_ubicacion": "https://www.openstreetmap.org/way/859463546",
+      "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40",
+      "licencia": "ANH01398-CLES01-LIC09/2026",
+      "activo": true,
+      "origen_registro": "registro_anterior_conservado",
+      "combustibles": [
+        "Gasolina Premium",
+        "Gasolina Especial",
+        "Gasolina Especial (+)",
+        "Super Etanol 92",
+        "Diésel Oil"
+      ],
+      "disponibilidad_de_prueba": {
+        "Gasolina Premium": "limitada",
+        "Gasolina Especial": "limitada",
+        "Gasolina Especial (+)": "limitada",
+        "Super Etanol 92": "limitada",
+        "Diésel Oil": "limitada"
+      }
+    },
+    {
+      "id": "3e57c9d2-ef85-4fa5-9de6-1c5f697b92b0",
+      "nombre": "Senkata",
+      "ciudad": "El Alto",
+      "empresa": "ESTACION DE SERVICIO \"C. REDENTOR\" S.R.L.",
+      "direccion": "Av. 6 de Marzo Nº 110",
+      "latitud": -16.5764028,
+      "longitud": -68.1850392,
+      "tipo_ubicacion": "punto_cartografico",
+      "fuente_ubicacion": "https://www.openstreetmap.org/node/4010455919",
+      "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40",
+      "licencia": "ANH04972-CLES01-LIC09/2026",
+      "activo": true,
+      "origen_registro": "registro_anterior_conservado",
+      "combustibles": [
+        "Gasolina Especial",
+        "Gasolina Especial (+)",
+        "Diésel Oil"
+      ],
+      "disponibilidad_de_prueba": {
+        "Gasolina Especial": "disponible",
+        "Gasolina Especial (+)": "disponible",
+        "Diésel Oil": "disponible"
+      }
+    },
+    {
+      "id": "56deaf50-a6ac-485b-a6ea-2677f7788ec0",
+      "nombre": "Centro",
+      "ciudad": "La Paz",
+      "empresa": "GAS CENTRO S.R.L.",
+      "direccion": "LA PAZ-CALLE INDABURO NO. 1396 ZONA: CENTRAL",
+      "latitud": -16.4956172,
+      "longitud": -68.1309731,
+      "tipo_ubicacion": "punto_cartografico",
+      "fuente_ubicacion": "https://www.openstreetmap.org/way/438460689",
+      "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40",
+      "licencia": "ANH00415-CLES01-LIC08/2025",
+      "activo": true,
+      "origen_registro": "registro_anterior_conservado",
+      "combustibles": [
+        "Gasolina Premium",
+        "Gasolina Especial",
+        "Gasolina Especial (+)",
+        "Super Etanol 92",
+        "Diésel Oil"
+      ],
+      "disponibilidad_de_prueba": {
+        "Gasolina Premium": "disponible",
+        "Gasolina Especial": "disponible",
+        "Gasolina Especial (+)": "disponible",
+        "Super Etanol 92": "disponible",
+        "Diésel Oil": "limitada"
+      }
+    },
+    {
+      "id": "f2f24626-b1fa-4208-9aa2-203a6028a795",
+      "nombre": "Ciudad Satélite",
+      "ciudad": "El Alto",
+      "empresa": "TEXAS S.R.L.",
+      "direccion": "EL ALTO - AV. CIVICA SATELITE NO. 101 ZONA: TEJADA RECTANGULAR",
+      "latitud": -16.5218918,
+      "longitud": -68.1570135,
+      "tipo_ubicacion": "punto_cartografico",
+      "fuente_ubicacion": "https://www.openstreetmap.org/way/760061540",
+      "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40",
+      "licencia": "ANH00267-CLES01-LIC09/2026",
+      "activo": true,
+      "origen_registro": "registro_anterior_conservado",
+      "combustibles": [
+        "Diésel Oil",
+        "Gasolina Especial",
+        "Gasolina Especial (+)"
+      ],
+      "disponibilidad_de_prueba": {
+        "Diésel Oil": "limitada",
+        "Gasolina Especial": "limitada",
+        "Gasolina Especial (+)": "limitada"
+      }
+    },
+    {
+      "id": "2a54a69a-0c10-4c28-8d6f-0e3490e70171",
+      "nombre": "Miraflores",
+      "ciudad": "La Paz",
+      "empresa": "SIEMPRE A FULL MIRAFLORES S.R.L. SAF S.R.L.",
+      "direccion": "AV. BUSCH ESQ. CALLE NICARAGUA ZONA MIRAFLORES",
+      "latitud": -16.5037493,
+      "longitud": -68.1211228,
+      "tipo_ubicacion": "punto_cartografico",
+      "fuente_ubicacion": "https://www.openstreetmap.org/node/11985487736",
+      "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40",
+      "licencia": "ANH00214-CLES01-LIC09/2026",
+      "activo": true,
+      "origen_registro": "registro_anterior_conservado",
+      "combustibles": [
+        "Gasolina Premium",
+        "Gasolina Especial",
+        "Gasolina Especial (+)",
+        "Super Etanol 92",
+        "Diésel Oil"
+      ],
+      "disponibilidad_de_prueba": {
+        "Gasolina Premium": "disponible",
+        "Gasolina Especial": "disponible",
+        "Gasolina Especial (+)": "disponible",
+        "Super Etanol 92": "disponible",
+        "Diésel Oil": "disponible"
+      }
+    },
+    {
+      "id": "94988b49-9f52-4409-a156-8dda388a3d34",
+      "nombre": "San Sebastián",
+      "ciudad": "La Paz",
+      "empresa": "ESTACION DE SERVICIOS VOLCAN S.R.L.",
+      "direccion": "AV. MONTES ESQ. PANDO NO. 101 ZONA SAN SEBASTIAN",
+      "latitud": -16.4911894,
+      "longitud": -68.1399321,
+      "tipo_ubicacion": "punto_cartografico",
+      "fuente_ubicacion": "https://www.openstreetmap.org/node/10253815272",
+      "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40",
+      "licencia": "ANH00580-CLES01-LIC09/2026",
+      "activo": true,
+      "origen_registro": "registro_anterior_conservado",
+      "combustibles": [
+        "Gasolina Premium",
+        "Gasolina Especial",
+        "Gasolina Especial (+)",
+        "Super Etanol 92",
+        "Diésel Oil"
+      ],
+      "disponibilidad_de_prueba": {
+        "Gasolina Premium": "disponible",
+        "Gasolina Especial": "disponible",
+        "Gasolina Especial (+)": "disponible",
+        "Super Etanol 92": "disponible",
+        "Diésel Oil": "limitada"
+      }
+    },
+    {
+      "id": "438cda96-5183-4704-9d29-9bc166cb4247",
+      "nombre": "Sopocachi",
+      "ciudad": "La Paz",
+      "empresa": "EMPRESA COMERCIALIZADORA DE HIDROCARBUROS TUPAC KATARI S.R.L.",
+      "direccion": "Calle Bernardino Bilbao Rioja, Sopocachi",
+      "latitud": -16.513702,
+      "longitud": -68.1251254,
+      "tipo_ubicacion": "punto_cartografico",
+      "fuente_ubicacion": "https://www.openstreetmap.org/way/860825870",
+      "fuente_url": "https://www.anh.gob.bo/w2026/contenido.php?D=2&R=1&s=40",
+      "licencia": "ANH00292-CLES01-LIC09/2026",
+      "activo": true,
+      "origen_registro": "registro_anterior_conservado",
+      "combustibles": [
+        "Gasolina Premium",
+        "Gasolina Especial",
+        "Gasolina Especial (+)",
+        "Super Etanol 92",
+        "Diésel Oil"
+      ],
+      "disponibilidad_de_prueba": {
+        "Gasolina Premium": "disponible",
+        "Gasolina Especial": "disponible",
+        "Gasolina Especial (+)": "disponible",
+        "Super Etanol 92": "disponible",
+        "Diésel Oil": "limitada"
+      }
+    },
+    {
+      "id": "06d1fc44-a77d-4d6d-bd3d-f6abd274d126",
+      "nombre": "Villa Adela",
+      "ciudad": "El Alto",
+      "empresa": "Servicios Energéticos Andinos",
+      "direccion": "Av. Ladislao Cabrera, sector Villa Adela",
+      "latitud": -16.5409,
+      "longitud": -68.1967,
+      "tipo_ubicacion": "simulada_para_pruebas",
+      "fuente_ubicacion": null,
+      "fuente_url": "",
+      "licencia": "",
+      "activo": true,
+      "origen_registro": "registro_anterior_conservado",
+      "combustibles": [
+        "Diésel Oil"
+      ],
+      "disponibilidad_de_prueba": {
+        "Diésel Oil": "agotado"
+      }
+    },
+    {
+      "id": "300cb645-a911-4692-97b5-2fb9b9e72b32",
+      "nombre": "Villa Bolívar",
+      "ciudad": "El Alto",
+      "empresa": "SIEMPRE A FULL MIRAFLORES S.R.L. SAF S.R.L.",
+      "direccion": "Av. 6 de Marzo, sector Villa Bolívar",
+      "latitud": -16.535,
+      "longitud": -68.1717,
+      "tipo_ubicacion": "simulada_para_pruebas",
+      "fuente_ubicacion": null,
+      "fuente_url": "",
+      "licencia": "",
+      "activo": true,
+      "origen_registro": "registro_anterior_conservado",
+      "combustibles": [
+        "Diésel Oil",
+        "Gasolina Especial"
+      ],
+      "disponibilidad_de_prueba": {
+        "Diésel Oil": "limitada",
+        "Gasolina Especial": "disponible"
+      }
+    },
+    {
+      "id": "63a10640-e120-5bd4-b5ef-f3e44f43075a",
+      "nombre": "Servifull Miraflores",
+      "ciudad": "La Paz",
+      "empresa": "EMPRESA COMERCIALIZADORA SERVICIO A FULL S.R.L.",
+      "direccion": "Avenida Pasoskanki, Miraflores",
+      "latitud": -16.4971101,
+      "longitud": -68.118491,
+      "tipo_ubicacion": "punto_cartografico",
+      "fuente_ubicacion": "https://www.openstreetmap.org/node/4412051860",
+      "fuente_url": "https://www.openstreetmap.org/node/4412051860",
+      "licencia": "",
+      "activo": true,
+      "origen_registro": "incorporado_sprint3",
+      "combustibles": [
+        "Gasolina Premium",
+        "Gasolina Especial",
+        "Gasolina Especial (+)",
+        "Super Etanol 92",
+        "Diésel Oil"
+      ],
+      "disponibilidad_de_prueba": {
+        "Gasolina Premium": "disponible",
+        "Gasolina Especial": "disponible",
+        "Gasolina Especial (+)": "disponible",
+        "Super Etanol 92": "disponible",
+        "Diésel Oil": "disponible"
+      }
+    },
+    {
+      "id": "4ba9b4d3-4905-5073-9336-8bbd169c5310",
+      "nombre": "Angelita Miraflores",
+      "ciudad": "La Paz",
+      "empresa": "Estación de Servicio Angelita",
+      "direccion": "Calle Juan Capriles, Miraflores",
+      "latitud": -16.4980369,
+      "longitud": -68.1164805,
+      "tipo_ubicacion": "punto_cartografico",
+      "fuente_ubicacion": "https://www.openstreetmap.org/node/4412327407",
+      "fuente_url": "https://www.openstreetmap.org/node/4412327407",
+      "licencia": "",
+      "activo": true,
+      "origen_registro": "incorporado_sprint3",
+      "combustibles": [
+        "Gasolina Premium",
+        "Gasolina Especial",
+        "Gasolina Especial (+)",
+        "Super Etanol 92",
+        "Diésel Oil"
+      ],
+      "disponibilidad_de_prueba": {
+        "Gasolina Premium": "limitada",
+        "Gasolina Especial": "limitada",
+        "Gasolina Especial (+)": "limitada",
+        "Super Etanol 92": "limitada",
+        "Diésel Oil": "limitada"
+      }
+    },
+    {
+      "id": "8f18eef4-f762-5b6e-961c-7bf5e13c95d5",
+      "nombre": "Motoreco",
+      "ciudad": "La Paz",
+      "empresa": "MOTORECO S.R.L.",
+      "direccion": "Avenida Sucre, zona Central",
+      "latitud": -16.496203,
+      "longitud": -68.1282112,
+      "tipo_ubicacion": "punto_cartografico",
+      "fuente_ubicacion": "https://www.openstreetmap.org/node/9426020484",
+      "fuente_url": "https://www.openstreetmap.org/node/9426020484",
+      "licencia": "",
+      "activo": true,
+      "origen_registro": "incorporado_sprint3",
+      "combustibles": [
+        "Gasolina Premium",
+        "Gasolina Especial",
+        "Gasolina Especial (+)",
+        "Super Etanol 92",
+        "Diésel Oil"
+      ],
+      "disponibilidad_de_prueba": {
+        "Gasolina Premium": "disponible",
+        "Gasolina Especial": "disponible",
+        "Gasolina Especial (+)": "disponible",
+        "Super Etanol 92": "disponible",
+        "Diésel Oil": "disponible"
+      }
+    },
+    {
+      "id": "18104af8-bfe8-55ee-bd79-2b27cd0017ad",
+      "nombre": "Kantuta",
+      "ciudad": "La Paz",
+      "empresa": "Estación de Servicio Kantuta",
+      "direccion": "Calle Honduras, sector Miraflores norte",
+      "latitud": -16.488967,
+      "longitud": -68.1213775,
+      "tipo_ubicacion": "punto_cartografico",
+      "fuente_ubicacion": "https://www.openstreetmap.org/node/4411573093",
+      "fuente_url": "https://www.openstreetmap.org/node/4411573093",
+      "licencia": "",
+      "activo": true,
+      "origen_registro": "incorporado_sprint3",
+      "combustibles": [
+        "Gasolina Premium",
+        "Gasolina Especial",
+        "Gasolina Especial (+)",
+        "Super Etanol 92",
+        "Diésel Oil"
+      ],
+      "disponibilidad_de_prueba": {
+        "Gasolina Premium": "disponible",
+        "Gasolina Especial": "disponible",
+        "Gasolina Especial (+)": "disponible",
+        "Super Etanol 92": "disponible",
+        "Diésel Oil": "limitada"
+      }
+    },
+    {
+      "id": "b47b72d0-bd0d-5b84-959b-03cf218053ee",
+      "nombre": "Soinco",
+      "ciudad": "La Paz",
+      "empresa": "Estación de Servicio Soinco",
+      "direccion": "Avenida Ciudad del Niño",
+      "latitud": -16.500576,
+      "longitud": -68.1058509,
+      "tipo_ubicacion": "punto_cartografico",
+      "fuente_ubicacion": "https://www.openstreetmap.org/node/3416439472",
+      "fuente_url": "https://www.openstreetmap.org/node/3416439472",
+      "licencia": "",
+      "activo": true,
+      "origen_registro": "incorporado_sprint3",
+      "combustibles": [
+        "Gasolina Premium",
+        "Gasolina Especial",
+        "Gasolina Especial (+)",
+        "Super Etanol 92",
+        "Diésel Oil"
+      ],
+      "disponibilidad_de_prueba": {
+        "Gasolina Premium": "agotado",
+        "Gasolina Especial": "disponible",
+        "Gasolina Especial (+)": "disponible",
+        "Super Etanol 92": "disponible",
+        "Diésel Oil": "limitada"
+      }
+    },
+    {
+      "id": "6df94fee-8f9d-5b5a-9534-bd4fab108c7a",
+      "nombre": "La Costanera",
+      "ciudad": "La Paz",
+      "empresa": "Estación de Servicio La Costanera",
+      "direccion": "Avenida Costanerita, Obrajes",
+      "latitud": -16.5265732,
+      "longitud": -68.111755,
+      "tipo_ubicacion": "punto_cartografico",
+      "fuente_ubicacion": "https://www.openstreetmap.org/way/859463551",
+      "fuente_url": "https://www.openstreetmap.org/way/859463551",
+      "licencia": "",
+      "activo": true,
+      "origen_registro": "incorporado_sprint3",
+      "combustibles": [
+        "Gasolina Premium",
+        "Gasolina Especial",
+        "Gasolina Especial (+)",
+        "Super Etanol 92",
+        "Diésel Oil"
+      ],
+      "disponibilidad_de_prueba": {
+        "Gasolina Premium": "disponible",
+        "Gasolina Especial": "disponible",
+        "Gasolina Especial (+)": "disponible",
+        "Super Etanol 92": "disponible",
+        "Diésel Oil": "limitada"
+      }
+    },
+    {
+      "id": "8ce49be7-7e10-574c-bf31-fb3c502a54b2",
+      "nombre": "San Pedro",
+      "ciudad": "La Paz",
+      "empresa": "Estación de Servicio San Pedro",
+      "direccion": "Avenida 20 de Octubre, San Pedro",
+      "latitud": -16.5042466,
+      "longitud": -68.1339187,
+      "tipo_ubicacion": "punto_cartografico",
+      "fuente_ubicacion": "https://www.openstreetmap.org/node/4412485953",
+      "fuente_url": "https://www.openstreetmap.org/node/4412485953",
+      "licencia": "",
+      "activo": true,
+      "origen_registro": "incorporado_sprint3",
+      "combustibles": [
+        "Gasolina Premium",
+        "Gasolina Especial",
+        "Gasolina Especial (+)",
+        "Super Etanol 92",
+        "Diésel Oil"
+      ],
+      "disponibilidad_de_prueba": {
+        "Gasolina Premium": "disponible",
+        "Gasolina Especial": "disponible",
+        "Gasolina Especial (+)": "disponible",
+        "Super Etanol 92": "disponible",
+        "Diésel Oil": "disponible"
+      }
+    },
+    {
+      "id": "18256701-a3c9-5cc5-8828-525a2ee42d87",
+      "nombre": "Cristo Autogas",
+      "ciudad": "La Paz",
+      "empresa": "CRISTO AUTOGAS S.R.L.",
+      "direccion": "Avenida Chacaltaya Nº 804, Achachicala",
+      "latitud": -16.482778,
+      "longitud": -68.145499,
+      "tipo_ubicacion": "punto_cartografico",
+      "fuente_ubicacion": "https://www.openstreetmap.org/node/5111748290",
+      "fuente_url": "https://www.openstreetmap.org/node/5111748290",
+      "licencia": "",
+      "activo": true,
+      "origen_registro": "incorporado_sprint3",
+      "combustibles": [
+        "Gasolina Premium",
+        "Gasolina Especial",
+        "Gasolina Especial (+)",
+        "Super Etanol 92",
+        "Diésel Oil"
+      ],
+      "disponibilidad_de_prueba": {
+        "Gasolina Premium": "disponible",
+        "Gasolina Especial": "disponible",
+        "Gasolina Especial (+)": "disponible",
+        "Super Etanol 92": "disponible",
+        "Diésel Oil": "limitada"
+      }
+    }
+  ]
+}

@@ -29,3 +29,7 @@ La entrega implementa la recepción y navegación de notificaciones del sistema.
 El trabajo y verificación de iOS quedan pendientes por decisión del equipo. La información de combustible vence a las dos horas; las pruebas generan publicaciones académicas recientes y no renuevan fechas automáticamente.
 
 Las tablas nuevas tienen RLS con denegación predeterminada y permisos directos revocados a los clientes; las operaciones pasan por funciones que revisan identidad y rol. La revisión de Supabase informó estas tablas sin políticas como información, coherente con ese acceso por RPC. La protección de contraseñas filtradas continúa como aviso previo de configuración de Auth: [documentación de Supabase](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
+
+## Ampliación del catálogo de exposición
+
+Se completaron los 12 registros anteriores y se añadieron ocho estaciones: 20 activas, ubicadas y con responsables. Los 89 estados académicos vigentes incluyen opciones para los cinco combustibles. Se verificaron recomendaciones desde tres orígenes y rutas reales a las 20 estaciones, conservando preferencias y el historial anterior. Preparación y fuentes: [PRUEBAS_CATALOGO_SPRINT_3.md](PRUEBAS_CATALOGO_SPRINT_3.md).
