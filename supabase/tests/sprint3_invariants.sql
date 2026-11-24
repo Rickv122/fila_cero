@@ -37,7 +37,7 @@ begin
  if n<>1 then raise exception 'Se duplicó un aviso por publicación disponible repetida';end if;
  perform set_config('request.jwt.claims',jsonb_build_object('sub',driver,'role','authenticated','session_id',session_id)::text,true);
  perform public.fc_command('favorite',jsonb_build_object('id',station,'activo',false));
- if exists(select 1 from public.suscripciones_disponibilidad where perfil_id=driver and estacion_id=station and activo) then raise exception 'Quitar favorita no revocó suscripción';end if;
+ if exists(select 1 from public.avisos_por_estacion where perfil_id=driver and estacion_id=station and activo) then raise exception 'Quitar favorita no revocó el aviso';end if;
  perform set_config('request.jwt.claims','{"role":"service_role"}',true);
  perform public.fc3_push_claim(20);
  if exists(select 1 from public.cola_notificaciones where dispositivo_id=device and estado<>'cancelado') then raise exception 'La cola no canceló avisos sin favorita';end if;

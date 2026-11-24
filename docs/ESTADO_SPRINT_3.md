@@ -33,3 +33,7 @@ Las tablas nuevas tienen RLS con denegación predeterminada y permisos directos 
 ## Ampliación del catálogo de exposición
 
 Se completaron los 12 registros anteriores y se añadieron ocho estaciones: 20 activas, ubicadas y con responsables. Los 89 estados académicos vigentes incluyen opciones para los cinco combustibles. Se verificaron recomendaciones desde tres orígenes y rutas reales a las 20 estaciones, conservando preferencias y el historial anterior. Preparación y fuentes: [PRUEBAS_CATALOGO_SPRINT_3.md](PRUEBAS_CATALOGO_SPRINT_3.md).
+
+## Nombre de la tabla de avisos
+
+La tabla de activación de avisos se llama `avisos_por_estacion`. La migración de cambio de nombre conserva sus datos, clave compuesta, referencia a favoritas, índices, RLS y permisos. Se actualizaron las cinco funciones de BD que la utilizan. Las consultas y comandos públicos mantienen sus nombres para conservar la compatibilidad con el APK instalado. Pasaron las pruebas de preferencias, permisos, generación, cancelación y deduplicación de avisos, además de los cinco casos de revocación, con ROLLBACK. Una consulta autenticada desde el contrato del APK recuperó el aviso de San Jorge.

@@ -81,7 +81,7 @@ La revocación de un dispositivo propio requiere identidad autenticada y se perm
 | Tabla | Propósito |
 | --- | --- |
 | `preferencias_conductor` | Una configuración por perfil. |
-| `suscripciones_disponibilidad` | Activación por perfil y estación favorita. |
+| `avisos_por_estacion` | Activación de avisos por perfil y estación favorita. |
 | `dispositivos_notificaciones` | Identificador de mensajería asociado a perfil y sesión. |
 | `cola_notificaciones` | Estado de entrega, bloqueo e intentos por evento. |
 
